@@ -1,80 +1,94 @@
 <template>
-  <a-layout id="components-layout-demo-top-side-2">
-    <a-layout-header class="header">
-      <div class="logo" />
-      <a-menu
-        theme="dark"
-        mode="horizontal"
-        :defaultSelectedKeys="['2']"
-        :style="{ lineHeight: '64px' }"
-      >
-        <a-menu-item key="1">nav 1</a-menu-item>
-        <a-menu-item key="2">nav 2</a-menu-item>
-        <a-menu-item key="3">nav 3</a-menu-item>
-      </a-menu>
-    </a-layout-header>
-    <a-layout>
-      <a-layout-sider width="200" style="background: #fff">
-        <a-menu
-          mode="inline"
-          :defaultSelectedKeys="['1']"
-          :defaultOpenKeys="['sub1']"
-          :style="{ height: '100%', borderRight: 0 }"
-        >
-          <a-sub-menu key="sub1">
-            <span slot="title"><a-icon type="user" />subnav 1</span>
-            <a-menu-item key="1">option1</a-menu-item>
-            <a-menu-item key="2">option2</a-menu-item>
-            <a-menu-item key="3">option3</a-menu-item>
-            <a-menu-item key="4">option4</a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub2">
-            <span slot="title"><a-icon type="laptop" />subnav 2</span>
-            <a-menu-item key="5">option5</a-menu-item>
-            <a-menu-item key="6">option6</a-menu-item>
-            <a-menu-item key="7">option7</a-menu-item>
-            <a-menu-item key="8">option8</a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub3">
-            <span slot="title"><a-icon type="notification" />subnav 3</span>
-            <a-menu-item key="9">option9</a-menu-item>
-            <a-menu-item key="10">option10</a-menu-item>
-            <a-menu-item key="11">option11</a-menu-item>
-            <a-menu-item key="12">option12</a-menu-item>
-          </a-sub-menu>
-        </a-menu>
-      </a-layout-sider>
-      <a-layout style="padding: 0 24px 24px">
-        <a-breadcrumb style="margin: 16px 0">
-          <a-breadcrumb-item>Home</a-breadcrumb-item>
-          <a-breadcrumb-item>List</a-breadcrumb-item>
-          <a-breadcrumb-item>App</a-breadcrumb-item>
-        </a-breadcrumb>
-        <a-layout-content
-          :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
-        >
-          Content
-        </a-layout-content>
-      </a-layout>
-    </a-layout>
+  <a-layout id="fixed">
+    <TopBar></TopBar>
+    <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
+      <a-breadcrumb :style="{ margin: '32px 0' }">
+        <a-breadcrumb-item>Home</a-breadcrumb-item>
+        <a-breadcrumb-item>List</a-breadcrumb-item>
+        <a-breadcrumb-item>App</a-breadcrumb-item>
+      </a-breadcrumb>
+      <div class="product-list">
+        <a-row :gutter="24">
+          <a-col :span="6">
+            <a-card hoverable>
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                slot="cover"
+              />
+              <a-card-meta title="$27">
+                <template slot="description">a bear</template>
+              </a-card-meta>
+            </a-card>
+          </a-col>
+          <a-col :span="6">
+            <a-card hoverable>
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                slot="cover"
+              />
+              <a-card-meta title="$27">
+                <template slot="description">a bear</template>
+              </a-card-meta>
+            </a-card>
+          </a-col>
+          <a-col :span="6">
+            <a-card hoverable>
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                slot="cover"
+              />
+              <a-card-meta title="$27">
+                <template slot="description">a bear</template>
+              </a-card-meta>
+            </a-card>
+          </a-col>
+          <a-col :span="6">
+            <a-card hoverable>
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                slot="cover"
+              />
+              <a-card-meta title="$27">
+                <template slot="description">a bear</template>
+              </a-card-meta>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+      <a-pagination id="page" showQuickJumper :defaultCurrent="2" :total="500" @change="onChange" />
+    </a-layout-content>
+    <a-layout-footer :style="{ textAlign: 'center' }">
+      Ant Design ©2018 Created by Ant UED
+    </a-layout-footer>
   </a-layout>
 </template>
+<style>
+
+ #page {
+   margin-top: 50px;
+   text-align: center;
+ }
+
+ /* #search-box{
+   float: right;
+ } */
+</style>
+
 <script>
+import TopBar from '@/components/TopBar.vue'
   export default {
-    data() {
-      return {
-        collapsed: false,
-      };
+    name:'product-list',
+    components:{
+      TopBar
+    },
+    methods: {
+      onChange() {
+
+      },
     },
   };
 </script>
-
-<style>
-  #components-layout-demo-top-side-2 .logo {
-    width: 120px;
-    height: 31px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 16px 28px 16px 0;
-    float: left;
-  }
-</style>
