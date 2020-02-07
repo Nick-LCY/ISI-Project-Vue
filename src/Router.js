@@ -11,5 +11,11 @@ export default new Router({
       name: 'Home',
       component: () => import('@/pages/ProductList.vue'),
     },
+
+    {
+      path: '/1',
+      name: 'Product Detail',
+      component: () => import('@/pages/ProductDetail.vue'),
+    },
   ]
 })

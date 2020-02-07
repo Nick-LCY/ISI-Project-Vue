@@ -1,5 +1,6 @@
 // vue.config.js
 module.exports = {
+    // publicPath: '',
     css: {
       loaderOptions: {
         less: {
@@ -12,4 +13,4 @@ module.exports = {
         }
       }
     }
-  }
+}

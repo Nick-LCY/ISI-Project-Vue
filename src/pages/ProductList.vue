@@ -66,6 +66,7 @@
     </a-layout-footer>
   </a-layout>
 </template>
+
 <style>
 
  #page {
@@ -77,6 +78,8 @@
    float: right;
  } */
 </style>
+=======
+
 
 <script>
 import TopBar from '@/components/TopBar.vue'
