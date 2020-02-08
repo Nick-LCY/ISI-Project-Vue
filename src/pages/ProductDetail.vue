@@ -24,24 +24,28 @@
         <div class="title">
           Good's name
         </div>
-
-        <!-- <a-carousel autoplay arrows dotsClass="slick-dots slick-thumb">
-          <div><img src="..\\assets\\photo1.jpg"></div>
-          <div><img src="..\\assets\\photo2.jpg"></div>
-          <div><img src="..\\assets\\photo3.jpg"></div>
-          <div><img src="..\\assets\\photo4.jpg"></div>
-        </a-carousel> -->
-        <div class="carou">
-          <a-carousel arrows dotsClass="slick-dots slick-thumb">
-            <a slot="customPaging" slot-scope="props">
-              <img :src="getImgUrl(props.i)" />
-            </a>
-            <div v-for="p in 4" :key="p">
-              <img :src="baseUrl+'photo'+p+'.jpg'" />
-            </div>
-          </a-carousel>
-        </div>
-        
+        <a-row>
+          <div class="carou">
+            <a-carousel autoplay arrows>
+              <div slot="prevArrow" class="custom-slick-arrow" style="left: 10px;zIndex: 1">
+                <a-icon type="left-circle" />
+              </div>
+              <div slot="nextArrow" class="custom-slick-arrow" style="right: 10px">
+                <a-icon type="right-circle" />
+              </div>
+              <div><img src="..\\assets\\thumbnail.jpg"></div>
+              <div><img src="..\\assets\\photo1.jpg"></div>
+              <div><img src="..\\assets\\photo2.jpg"></div>
+              <div><img src="..\\assets\\photo3.jpg"></div>
+              <div><img src="..\\assets\\photo4.jpg"></div>
+            </a-carousel>
+          </div>
+          <div class="price">
+            <a-row>
+              Price: {{price}}
+            </a-row>
+          </div>
+        </a-row>        
         
       </div>
     </a-layout-content>
@@ -52,26 +56,12 @@
 </template>
 
 <script>
-  const baseUrl = '../assets/';
   export default {
     data() {
       return {
-        baseUrl,
-        // collapsed: false,
-        // photos: [
-        //   {src: require('../assets/thumbnail.jpg')},
-        //   {src: require('../assets/photo1.jpg')},
-        //   {src: require('../assets/photo2.jpg')},
-        //   {src: require('../assets/photo3.jpg')},
-        //   {src: require('../assets/photo4.jpg')},
-        // ],
+        collapsed: false,
+        price: '$100',
       };
-    },
-    methods: {
-      getImgUrl(i) {
-        return `${baseUrl}photo${i + 1}.jpg`;
-        // return this.photos[i];
-      },
     },
   };
 </script>
@@ -101,47 +91,44 @@
     font-weight: bold;
   }
 
-  .thumbnail {
-    width: 50px;
-    padding-right: 10px;
-  }
-
-/*  .ant-carousel >>> .slick-slide {
-    text-align: center;
-    height: 160px;
-    line-height: 160px;
-    background: #364d79;
-    overflow: hidden;
-  }*/
-
-/*  .carou {
-    position: absolute;
-    left: 0px;
-  }*/
-
-  .ant-carousel >>> .slick-dots {
-    height: auto;
-  }
-  .ant-carousel >>> .slick-slide img {
-    border: 5px solid #fff;
-    display: block;
-    margin: auto;
-    max-width: 80%;
-  }
-  .ant-carousel >>> .slick-thumb {
-    bottom: -45px;
-  }
-  .ant-carousel >>> .slick-thumb li {
-    width: 60px;
-    height: 45px;
-  }
-  .ant-carousel >>> .slick-thumb li img {
+  .ant-carousel img {
+    margin: 0 auto;
     width: 100%;
-    height: 100%;
-    filter: grayscale(100%);
+    /*height: 100%;*/
+    vertical-align: middle;
   }
-  .ant-carousel >>> .slick-thumb li.slick-active img {
-    filter: grayscale(0%);
+
+  .ant-carousel {
+    width: 40%;
+  }
+
+  .ant-carousel >>> .slick-slide {
+    text-align: center;
+    height: 300px;
+    line-height: 300px;
+    /*background: #364d79;*/
+    overflow: hidden;
+  }
+
+  .ant-carousel >>> .custom-slick-arrow {
+    width: 25px;
+    height: 25px;
+    font-size: 25px;
+    color: rgb(1, 1, 1);
+    background-color: rgba(31, 45, 61, 0.11);
+    opacity: 0.3;
+  }
+
+  .ant-carousel >>> .custom-slick-arrow:before {
+    display: none;
+  }
+
+  .ant-carousel >>> .custom-slick-arrow:hover {
+    opacity: 0.5;
+  }
+
+  .ant-carousel >>> .slick-slide h3 {
+    color: rgb(1, 1, 1);
   }
 
 </style>
