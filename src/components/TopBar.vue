@@ -1,67 +1,59 @@
 <template>
-        <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-      <a-menu
-        theme="dark"
-        mode="horizontal"
-        :style="{ lineHeight: '64px'}"
-      >
-        <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>
-                <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu>
-          <span slot="title"><a-icon type="setting"/>Electronics</span>
-          <a-menu-item key="electronics 1">Electronics</a-menu-item>
-          <a-menu-item key="electronics 2">Clothing</a-menu-item>
-        </a-sub-menu>  
-         <a-input-search id="search-box" placeholder="input search text" style="width: 200px" @search="onSearch"  />
-         <a-avatar id="user-icon" icon="user"/>
-      </a-menu>
-      <!-- <div id="search-box">
-       <a-input-search placeholder="input search text" style="width: 200px" @search="onSearch"  />
-      </div> -->
-    </a-layout-header>
+  <a-layout-header>
+
+    <div class="right-align" style="float: right;">
+      <div id="search-container">
+        <a-input-search id="search-box" placeholder="input search text"/>
+      </div>
+      <div id="avatar-container">
+        <a-avatar id="user-icon" icon="user" size="large"/>
+      </div>
+    </div>
+
+    <a-menu theme="dark" mode="horizontal" style="line-height: 64px;">
+      <a-sub-menu>
+        <span slot="title"><a-icon type="sliders"/><b style="color: orange;">Filter</b></span>
+        <a-menu-item key="electronics 1">Price descending</a-menu-item>
+        <a-menu-item key="electronics 2">Price ascending</a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu>
+        <span slot="title">Electronics</span>
+        <a-menu-item key="electronics 1">Electronics</a-menu-item>
+        <a-menu-item key="electronics 2">Clothing</a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu>
+        <span slot="title"><a-icon type="right-circle"/>Electronics</span>
+        <a-menu-item key="electronics 1">Electronics</a-menu-item>
+        <a-menu-item key="electronics 2">Clothing</a-menu-item>
+      </a-sub-menu>
+    </a-menu>
+  </a-layout-header>
 </template>
 
 <style scoped>
-    #user-icon {
-        margin-left: 20px;
-    }
+  .right-align {
+    display: flex;
+    width: 15vw;
+    height: 64px;
+    float: right;
+  }
+  #avatar-container {
+    flex: 0 1 1;
+    margin: 0 5px;
+    display: flex;
+    align-items: center;
+  }
+  #user-icon {
+    top: 0;
+  }
+  #search-container {
+    flex: 0 1 3;
+    margin: 0 5px;
+  }
 </style>
 
 <script>
-export default {
+  export default {
     name: 'TopBar',
-}
+  }
 </script>
