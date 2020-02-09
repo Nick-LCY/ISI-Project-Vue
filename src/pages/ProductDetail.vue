@@ -24,8 +24,21 @@
         <div class="title">
           Good's name
         </div>
+
         <a-row>
-          <div class="carou">
+           <a-col class="info">
+            <a-row>
+              Price: {{price}}
+            </a-row>
+            <a-row id="app">
+              Rating: <star :num="5" :stor="3.5"></star>
+            </a-row>
+            <a-row>
+              <a-button>Add to cart</a-button>
+            </a-row>
+            <a-row>Category: Lv1 Cate, Lv2 Cate, Lv3 Cate, Lv4 Cate</a-row>
+          </a-col>
+          <a-col class="carou">
             <a-carousel autoplay arrows>
               <div slot="prevArrow" class="custom-slick-arrow" style="left: 10px;zIndex: 1">
                 <a-icon type="left-circle" />
@@ -39,14 +52,50 @@
               <div><img src="..\\assets\\photo3.jpg"></div>
               <div><img src="..\\assets\\photo4.jpg"></div>
             </a-carousel>
-          </div>
-          <div class="price">
-            <a-row>
-              Price: {{price}}
-            </a-row>
-          </div>
-        </a-row>        
+          </a-col>
+         
+        </a-row> 
+
+        <br><br><br> 
+
+
+        <a-row class="description">
+          Other properties:
+          <a-row>
+            Key1: Value1
+          </a-row>
+          <a-row>
+            Key2: Value2
+          </a-row>
+          <a-row>
+            Key3: Value3
+          </a-row>
+        </a-row>
+
+        <br><br><br>
+
+        <a-row>
+          <a-divider>Review</a-divider>
+          <a-card :loading="loading" title="User Name:">
+            Rating: <star :num="5" :stor="5"></star>
+            <br>
+            Comment:
+          </a-card>
+          <br>
+          <a-card :loading="loading" title="User Name:">
+            Rating: <star :num="5" :stor="4.5"></star>
+            <br>
+            Comment:
+          </a-card>
+          <br>
+          <a-card :loading="loading" title="User Name:">
+            Rating: <star :num="5" :stor="4"></star>
+            <br>
+            Comment:
+          </a-card>
+        </a-row>
         
+
       </div>
     </a-layout-content>
     <a-layout-footer :style="{ textAlign: 'center' }">
@@ -55,12 +104,18 @@
   </a-layout>
 </template>
 
+
+
 <script>
+  import star from '../components/Star.vue'
   export default {
+    components: {
+      star
+    },
     data() {
       return {
         collapsed: false,
-        price: '$100',
+        price: '$100.01',
       };
     },
   };
@@ -129,6 +184,20 @@
 
   .ant-carousel >>> .slick-slide h3 {
     color: rgb(1, 1, 1);
+  }
+
+  .info {
+    float: right;
+    text-align: left;
+    font-size: 20px;
+  }
+
+  .description {
+    font-size: 20px;
+  }
+
+  .description >>> .a-row {
+    font-size: 15px;
   }
 
 </style>
