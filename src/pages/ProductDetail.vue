@@ -1,18 +1,6 @@
 <template>
   <a-layout id="components-layout-demo-fixed">
-    <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-      <div class="logo" />
-      <a-menu
-        theme="dark"
-        mode="horizontal"
-        :defaultSelectedKeys="['2']"
-        :style="{ lineHeight: '64px' }"
-      >
-        <a-menu-item key="1">nav 1</a-menu-item>
-        <a-menu-item key="2">nav 2</a-menu-item>
-        <a-menu-item key="3">nav 3</a-menu-item>
-      </a-menu>
-    </a-layout-header>
+    <TopBar></TopBar>
     <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
       <a-breadcrumb :style="{ margin: '16px 0' }">
         <a-breadcrumb-item>Home</a-breadcrumb-item>
@@ -21,31 +9,11 @@
       </a-breadcrumb>
       
       <div id="main-content">
-        <div class="title">
-          Good's name
-        </div>
+        
 
-        <a-row>
-           <a-col class="info">
-            <a-row>
-              Price: {{price}}
-            </a-row>
-            <a-row id="app">
-              Rating: <star :num="5" :stor="3.5"></star>
-            </a-row>
-            <a-row>
-              <a-button>Add to cart</a-button>
-            </a-row>
-            <a-row>Category: Lv1 Cate, Lv2 Cate, Lv3 Cate, Lv4 Cate</a-row>
-          </a-col>
-          <a-col class="carou">
-            <a-carousel autoplay arrows>
-              <div slot="prevArrow" class="custom-slick-arrow" style="left: 10px;zIndex: 1">
-                <a-icon type="left-circle" />
-              </div>
-              <div slot="nextArrow" class="custom-slick-arrow" style="right: 10px">
-                <a-icon type="right-circle" />
-              </div>
+        <a-row type="flex" justify="space-around">
+          <a-col :span="8">
+            <a-carousel autoplay>
               <div><img src="..\\assets\\thumbnail.jpg"></div>
               <div><img src="..\\assets\\photo1.jpg"></div>
               <div><img src="..\\assets\\photo2.jpg"></div>
@@ -53,46 +21,49 @@
               <div><img src="..\\assets\\photo4.jpg"></div>
             </a-carousel>
           </a-col>
-         
+          <a-col :span="16" class="info">
+            <a-divider>Good's name</a-divider>
+            <a-row type="flex" justify="space-around">
+              
+              <a-col :span="7" class="basic_info">
+                <p>Price: {{price}}</p>
+                <p>Rating: <a-rate :defaultValue="4.5" disabled allowHalf/></p>
+                <p><a-button type="primary" size="large">Add to Cart</a-button></p>
+                <p class="cate">Category: Lv1 Cate, Lv2 Cate, Lv3 Cate, Lv4 Cate</p>
+              </a-col>
+              <a-col :span="12" class="description">
+                <p>Other Properties:</p>
+                <a-tabs defaultActiveKey="1" tabPosition="left">
+                  <a-tab-pane tab="Key 1" key="1">Value 1</a-tab-pane>
+                  <a-tab-pane tab="Key 2" key="2">Value 2</a-tab-pane>
+                  <a-tab-pane tab="Key 3" key="3">Value 3</a-tab-pane>
+                </a-tabs>
+              </a-col>
+            </a-row>
+          </a-col>
         </a-row> 
 
         <br><br><br> 
 
-
-        <a-row class="description">
-          Other properties:
-          <a-row>
-            Key1: Value1
-          </a-row>
-          <a-row>
-            Key2: Value2
-          </a-row>
-          <a-row>
-            Key3: Value3
-          </a-row>
-        </a-row>
-
-        <br><br><br>
-
         <a-row>
-          <a-divider>Review</a-divider>
-          <a-card :loading="loading" title="User Name:">
-            Rating: <star :num="5" :stor="5"></star>
-            <br>
-            Comment:
-          </a-card>
-          <br>
-          <a-card :loading="loading" title="User Name:">
-            Rating: <star :num="5" :stor="4.5"></star>
-            <br>
-            Comment:
-          </a-card>
-          <br>
-          <a-card :loading="loading" title="User Name:">
-            Rating: <star :num="5" :stor="4"></star>
-            <br>
-            Comment:
-          </a-card>
+          <a-col>
+            <a-list
+              class="comment-list"
+              :header="`${data.length} reviews`"
+              itemLayout="horizontal"
+              :dataSource="data"
+            >
+              <a-list-item slot="renderItem" slot-scope="item">
+                <a-comment :author="item.author" :avatar="item.avatar">
+                  <p>Rating: <a-rate :defaultValue="3.5" disabled allowHalf/></p>
+                  <p slot="content">{{item.content}}</p>
+                  <a-tooltip slot="datetime" :title="item.datetime.format('YYYY-MM-DD HH:mm:ss')">
+                    <span>{{item.datetime.fromNow()}}</span>
+                  </a-tooltip>
+                </a-comment>
+              </a-list-item>
+            </a-list>
+          </a-col>
         </a-row>
         
 
@@ -107,15 +78,48 @@
 
 
 <script>
-  import star from '../components/Star.vue'
+  import moment from 'moment';
+  import TopBar from '@/components/TopBar.vue'
   export default {
-    components: {
-      star
+    components:{
+      TopBar
     },
     data() {
       return {
         collapsed: false,
         price: '$100.01',
+        data: [
+          {
+            // actions: ['Reply to'],
+            author: 'Jennifer Chun',
+            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+            content:
+              'Good.',
+            datetime: moment().subtract(1, 'days'),
+          },
+          {
+            // actions: ['Reply to'],
+            author: 'Monica Lyu',
+            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+            content:
+              'Great.',
+            datetime: moment().subtract(2, 'days'),
+          },
+          {
+            // actions: ['Reply to'],
+            author: 'Nick Lin',
+            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+            content:
+              'Just so so.',
+            datetime: moment().subtract(6, 'days'),
+          },
+        ],
+        moment,
+        // methods: {
+        //   callback(key) {
+        //     console.log(key);
+        //   },
+        // },
       };
     },
   };
@@ -140,10 +144,21 @@
 /*    min-height: 280px;*/
   }
 
-  .title {
-    padding-bottom: 25px;
+  .ant-divider {
+    padding-bottom: 10px;
     font-size: 30px;
     font-weight: bold;
+  }
+
+  .ant-divider.ant-divider-horizontal.ant-divider-with-text::before,
+  .ant-divider.ant-divider-horizontal.ant-divider-with-text::after
+  {
+    border-top: 3px dashed rgb(1,1,1);
+  }
+
+  .ant-carousel {
+    width: 100%;
+    padding-right: 15px;
   }
 
   .ant-carousel img {
@@ -153,51 +168,29 @@
     vertical-align: middle;
   }
 
-  .ant-carousel {
-    width: 40%;
-  }
-
   .ant-carousel >>> .slick-slide {
     text-align: center;
-    height: 300px;
-    line-height: 300px;
+    height: 250px;
+    line-height: 250px;
     /*background: #364d79;*/
     overflow: hidden;
   }
 
-  .ant-carousel >>> .custom-slick-arrow {
-    width: 25px;
-    height: 25px;
-    font-size: 25px;
-    color: rgb(1, 1, 1);
-    background-color: rgba(31, 45, 61, 0.11);
-    opacity: 0.3;
-  }
-
-  .ant-carousel >>> .custom-slick-arrow:before {
-    display: none;
-  }
-
-  .ant-carousel >>> .custom-slick-arrow:hover {
-    opacity: 0.5;
-  }
-
-  .ant-carousel >>> .slick-slide h3 {
-    color: rgb(1, 1, 1);
-  }
-
   .info {
-    float: right;
+    /*float: right;*/
     text-align: left;
     font-size: 20px;
+    padding-left: 15px;
+  }
+
+  .cate {
+    font-size: 15px;
   }
 
   .description {
-    font-size: 20px;
-  }
-
-  .description >>> .a-row {
-    font-size: 15px;
+    border-left: 2px solid rgb(220, 220, 220);
+    padding: 10px;
+    margin: 0;
   }
 
 </style>
