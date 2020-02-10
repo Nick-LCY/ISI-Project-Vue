@@ -1,44 +1,33 @@
 <template>
   <a-layout-header>
+<!--     <div class="left-align" style="float: left;">
+      <div id="logo-container">
+      </div>
+    </div> -->
 
     <div class="right-align" style="float: right;">
       <div id="search-container">
-        <a-input-search id="search-box" placeholder="input search text"/>
+        <a-button type="primary" size="large"><a-icon type="search" />Search</a-button>
       </div>
       <div id="avatar-container">
         <a-avatar id="user-icon" icon="user" size="large"/>
       </div>
     </div>
 
-    <a-menu theme="dark" mode="horizontal" style="line-height: 64px;">
-      <a-sub-menu>
-        <span slot="title"><a-icon type="sliders"/><b style="color: orange;">Filter</b></span>
-        <a-menu-item key="electronics 1">Price descending</a-menu-item>
-        <a-menu-item key="electronics 2">Price ascending</a-menu-item>
-      </a-sub-menu>
-      <a-sub-menu>
-        <span slot="title">Electronics</span>
-        <a-menu-item key="electronics 1">Electronics</a-menu-item>
-        <a-menu-item key="electronics 2">Clothing</a-menu-item>
-      </a-sub-menu>
-      <a-sub-menu>
-        <span slot="title"><a-icon type="right-circle"/>Electronics</span>
-        <a-menu-item key="electronics 1">Electronics</a-menu-item>
-        <a-menu-item key="electronics 2">Clothing</a-menu-item>
-      </a-sub-menu>
+    <a-menu theme="dark" mode="horizontal" style="line-height: 64px;" :defaultSelectedKeys="['products']">
+      <a-menu-item key="products">Products</a-menu-item>
+      <a-menu-item key="orders">Orders</a-menu-item>
+      <a-menu-item key="shipping_cart">Shopping Cart</a-menu-item>
     </a-menu>
   </a-layout-header>
 </template>
 
 <style scoped>
   .right-align {
-    display: flex;
-    width: 15vw;
     height: 64px;
-    float: right;
+    display: flex;
   }
   #avatar-container {
-    flex: 0 1 1;
     margin: 0 5px;
     display: flex;
     align-items: center;
@@ -47,7 +36,6 @@
     top: 0;
   }
   #search-container {
-    flex: 0 1 3;
     margin: 0 5px;
   }
 </style>
