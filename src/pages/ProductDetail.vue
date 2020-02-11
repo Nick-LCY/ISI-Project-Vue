@@ -19,21 +19,29 @@
               <div><img src="..\\assets\\photo3.jpg"></div>
               <div><img src="..\\assets\\photo4.jpg"></div>
             </a-carousel>
+            <!-- <a-carousel autoplay arrows dotsClass="slick-dots slick-thumb">
+              <a slot="customPaging" slot-scope="props">
+                <img :src="getImgUrl(props.i)" />
+              </a>
+              <div v-for="item in 5" v-bind:key="item">
+                <img :src="baseUrl+'abstract0'+item+'.jpg'" />
+              </div>
+            </a-carousel> -->
           </a-col>
 
-          <a-col :span="16" class="info" v-for="pro in data" v-bind:key="pro.id">
-            <a-divider>{{pro.name}}</a-divider>
+          <a-col :span="16" class="info">
+            <a-divider>{{product.name}}</a-divider>
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
-                <p>Price: ${{pro.price}}</p>
+                <p>Price: ${{product.price}}</p>
                 <!-- <p>Rating: <a-rate :defaultValue="4.5" disabled allowHalf/></p> -->
                 <p><a-button type="primary" size="large">Add to Cart</a-button></p>
-                <p class="cate">Category: {{pro.category}}</p>
+                <p class="cate">Category: {{product.category}}</p>
               </a-col>
               <a-col :span="12" class="description">
                 <p>Other Properties:</p>
                 <a-tabs tabPosition="left">
-                  <a-tab-pane v-for="des in pro.description" :tab=des.id :key=des.id>{{des.content}}</a-tab-pane>
+                  <a-tab-pane v-for="des in product.product_descriptions" :tab=des.attribute_name :key=des.id>{{des.attribute_value}}</a-tab-pane>
                 </a-tabs>
               </a-col>
             </a-row>
@@ -78,6 +86,8 @@
   import moment from 'moment';
   import axios from 'axios';
   import TopBar from '@/components/TopBar.vue';
+  const baseUrl =
+    'https://raw.githubusercontent.com/vueComponent/ant-design-vue/master/components/vc-slick/assets/img/react-slick/';
   export default {
     name: "product-detail",
     components:{
@@ -85,6 +95,8 @@
     },
     data() {
       return {
+        baseUrl,
+        product: '',
         collapsed: false,
         moment,
         data: [{
@@ -130,17 +142,22 @@
       // var test = this;
       axios
         .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product')
-        .then((res) =>{ this.data = res.data.product;
+        .then((res) =>{ this.product = res.data;
                         // test.current_page = res.data.current_page;
                         // test.total_pages = res.data.total_pages*10;
                         // // eslint-disable-next-line no-console
                         // console.log(test.total_pages)
                         // eslint-disable-next-line no-console
-                        console.log(this.data)
+                        console.log(this.product)
                         // // eslint-disable-next-line no-console
                         // console.log(test.current_page)
                         })
 
+    },
+    methods: {
+      getImgUrl(i) {
+        return `${baseUrl}abstract0${i + 1}.jpg`;
+      },
     },
   };
 </script>
@@ -175,24 +192,16 @@
     border-top: 3px dashed rgb(1,1,1);
   }
 
-  .ant-carousel {
-    width: 100%;
-    padding-right: 15px;
-  }
+  
 
   .ant-carousel img {
     margin: 0 auto;
     width: 100%;
-    /*height: 100%;*/
+    height: 100%;
     vertical-align: middle;
   }
 
-  .ant-carousel >>> .slick-slide {
-    text-align: center;
-    height: 250px;
-    line-height: 250px;
-    overflow: hidden;
-  }
+  
 
   .info {
     text-align: left;
@@ -213,5 +222,41 @@
   .ant-tabs {
     height: 200px;
   }
+
+  .ant-carousel {
+    width: 100%;
+    padding-right: 15px;
+  }
+
+/*  .ant-carousel >>> .slick-dots {
+    height: auto;
+  }
+  .ant-carousel >>> .slick-slide img {
+    border: 5px solid #fff;
+    display: block;
+    margin: auto;
+    max-width: 80%;
+  }*/
+  .ant-carousel >>> .slick-slide {
+    text-align: center;
+    height: 250px;
+    line-height: 250px;
+    overflow: hidden;
+  }
+  /*.ant-carousel >>> .slick-thumb {
+    bottom: -45px;
+  }
+  .ant-carousel >>> .slick-thumb li {
+    width: 60px;
+    height: 45px;
+  }
+  .ant-carousel >>> .slick-thumb li img {
+    width: 100%;
+    height: 100%;
+    filter: grayscale(100%);
+  }
+  .ant-carousel >>> .slick-thumb li.slick-active img {
+    filter: grayscale(0%);
+  }*/
 
 </style>
