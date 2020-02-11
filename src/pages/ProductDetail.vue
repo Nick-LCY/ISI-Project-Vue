@@ -210,4 +210,8 @@
     margin: 0;
   }
 
+  .ant-tabs {
+    height: 200px;
+  }
+
 </style>
