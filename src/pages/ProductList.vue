@@ -58,11 +58,11 @@ import axios from 'axios'
       TopBar
     },
     data() {
-    return {
-      total_pages : null,
-      product_list : null,
-    }
-  },
+      return {
+        total_pages : null,
+        product_list : null,
+      }
+    },
     created(){
       var test = this;
       axios

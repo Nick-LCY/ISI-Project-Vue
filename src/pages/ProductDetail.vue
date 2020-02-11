@@ -9,7 +9,6 @@
       </a-breadcrumb>
       
       <div id="main-content">
-        
 
         <a-row type="flex" justify="space-around">
           <a-col :span="8">
@@ -21,22 +20,20 @@
               <div><img src="..\\assets\\photo4.jpg"></div>
             </a-carousel>
           </a-col>
-          <a-col :span="16" class="info">
-            <a-divider>Good's name</a-divider>
+
+          <a-col :span="16" class="info" v-for="pro in data" v-bind:key="pro.id">
+            <a-divider>{{pro.name}}</a-divider>
             <a-row type="flex" justify="space-around">
-              
               <a-col :span="7" class="basic_info">
-                <p>Price: {{price}}</p>
-                <p>Rating: <a-rate :defaultValue="4.5" disabled allowHalf/></p>
+                <p>Price: ${{pro.price}}</p>
+                <!-- <p>Rating: <a-rate :defaultValue="4.5" disabled allowHalf/></p> -->
                 <p><a-button type="primary" size="large">Add to Cart</a-button></p>
-                <p class="cate">Category: Lv1 Cate, Lv2 Cate, Lv3 Cate, Lv4 Cate</p>
+                <p class="cate">Category: {{pro.category}}</p>
               </a-col>
               <a-col :span="12" class="description">
                 <p>Other Properties:</p>
-                <a-tabs defaultActiveKey="1" tabPosition="left">
-                  <a-tab-pane tab="Key 1" key="1">Value 1</a-tab-pane>
-                  <a-tab-pane tab="Key 2" key="2">Value 2</a-tab-pane>
-                  <a-tab-pane tab="Key 3" key="3">Value 3</a-tab-pane>
+                <a-tabs tabPosition="left">
+                  <a-tab-pane v-for="des in pro.description" :tab=des.id :key=des.id>{{des.content}}</a-tab-pane>
                 </a-tabs>
               </a-col>
             </a-row>
@@ -45,7 +42,7 @@
 
         <br><br><br> 
 
-        <a-row>
+        <!-- <a-row>
           <a-col>
             <a-list
               class="comment-list"
@@ -64,7 +61,7 @@
               </a-list-item>
             </a-list>
           </a-col>
-        </a-row>
+        </a-row> -->
         
 
       </div>
@@ -79,48 +76,71 @@
 
 <script>
   import moment from 'moment';
-  import TopBar from '@/components/TopBar.vue'
+  import axios from 'axios';
+  import TopBar from '@/components/TopBar.vue';
   export default {
+    name: "product-detail",
     components:{
       TopBar
     },
     data() {
       return {
         collapsed: false,
-        price: '$100.01',
-        data: [
-          {
-            // actions: ['Reply to'],
-            author: 'Jennifer Chun',
-            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-            content:
-              'Good.',
-            datetime: moment().subtract(1, 'days'),
-          },
-          {
-            // actions: ['Reply to'],
-            author: 'Monica Lyu',
-            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-            content:
-              'Great.',
-            datetime: moment().subtract(2, 'days'),
-          },
-          {
-            // actions: ['Reply to'],
-            author: 'Nick Lin',
-            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-            content:
-              'Just so so.',
-            datetime: moment().subtract(6, 'days'),
-          },
-        ],
         moment,
+        data: [{
+
+        }],
+        // data: [
+        //   {
+        //     // actions: ['Reply to'],
+        //     author: 'Jennifer Chun',
+        //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+        //     content:
+        //       'Good.',
+        //     datetime: moment().subtract(1, 'days'),
+        //   },
+        //   {
+        //     // actions: ['Reply to'],
+        //     author: 'Monica Lyu',
+        //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+        //     content:
+        //       'Great.',
+        //     datetime: moment().subtract(2, 'days'),
+        //   },
+        //   {
+        //     // actions: ['Reply to'],
+        //     author: 'Nick Lin',
+        //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+        //     content:
+        //       'Just so so.',
+        //     datetime: moment().subtract(6, 'days'),
+        //   },
+        // ],
+        
         // methods: {
         //   callback(key) {
+        // eslint-disable-next-line no-console
         //     console.log(key);
         //   },
         // },
+        
       };
+    },
+    created(){
+      // var test = this;
+      axios
+        .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product')
+        .then((res) =>{ this.data = res.data.product;
+                        // test.current_page = res.data.current_page;
+                        // test.total_pages = res.data.total_pages*10;
+                        // // eslint-disable-next-line no-console
+                        // console.log(test.total_pages)
+                        // eslint-disable-next-line no-console
+                        console.log(this.data)
+                        // // eslint-disable-next-line no-console
+                        // console.log(test.current_page)
+                        })
+
     },
   };
 </script>
@@ -141,7 +161,6 @@
   #main-content {
     background: #fff;
     padding: 24px;
-/*    min-height: 280px;*/
   }
 
   .ant-divider {
@@ -172,12 +191,10 @@
     text-align: center;
     height: 250px;
     line-height: 250px;
-    /*background: #364d79;*/
     overflow: hidden;
   }
 
   .info {
-    /*float: right;*/
     text-align: left;
     font-size: 20px;
     padding-left: 15px;
