@@ -22,7 +22,7 @@
           </a-list-item>
         </a-list>
       </div>
-      <a-pagination id="page" showQuickJumper :defaultCurrent=current_page :current=current_page :total=total_pages :defaultPageSize="20" @change="getProductList" />
+      <a-pagination id="page" showQuickJumper  :total=total_pages :defaultPageSize="20" @change="onChange" />
     </a-layout-content>
     <a-layout-footer :style="{ textAlign: 'center' }">
       Ant Design ©2018 Created by Ant UED
@@ -60,7 +60,6 @@ import axios from 'axios'
     data() {
     return {
       total_pages : null,
-      current_page : null,
       product_list : null,
     }
   },
@@ -69,7 +68,7 @@ import axios from 'axios'
       axios
         .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products')
         .then((res) =>{ test.product_list = res.data.item_list;
-                        test.current_page = res.data.current_page;
+                        // test.current_page = res.data.current_page;
                         test.total_pages = res.data.total_pages*10;
                         // // eslint-disable-next-line no-console
                         // console.log(test.total_pages)
@@ -81,7 +80,7 @@ import axios from 'axios'
 
     },
     methods: {
-      getProductList: function(){
+      onChange: function(){
         let current = this;
         axios
           .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',{
@@ -92,7 +91,7 @@ import axios from 'axios'
             // // eslint-disable-next-line no-console
             // console.log(current.product_list)
           })
-      }
+      },
     },
   };
 </script>
