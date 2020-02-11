@@ -1,7 +1,23 @@
 <template>
   <a-layout id="fixed">
     <TopBar></TopBar>
-    <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
+    <a-row type="flex" justify="start" :gutter="8">
+      <a-button-group>
+        <a-button icon="arrow-up" @click="onPriceAsc">Ascending Price</a-button>
+        <a-button icon="arrow-down" @click="onPriceDesc">Descending Price</a-button>
+      </a-button-group>
+      <a-col>    
+        <a-dropdown>
+          <a-menu slot="overlay" @click="handleMenuClick">
+            <a-menu-item key="1">1st item</a-menu-item>
+            <a-menu-item key="2">2nd item</a-menu-item>
+            <a-menu-item key="3">3rd item</a-menu-item>
+          </a-menu>
+          <a-button> Category <a-icon type="down" /> </a-button>
+        </a-dropdown>
+      </a-col>
+    </a-row>
+    <a-layout-content :style="{ padding: '0 50px', marginTop: '16px' }">
       <a-breadcrumb :style="{ margin: '32px 0' }">
         <a-breadcrumb-item>Home</a-breadcrumb-item>
         <a-breadcrumb-item>Product List</a-breadcrumb-item>
@@ -68,14 +84,7 @@ import axios from 'axios'
       axios
         .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products')
         .then((res) =>{ test.product_list = res.data.item_list;
-                        // test.current_page = res.data.current_page;
                         test.total_pages = res.data.total_pages*10;
-                        // // eslint-disable-next-line no-console
-                        // console.log(test.total_pages)
-                        // eslint-disable-next-line no-console
-                        console.log(test.product_list)
-                        // // eslint-disable-next-line no-console
-                        // console.log(test.current_page)
                         })
 
     },
@@ -88,10 +97,32 @@ import axios from 'axios'
                 })
           .then((res) => {
             current.product_list = res.data.item_list
+          })
+      },
+      onPriceAsc: function(){
+        let current = this;
+        
+        axios
+          .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',{
+                order_by: '1'
+                })
+          .then((res) => {
+            current.product_list = res.data.item_list
+          })
+      },
+      onPriceDesc: function(){
+        let current = this;
+        axios
+          .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',{
+                order_by: '0'
+                })
+          .then((res) => {
+            current.product_list = res.data.item_list
             // // eslint-disable-next-line no-console
             // console.log(current.product_list)
           })
       },
+
     },
   };
 </script>
