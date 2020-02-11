@@ -17,11 +17,14 @@ export default new Router({
       name: 'Product Detail',
       component: () => import('@/pages/ProductDetail.vue'),
     },
+<<<<<<< Updated upstream
 
     {
       path: '/2',
       name: 'JustForTest',
       component: () => import('@/pages/JustForTest.vue'),
     },
+=======
+>>>>>>> Stashed changes
   ]
 })
