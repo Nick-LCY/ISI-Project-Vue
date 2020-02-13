@@ -7,7 +7,7 @@
 
     <div class="right-align" style="float: right;">
       <div id="search-container">
-        <a-button type="primary" size="large"><a-icon type="search" />Search</a-button>
+        <a-button type="primary" size="large" @click="showSearchBox"><a-icon type="search" />Search</a-button>
       </div>
       <div id="avatar-container">
         <a-avatar id="user-icon" icon="user" size="large"/>
@@ -43,5 +43,14 @@
 <script>
   export default {
     name: 'TopBar',
+    data(){
+      return {
+      }
+    },
+    methods:{
+      showSearchBox() {
+        this.$emit('clicked',true)     
+      },
+    }
   }
 </script>
