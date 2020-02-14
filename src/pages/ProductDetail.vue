@@ -34,11 +34,11 @@
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
                 <p>Price: ${{product.price}}</p>
-                <!-- <p>Rating: <a-rate :defaultValue="4.5" disabled allowHalf/></p> -->
+                <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
                 <p><a-button type="primary" size="large">Add to Cart</a-button></p>
                 <p class="cate">Category: {{product.category}}</p>
               </a-col>
-              <a-col :span="12" class="description">
+              <a-col :span="15" class="description">
                 <p>Other Properties:</p>
                 <a-tabs tabPosition="left">
                   <a-tab-pane v-for="des in product.product_descriptions" :tab=des.attribute_name :key=des.id>{{des.attribute_value}}</a-tab-pane>
@@ -50,17 +50,17 @@
 
         <br><br><br> 
 
-        <!-- <a-row>
+        <a-row>
           <a-col>
             <a-list
               class="comment-list"
-              :header="`${data.length} reviews`"
+              :header="`${reviews.length} reviews`"
               itemLayout="horizontal"
-              :dataSource="data"
+              :dataSource="reviews"
             >
               <a-list-item slot="renderItem" slot-scope="item">
                 <a-comment :author="item.author" :avatar="item.avatar">
-                  <p>Rating: <a-rate :defaultValue="3.5" disabled allowHalf/></p>
+                  <a-rate v-model="item.rate" disabled allowHalf/>
                   <p slot="content">{{item.content}}</p>
                   <a-tooltip slot="datetime" :title="item.datetime.format('YYYY-MM-DD HH:mm:ss')">
                     <span>{{item.datetime.fromNow()}}</span>
@@ -69,7 +69,7 @@
               </a-list-item>
             </a-list>
           </a-col>
-        </a-row> -->
+        </a-row>
         
 
       </div>
@@ -99,35 +99,30 @@
         product: '',
         collapsed: false,
         moment,
-        data: [{
-
-        }],
-        // data: [
-        //   {
-        //     // actions: ['Reply to'],
-        //     author: 'Jennifer Chun',
-        //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-        //     content:
-        //       'Good.',
-        //     datetime: moment().subtract(1, 'days'),
-        //   },
-        //   {
-        //     // actions: ['Reply to'],
-        //     author: 'Monica Lyu',
-        //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-        //     content:
-        //       'Great.',
-        //     datetime: moment().subtract(2, 'days'),
-        //   },
-        //   {
-        //     // actions: ['Reply to'],
-        //     author: 'Nick Lin',
-        //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-        //     content:
-        //       'Just so so.',
-        //     datetime: moment().subtract(6, 'days'),
-        //   },
-        // ],
+        value: 3.5,
+        reviews: [
+          {
+            author: 'Jennifer Chun',
+            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+            content: 'Good.',
+            datetime: moment().subtract(1, 'days'),
+            rate: 4,
+          },
+          {
+            author: 'Monica Lyu',
+            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+            content: 'Great.',
+            datetime: moment().subtract(2, 'days'),
+            rate: 4.5,
+          },
+          {
+            author: 'Nick Lin',
+            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+            content: 'Just so so.',
+            datetime: moment().subtract(6, 'days'),
+            rate: 2.5,
+          },
+        ],
         
         // methods: {
         //   callback(key) {
@@ -157,6 +152,14 @@
     methods: {
       getImgUrl(i) {
         return `${baseUrl}abstract0${i + 1}.jpg`;
+      },
+      getValue() {
+        var star = 0;
+        for (var i = this.reviews.length - 1; i >= 0; i--) {
+           star += this.reviews[i].rate;
+        }
+        star = star/this.reviews.length;
+        return star; 
       },
     },
   };
