@@ -109,6 +109,7 @@
           category: '____'
         },
         request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products'
+        // request_url: 'http://localhost:9981/products'
       }
     },
     
@@ -157,6 +158,7 @@
             this.request_data.category,
             this.request_data.order_by
           )
+        this.visible = false;
       },
       closeSearchArea: function(e){
         if(e.target.id === 'search-box-container'){
