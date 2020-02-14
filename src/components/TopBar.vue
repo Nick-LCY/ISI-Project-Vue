@@ -5,7 +5,7 @@
         <a-button type="primary" size="large" @click="showSearchBox"><a-icon type="search" />Search</a-button>
       </div>
       <div id="avatar-container">
-        <a-avatar id="user-icon" icon="user" size="large"/>
+        <a-avatar id="user-icon" icon="user" size="large" @click="showLoginBox"/>
       </div>
     </div>
 
@@ -36,8 +36,11 @@
 </style>
 
 <script>
+
   export default {
     name: 'TopBar',
+    components:{
+    },
     data(){
       return {
       }
@@ -46,6 +49,9 @@
       showSearchBox() {
         this.$emit('clickSearchBtn',true)
       },
+      showLoginBox() {
+        this.$emit('clickLoginBtn',true)
+      }
     }
   }
 </script>

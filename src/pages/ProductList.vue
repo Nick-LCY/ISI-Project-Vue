@@ -1,7 +1,7 @@
 <template>
   <a-layout>
 
-    <TopBar @clickSearchBtn="visible = true"></TopBar>
+    <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="loginVisible"></TopBar>
 
     <a-row type="flex" justify="start" :gutter="8">
       <a-button-group>
@@ -39,11 +39,14 @@
 
     </a-layout-content>
 
-    <div id="search-box-container" v-if="visible" @click="closeSearchArea">
+    <div id="box-container" v-if="search_visible" @click="closeSearchArea">
       <div id="search-box">
         <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
+    <!-- <div id="box-container" v-if="login_visible" @click="closeLoginArea"> -->
+      <Login v-bind:login_visible=login_visible />
+    <!-- </div> -->
 
   </a-layout>
 </template>
@@ -69,7 +72,7 @@
  margin-bottom: 30px;
 }
 
-#search-box-container{
+#box-container{
  margin:0 auto;
  height: 100vh;
  width: 100vw;
@@ -85,23 +88,28 @@
  margin-top: -20vh;
  width: 60vw;
 }
+
+
 </style>
 
 
 <script>
   import TopBar from '@/components/TopBar.vue'
   import axios from 'axios'
+  import Login from '@/components/Login.vue'
 
   export default {
     name:'product-list',
     components:{
-      TopBar
+      TopBar,
+      Login
     },
     data() {
       return {
         total_pages: 0,
         product_list: [],
-        visible:false,
+        search_visible:false,
+        login_visible:false,
         request_data: {
           current_page: 0,
           key: '%',
@@ -124,7 +132,7 @@
 
     },
     methods: {
-      onChangePage: function(page){
+      onChangePage(page){
         this.sendRequest(
             page,
             this.request_data.key,
@@ -132,7 +140,7 @@
             this.request_data.order_by
           )
       },
-      onPriceAsc: function(){
+      onPriceAsc(){
         this.request_data.order_by = 1;
         this.sendRequest(
             1,
@@ -141,7 +149,7 @@
             this.request_data.order_by
           )
       },
-      onPriceDesc: function(){
+      onPriceDesc(){
         this.request_data.order_by = 0;
         this.sendRequest(
             1,
@@ -150,7 +158,7 @@
             this.request_data.order_by
           )
       },
-      onSearch: function(value){
+      onSearch(value){
         this.request_data.key = value;
         this.sendRequest(
             1,
@@ -160,12 +168,17 @@
           )
         this.visible = false;
       },
-      closeSearchArea: function(e){
-        if(e.target.id === 'search-box-container'){
-          this.visible = false;
+      closeSearchArea(e){
+        if(e.target.id === 'box-container'){
+          this.search_visible = false;
         }
       },
-      sendRequest: function (page, key, category, order_by) {
+      closeLoginArea(e){
+        if(e.target.id === 'box-container'){
+          this.login_visible = false;
+        }
+      },
+      sendRequest(page, key, category, order_by) {
         axios
         .get(this.request_url
           + '?page=' + page
@@ -177,6 +190,9 @@
           this.request_data.current_page = res.data.current_page;
           this.total_pages = res.data.total_pages;
         })
+      },
+      loginVisible(){
+        this.login_visible = true
       }
     },
   };
