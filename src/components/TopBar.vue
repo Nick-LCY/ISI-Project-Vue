@@ -1,10 +1,5 @@
 <template>
   <a-layout-header>
-<!--     <div class="left-align" style="float: left;">
-      <div id="logo-container">
-      </div>
-    </div> -->
-
     <div class="right-align" style="float: right;">
       <div id="search-container">
         <a-button type="primary" size="large" @click="showSearchBox"><a-icon type="search" />Search</a-button>
@@ -49,7 +44,7 @@
     },
     methods:{
       showSearchBox() {
-        this.$emit('clicked',true)     
+        this.$emit('clickSearchBtn',true)
       },
     }
   }

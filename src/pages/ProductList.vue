@@ -1,95 +1,96 @@
 <template>
-  <a-layout id="fixed">
-    <TopBar @clicked="search"></TopBar>
-      <a-row type="flex" justify="start" :gutter="8">
-        <a-button-group>
-          <a-button icon="arrow-up" @click="onPriceAsc">Ascending Price</a-button>
-          <a-button icon="arrow-down" @click="onPriceDesc">Descending Price</a-button>
-        </a-button-group>
-        <a-col>    
-          <a-dropdown>
-            <a-menu slot="overlay" @click="handleMenuClick">
-              <a-menu-item key="1">1st item</a-menu-item>
-              <a-menu-item key="2">2nd item</a-menu-item>
-              <a-menu-item key="3">3rd item</a-menu-item>
-            </a-menu>
-            <a-button> Category <a-icon type="down" /> </a-button>
-          </a-dropdown>
-        </a-col>
-      </a-row>
-      <a-layout-content :style="{ padding: '0 50px', marginTop: '16px' }">
-        <a-breadcrumb :style="{ margin: '32px 0' }">
-          <a-breadcrumb-item>Home</a-breadcrumb-item>
-          <a-breadcrumb-item>Product List</a-breadcrumb-item>
-        </a-breadcrumb>
-        <div class="product-list">
-          <a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="product_list">
-            <a-list-item slot="renderItem" slot-scope="item">
-              <a-card hoverable>
-                <img
-                  alt="example"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                  slot="cover"
-                />
-                <a-card-meta :title="'$'+item.price">
-                  <template slot="description">{{item.name}}</template>
-                </a-card-meta>
-              </a-card>
-            </a-list-item>
-          </a-list>
-        </div>
-        <a-pagination id="page" showQuickJumper  :total=total_pages :defaultPageSize="20" @change="onChange" />
-      </a-layout-content>
-      <a-layout-footer :style="{ textAlign: 'center' }">
-        Ant Design ©2018 Created by Ant UED
-      </a-layout-footer>
-    <div id="search-box-container" v-if="visible" >
+  <a-layout>
+
+    <TopBar @clickSearchBtn="visible = true"></TopBar>
+
+    <a-row type="flex" justify="start" :gutter="8">
+      <a-button-group>
+        <a-button icon="arrow-up" @click="onPriceAsc">Ascending Price</a-button>
+        <a-button icon="arrow-down" @click="onPriceDesc">Descending Price</a-button>
+      </a-button-group>
+    </a-row>
+
+    <a-layout-content id="content">
+
+      <a-breadcrumb id="breadcrumb">
+        <a-breadcrumb-item>Home</a-breadcrumb-item>
+        <a-breadcrumb-item>Product List</a-breadcrumb-item>
+      </a-breadcrumb>
+
+      <a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="product_list">
+        <a-list-item slot="renderItem" slot-scope="item">
+          <a-card hoverable>
+            <img :src="item.thumbnail_location" slot="cover"/>
+            <a-card-meta :title="'$'+item.price">
+              <template slot="description">{{item.name}}</template>
+            </a-card-meta>
+          </a-card>
+        </a-list-item>
+      </a-list>
+
+      <a-pagination 
+        id="page"
+        showQuickJumper
+        :total="total_pages*20"
+        :current=request_data.current_page
+        :defaultPageSize="20"
+        @change="onChangePage"
+      />
+
+    </a-layout-content>
+
+    <div id="search-box-container" v-if="visible" @click="closeSearchArea">
       <div id="search-box">
         <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
+
   </a-layout>
 </template>
 
 <style scoped>
+#breadcrumb {
+   margin: 32px 0;
+}
 
- #page {
-   margin-top: 50px;
-   text-align: center;
- }
+#content {
+   padding: 0 50px;
+   margin-top: 16px;
+}
 
- .ant-card{
-   width: 300px;
-   height: 300px;
-   margin-bottom: 30px;
- }
+#page {
+ margin: 50px 0;
+ text-align: center;
+}
 
- #search-box-container{
-   margin:0 auto;
-   height: 100vh;
-   width: 100vw;
-   position: fixed;
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   z-index: 1;
-   background-color: rgba(0, 0, 0, 0.5)
- }
+.ant-card{
+ width: 300px;
+ height: 300px;
+ margin-bottom: 30px;
+}
 
- #search-box{
-   width: 60vw;
- }
+#search-box-container{
+ margin:0 auto;
+ height: 100vh;
+ width: 100vw;
+ position: fixed;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 1;
+ background-color: rgba(0, 0, 0, 0.5)
+}
 
-#main{
-  z-index: -1;
+#search-box{
+ margin-top: -20vh;
+ width: 60vw;
 }
 </style>
 
 
 <script>
-
-import TopBar from '@/components/TopBar.vue'
-import axios from 'axios'
+  import TopBar from '@/components/TopBar.vue'
+  import axios from 'axios'
 
   export default {
     name:'product-list',
@@ -98,68 +99,82 @@ import axios from 'axios'
     },
     data() {
       return {
-        total_pages : null,
-        product_list : null,
-        afterSearchStytle:{}, 
-        visible:false     
+        total_pages: 0,
+        product_list: [],
+        visible:false,
+        request_data: {
+          current_page: 0,
+          key: '%',
+          order_by: '1',
+          category: '____'
+        },
+        request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products'
       }
     },
     
     created(){
-      var test = this;
       axios
-        .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products')
-        .then((res) =>{ test.product_list = res.data.item_list;
-                        test.total_pages = res.data.total_pages*10;
-                        })
+      .get(this.request_url)
+      .then((res) =>{
+        this.product_list = res.data.item_list;
+        this.total_pages = res.data.total_pages;
+        this.request_data.current_page = res.data.current_page;
+      })
 
     },
     methods: {
-      onChange: function(){
-        let current = this;
-        axios
-          .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',{
-                page: this.current_page
-                })
-          .then((res) => {
-            current.product_list = res.data.item_list
-          })
+      onChangePage: function(page){
+        this.sendRequest(
+            page,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
       },
       onPriceAsc: function(){
-        let current = this;
-        
-        axios
-          .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',{
-                order_by: '1'
-                })
-          .then((res) => {
-            current.product_list = res.data.item_list
-          })
+        this.request_data.order_by = 1;
+        this.sendRequest(
+            1,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
       },
       onPriceDesc: function(){
-        let current = this;
-        axios
-          .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',{
-                order_by: '0'
-                })
-          .then((res) => {
-            current.product_list = res.data.item_list
-            // // eslint-disable-next-line no-console
-            // console.log(current.product_list)
-          })
-      },
-      search: function(value){
-        this.visible = value
+        this.request_data.order_by = 0;
+        this.sendRequest(
+            1,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
       },
       onSearch: function(value){
-        let current = this;
+        this.request_data.key = value;
+        this.sendRequest(
+            1,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
+      },
+      closeSearchArea: function(e){
+        if(e.target.id === 'search-box-container'){
+          this.visible = false;
+        }
+      },
+      sendRequest: function (page, key, category, order_by) {
         axios
-          .post('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',{
-                key: value
-                })
-          .then((res) => {
-            current.product_list = res.data.item_list
-          })
+        .get(this.request_url
+          + '?page=' + page
+          + '&key=' + key
+          + '&order_by=' + order_by
+          + '&category=' + category)
+        .then((res) => {
+          this.product_list = res.data.item_list;
+          this.request_data.current_page = res.data.current_page;
+          this.total_pages = res.data.total_pages;
+        })
       }
     },
   };
