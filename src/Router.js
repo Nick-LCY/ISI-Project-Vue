@@ -24,5 +24,11 @@ export default new Router({
       component: () => import('@/pages/JustForTest.vue'),
     },
 
+    {
+      path: '/4',
+      name: 'Purchase Tracking',
+      component: () => import('@/pages/PurchaseTracking.vue'),
+    },
+
   ]
 })

@@ -1,7 +1,8 @@
 <template>
   <a-layout id="components-layout-demo-fixed">
-    <TopBar></TopBar>
-    <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
+    <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="loginVisible"></TopBar>
+
+    <a-layout-content id="content">
       <a-breadcrumb :style="{ margin: '16px 0' }">
         <a-breadcrumb-item>Home</a-breadcrumb-item>
         <a-breadcrumb-item>List</a-breadcrumb-item>
@@ -74,9 +75,18 @@
 
       </div>
     </a-layout-content>
-    <a-layout-footer :style="{ textAlign: 'center' }">
+<!--     <a-layout-footer :style="{ textAlign: 'center' }">
       Ant Design ©2018 Created by Ant UED
-    </a-layout-footer>
+    </a-layout-footer> -->
+
+    <div id="box-container" v-if="search_visible" @click="closeSearchArea">
+      <div id="search-box">
+        <a-input-search size="large" @search="onSearch"/>
+      </div>
+    </div>
+    <!-- <div id="box-container" v-if="login_visible" @click="closeLoginArea"> -->
+      <Login v-bind:login_visible=login_visible />
+    <!-- </div> -->
   </a-layout>
 </template>
 
@@ -86,16 +96,24 @@
   import moment from 'moment';
   import axios from 'axios';
   import TopBar from '@/components/TopBar.vue';
-  const baseUrl =
-    'https://raw.githubusercontent.com/vueComponent/ant-design-vue/master/components/vc-slick/assets/img/react-slick/';
+  import Login from '@/components/Login.vue'
+
   export default {
     name: "product-detail",
     components:{
-      TopBar
+      TopBar,
+      Login,
     },
     data() {
       return {
-        baseUrl,
+        search_visible:false,
+        login_visible:false,
+        request_data: {
+          current_page: 0,
+          key: '%',
+          order_by: '1',
+          category: '____'
+        },
         product: '',
         collapsed: false,
         moment,
@@ -123,36 +141,18 @@
             rate: 2.5,
           },
         ],
-        
-        // methods: {
-        //   callback(key) {
-        // eslint-disable-next-line no-console
-        //     console.log(key);
-        //   },
-        // },
-        
       };
     },
     created(){
-      // var test = this;
       axios
         .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product')
         .then((res) =>{ this.product = res.data;
-                        // test.current_page = res.data.current_page;
-                        // test.total_pages = res.data.total_pages*10;
-                        // // eslint-disable-next-line no-console
-                        // console.log(test.total_pages)
                         // eslint-disable-next-line no-console
                         console.log(this.product)
-                        // // eslint-disable-next-line no-console
-                        // console.log(test.current_page)
                         })
 
     },
     methods: {
-      getImgUrl(i) {
-        return `${baseUrl}abstract0${i + 1}.jpg`;
-      },
       getValue() {
         var star = 0;
         for (var i = this.reviews.length - 1; i >= 0; i--) {
@@ -161,12 +161,55 @@
         star = star/this.reviews.length;
         return star; 
       },
+      onSearch(value){
+        this.request_data.key = value;
+        this.sendRequest(
+            1,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
+        this.visible = false;
+      },
+      closeSearchArea(e){
+        if(e.target.id === 'box-container'){
+          this.search_visible = false;
+        }
+      },
+      closeLoginArea(e){
+        if(e.target.id === 'box-container'){
+          this.login_visible = false;
+        }
+      },
+      sendRequest(page, key, category, order_by) {
+        axios
+        .get(this.request_url
+          + '?page=' + page
+          + '&key=' + key
+          + '&order_by=' + order_by
+          + '&category=' + category)
+        .then((res) => {
+          this.product_list = res.data.item_list;
+          this.request_data.current_page = res.data.current_page;
+          this.total_pages = res.data.total_pages;
+        })
+      },
+      loginVisible(){
+        this.login_visible = true
+      },
+
     },
   };
 </script>
 
 <style scoped>
-   #components-layout-demo-fixed .logo {
+  #content {
+    padding: 0 50px;
+    margin-top: 16px;
+    margin-bottom: 50px;
+  }
+
+  #components-layout-demo-fixed .logo {
     width: 120px;
     height: 31px;
     background: rgba(255, 255, 255, 0.2);
@@ -261,5 +304,22 @@
   .ant-carousel >>> .slick-thumb li.slick-active img {
     filter: grayscale(0%);
   }*/
+
+  #box-container{
+   margin:0 auto;
+   height: 100vh;
+   width: 100vw;
+   position: fixed;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   z-index: 1;
+   background-color: rgba(0, 0, 0, 0.5)
+  }
+
+  #search-box{
+   margin-top: -20vh;
+   width: 60vw;
+  }
 
 </style>
