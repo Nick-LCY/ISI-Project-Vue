@@ -14,9 +14,9 @@
 		</div>
 
 		<div v-if="po === 'all'">
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="po_info">
+			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="orderedPO">
 				<a-list-item slot="renderItem" slot-scope="item">
-					<a-card hoverable>
+					<a-card :class="item.status" hoverable>
 						<a-card-meta>
 							<template slot="description">
 								<p>PO. Number: {{item.po_no}}</p>
@@ -33,10 +33,10 @@
 			</a-list>
 		</div>
 
-		<div v-if="po === 'all'">
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="po_info">
+		<div v-if="po === 'current'">
+			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="currentPO">
 				<a-list-item slot="renderItem" slot-scope="item">
-					<a-card hoverable>
+					<a-card :class="item.status" hoverable>
 						<a-card-meta>
 							<template slot="description">
 								<p>PO. Number: {{item.po_no}}</p>
@@ -53,10 +53,10 @@
 			</a-list>
 		</div>
 		
-		<div v-if="po === 'all'">
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="po_info">
+		<div v-if="po === 'past'">
+			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="pastPO">
 				<a-list-item slot="renderItem" slot-scope="item">
-					<a-card hoverable>
+					<a-card :class="item.status" hoverable>
 						<a-card-meta>
 							<template slot="description">
 								<p>PO. Number: {{item.po_no}}</p>
@@ -112,6 +112,7 @@
 
 <script>
   import axios from 'axios';
+  import _ from 'lodash';
   import TopBar from '@/components/TopBar.vue';
   import Login from '@/components/Login.vue';
 
@@ -142,6 +143,24 @@
 				status: 'Pending',
 				total_amount: '$100',
 			},
+			{
+				po_no: 67580946,
+				purchase_date: '21/01/2020',
+				status: 'Hold',
+				total_amount: '$100',
+			},
+			{
+				po_no: 67580946,
+				purchase_date: '25/01/2020',
+				status: 'Shipped',
+				total_amount: '$100',
+			},
+			{
+				po_no: 67580946,
+				purchase_date: '12/01/2020',
+				status: 'Canceled',
+				total_amount: '$100',
+			},
         ],
       }
     },
@@ -156,6 +175,38 @@
       })
 
     },
+
+    computed: {
+		currentPO: function () {
+			var c = [];
+			for (var i = this.po_info.length - 1; i >= 0; i--) {
+				var po = this.po_info[i];
+				if (po.status == "Pending" || po.status == "Hold") {
+					c.push(po);
+				}
+			}
+			return _.orderBy(c, 'purchase_date', 'desc');
+		},
+
+		pastPO: function () {
+			var c = [];
+			for (var i = this.po_info.length - 1; i >= 0; i--) {
+				var po = this.po_info[i];
+				if (po.status == "Shipped" || po.status == "Canceled") {
+					c.push(po);
+				}
+			}
+			return _.orderBy(c, 'purchase_date', 'desc');
+			// return c;
+		},
+
+		orderedPO: function () {
+			return _.orderBy(this.po_info, 'purchase_date', 'desc');
+		}
+
+
+	},
+
     methods: {
       onChangePage(page){
         this.sendRequest(
@@ -204,6 +255,11 @@
       handlePOChange(e) {
         this.po = e.target.value;
       },
+  //     sort() {
+		// for (var i = po_info.length - 1; i >= 0; i--) {
+		// 	po_info[i]
+		// }
+  //     },
     },
   };
 </script>
@@ -221,7 +277,7 @@
 
 .ant-card{
  width: 300px;
- height: 220px;
+ height: 182px;
  margin-bottom: 30px;
 }
 
@@ -247,5 +303,20 @@
 	text-align: center;
 }
 
+.Pending {
+	background-color: #fff3cf;
+}
+
+.Hold {
+	background-color: #fcdbd9;
+}
+
+.Shipped {
+	background-color: #cfefdf;
+}
+
+.Canceled {
+	background-color: #e9e9e9;
+}
 
 </style>
