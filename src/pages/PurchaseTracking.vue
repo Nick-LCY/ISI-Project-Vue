@@ -197,7 +197,6 @@
 				}
 			}
 			return _.orderBy(c, 'purchase_date', 'desc');
-			// return c;
 		},
 
 		orderedPO: function () {
