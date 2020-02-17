@@ -22,7 +22,7 @@
 								<p>PO. Number: {{item.po_no}}</p>
 								<p>Purchase Date: {{item.purchase_date}}</p>
 								<p>Status: {{item.status}}</p>
-								<p>Total Amount: {{item.total_amount}}</p>
+								<p>Total Amount: ${{item.total_amount}}</p>
 							</template>
 						</a-card-meta>
 						<template class="ant-card-actions" slot="actions">
@@ -42,7 +42,7 @@
 								<p>PO. Number: {{item.po_no}}</p>
 								<p>Purchase Date: {{item.purchase_date}}</p>
 								<p>Status: {{item.status}}</p>
-								<p>Total Amount: {{item.total_amount}}</p>
+								<p>Total Amount: ${{item.total_amount}}</p>
 							</template>
 						</a-card-meta>
 						<template class="ant-card-actions" slot="actions">
@@ -62,7 +62,7 @@
 								<p>PO. Number: {{item.po_no}}</p>
 								<p>Purchase Date: {{item.purchase_date}}</p>
 								<p>Status: {{item.status}}</p>
-								<p>Total Amount: {{item.total_amount}}</p>
+								<p>Total Amount: ${{item.total_amount}}</p>
 							</template>
 						</a-card-meta>
 						<template class="ant-card-actions" slot="actions">
@@ -141,25 +141,25 @@
 				po_no: 67580946,
 				purchase_date: '20/01/2020',
 				status: 'Pending',
-				total_amount: '$100',
+				total_amount: '100',
 			},
 			{
 				po_no: 67580946,
 				purchase_date: '21/01/2020',
 				status: 'Hold',
-				total_amount: '$100',
+				total_amount: '100',
 			},
 			{
 				po_no: 67580946,
 				purchase_date: '25/01/2020',
 				status: 'Shipped',
-				total_amount: '$100',
+				total_amount: '100',
 			},
 			{
 				po_no: 67580946,
 				purchase_date: '12/01/2020',
 				status: 'Canceled',
-				total_amount: '$100',
+				total_amount: '100',
 			},
         ],
       }
