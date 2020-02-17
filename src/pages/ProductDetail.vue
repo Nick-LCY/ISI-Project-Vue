@@ -1,6 +1,6 @@
 <template>
   <a-layout id="components-layout-demo-fixed">
-    <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="loginVisible"></TopBar>
+    <TopBar></TopBar>
 
     <a-layout-content id="content">
       <a-breadcrumb :style="{ margin: '16px 0' }">
@@ -79,15 +79,13 @@
       Ant Design ©2018 Created by Ant UED
     </a-layout-footer> -->
 
-    <div id="box-container" v-if="search_visible" @click="closeSearchArea">
+   <!--  <div id="box-container" v-if="search_visible" @click="closeSearchArea">
       <div id="search-box">
         <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
-    <!-- <div id="box-container" v-if="login_visible" @click="closeLoginArea"> -->
       <Login v-bind:login_visible=login_visible />
-    <!-- </div> -->
-  </a-layout>
+ -->  </a-layout>
 </template>
 
 
@@ -96,24 +94,24 @@
   import moment from 'moment';
   import axios from 'axios';
   import TopBar from '@/components/TopBar.vue';
-  import Login from '@/components/Login.vue'
+  // import Login from '@/components/Login.vue'
 
   export default {
     name: "product-detail",
     components:{
       TopBar,
-      Login,
+      // Login,
     },
     data() {
       return {
-        search_visible:false,
-        login_visible:false,
-        request_data: {
-          current_page: 0,
-          key: '%',
-          order_by: '1',
-          category: '____'
-        },
+        // search_visible:false,
+        // login_visible:false,
+        // request_data: {
+        //   current_page: 0,
+        //   key: '%',
+        //   order_by: '1',
+        //   category: '____'
+        // },
         product: '',
         collapsed: false,
         moment,
@@ -161,42 +159,42 @@
         star = star/this.reviews.length;
         return star; 
       },
-      onSearch(value){
-        this.request_data.key = value;
-        this.sendRequest(
-            1,
-            this.request_data.key,
-            this.request_data.category,
-            this.request_data.order_by
-          )
-        this.visible = false;
-      },
-      closeSearchArea(e){
-        if(e.target.id === 'box-container'){
-          this.search_visible = false;
-        }
-      },
-      closeLoginArea(e){
-        if(e.target.id === 'box-container'){
-          this.login_visible = false;
-        }
-      },
-      sendRequest(page, key, category, order_by) {
-        axios
-        .get(this.request_url
-          + '?page=' + page
-          + '&key=' + key
-          + '&order_by=' + order_by
-          + '&category=' + category)
-        .then((res) => {
-          this.product_list = res.data.item_list;
-          this.request_data.current_page = res.data.current_page;
-          this.total_pages = res.data.total_pages;
-        })
-      },
-      loginVisible(){
-        this.login_visible = true
-      },
+      // onSearch(value){
+      //   this.request_data.key = value;
+      //   this.sendRequest(
+      //       1,
+      //       this.request_data.key,
+      //       this.request_data.category,
+      //       this.request_data.order_by
+      //     )
+      //   this.visible = false;
+      // },
+      // closeSearchArea(e){
+      //   if(e.target.id === 'box-container'){
+      //     this.search_visible = false;
+      //   }
+      // },
+      // closeLoginArea(e){
+      //   if(e.target.id === 'box-container'){
+      //     this.login_visible = false;
+      //   }
+      // },
+      // sendRequest(page, key, category, order_by) {
+      //   axios
+      //   .get(this.request_url
+      //     + '?page=' + page
+      //     + '&key=' + key
+      //     + '&order_by=' + order_by
+      //     + '&category=' + category)
+      //   .then((res) => {
+      //     this.product_list = res.data.item_list;
+      //     this.request_data.current_page = res.data.current_page;
+      //     this.total_pages = res.data.total_pages;
+      //   })
+      // },
+      // loginVisible(){
+      //   this.login_visible = true
+      // },
 
     },
   };

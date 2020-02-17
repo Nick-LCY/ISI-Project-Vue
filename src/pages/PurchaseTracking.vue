@@ -1,7 +1,7 @@
 <template>
 	<a-layout>
 
-		<TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="loginVisible"></TopBar>
+		<TopBar></TopBar>
 
 		<a-layout-content id="content">
 
@@ -84,7 +84,7 @@
 			</a-list-item>
 		</a-list> -->
 
-      <a-pagination 
+    <!--   <a-pagination 
         id="page"
         showQuickJumper
         :total="total_pages*20"
@@ -92,17 +92,15 @@
         :defaultPageSize="20"
         @change="onChangePage"
       />
-
+ -->
     </a-layout-content>
 
-    <div id="box-container" v-if="search_visible" @click="closeSearchArea">
+<!--     <div id="box-container" v-if="search_visible" @click="closeSearchArea">
       <div id="search-box">
         <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
-    <!-- <div id="box-container" v-if="login_visible" @click="closeLoginArea"> -->
-      <Login v-bind:login_visible=login_visible />
-    <!-- </div> -->
+      <Login v-bind:login_visible=login_visible /> -->
 
   </a-layout>
 </template>
@@ -111,30 +109,30 @@
 
 
 <script>
-  import axios from 'axios';
+  // import axios from 'axios';
   import _ from 'lodash';
   import TopBar from '@/components/TopBar.vue';
-  import Login from '@/components/Login.vue';
+  // import Login from '@/components/Login.vue';
 
   export default {
     name:'purchase-tracking',
     components:{
       TopBar,
-      Login
+      // Login
     },
     data() {
       return {
         total_pages: 0,
         po: 'current',
-        search_visible: false,
-        login_visible: false,
-        request_data: {
-          current_page: 0,
-          key: '%',
-          order_by: '1',
-          category: '____'
-        },
-        request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+        // search_visible: false,
+        // login_visible: false,
+        // request_data: {
+        //   current_page: 0,
+        //   key: '%',
+        //   order_by: '1',
+        //   category: '____'
+        // },
+        // request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
         // request_url: 'http://localhost:9981/products'
         po_info: [
 			{
@@ -165,16 +163,16 @@
       }
     },
     
-    created(){
-      axios
-      .get(this.request_url)
-      .then((res) =>{
-        this.product_list = res.data.item_list;
-        this.total_pages = res.data.total_pages;
-        this.request_data.current_page = res.data.current_page;
-      })
+    // created(){
+    //   axios
+    //   .get(this.request_url)
+    //   .then((res) =>{
+    //     this.product_list = res.data.item_list;
+    //     this.total_pages = res.data.total_pages;
+    //     this.request_data.current_page = res.data.current_page;
+    //   })
 
-    },
+    // },
 
     computed: {
 		currentPO: function () {
@@ -207,50 +205,50 @@
 	},
 
     methods: {
-      onChangePage(page){
-        this.sendRequest(
-            page,
-            this.request_data.key,
-            this.request_data.category,
-            this.request_data.order_by
-          )
-      },
-      onSearch(value){
-        this.request_data.key = value;
-        this.sendRequest(
-            1,
-            this.request_data.key,
-            this.request_data.category,
-            this.request_data.order_by
-          )
-        this.visible = false;
-      },
-      closeSearchArea(e){
-        if(e.target.id === 'box-container'){
-          this.search_visible = false;
-        }
-      },
-      closeLoginArea(e){
-        if(e.target.id === 'box-container'){
-          this.login_visible = false;
-        }
-      },
-      sendRequest(page, key, category, order_by) {
-        axios
-        .get(this.request_url
-          + '?page=' + page
-          + '&key=' + key
-          + '&order_by=' + order_by
-          + '&category=' + category)
-        .then((res) => {
-          this.product_list = res.data.item_list;
-          this.request_data.current_page = res.data.current_page;
-          this.total_pages = res.data.total_pages;
-        })
-      },
-      loginVisible(){
-        this.login_visible = true
-      },
+      // onChangePage(page){
+      //   this.sendRequest(
+      //       page,
+      //       this.request_data.key,
+      //       this.request_data.category,
+      //       this.request_data.order_by
+      //     )
+      // },
+      // onSearch(value){
+      //   this.request_data.key = value;
+      //   this.sendRequest(
+      //       1,
+      //       this.request_data.key,
+      //       this.request_data.category,
+      //       this.request_data.order_by
+      //     )
+      //   this.visible = false;
+      // },
+      // closeSearchArea(e){
+      //   if(e.target.id === 'box-container'){
+      //     this.search_visible = false;
+      //   }
+      // },
+      // closeLoginArea(e){
+      //   if(e.target.id === 'box-container'){
+      //     this.login_visible = false;
+      //   }
+      // },
+      // sendRequest(page, key, category, order_by) {
+      //   axios
+      //   .get(this.request_url
+      //     + '?page=' + page
+      //     + '&key=' + key
+      //     + '&order_by=' + order_by
+      //     + '&category=' + category)
+      //   .then((res) => {
+      //     this.product_list = res.data.item_list;
+      //     this.request_data.current_page = res.data.current_page;
+      //     this.total_pages = res.data.total_pages;
+      //   })
+      // },
+      // loginVisible(){
+      //   this.login_visible = true
+      // },
       handlePOChange(e) {
         this.po = e.target.value;
       },
