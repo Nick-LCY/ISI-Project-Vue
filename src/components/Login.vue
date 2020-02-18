@@ -1,38 +1,63 @@
 <template>
-    <!-- <div id="login-box"> -->
-    <a-modal v-model="login_visible" title="Login">
-        <a-form layout="vertical" :form="form" @submit="handleSubmit">
-            <a-form-item :validate-status="userNameError() ? 'error' : ''" :help="userNameError() || ''">
-            <a-input
-                v-decorator="[
-                'userName',
-                { rules: [{ required: true, message: 'Please input your username!' }] },
-                ]"
-                placeholder="Username"
-            >
-                <a-icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)" />
-            </a-input>
-            </a-form-item>
-            <a-form-item :validate-status="passwordError() ? 'error' : ''" :help="passwordError() || ''">
-            <a-input
-                v-decorator="[
-                'password',
-                { rules: [{ required: true, message: 'Please input your Password!' }] },
-                ]"
-                type="password"
-                placeholder="Password"
-            >
-                <a-icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)" />
-            </a-input>
-            </a-form-item>
-            <!-- <a-form-item>
-            <a-button type="primary" html-type="submit" :disabled="hasErrors(form.getFieldsError())">
-                Log in
-            </a-button>
-            </a-form-item> -->
-        </a-form>
+    <a-modal 
+    v-model="login_visible" 
+    title="Login"
+    footer=''
+    >
+      <a-form
+        id="components-form-demo-normal-login"
+        :form="form"
+        class="login-form"
+        @submit="handleSubmit"
+      >
+        <a-form-item>
+          <a-input
+            v-decorator="[
+              'email',
+              { rules: [{ required: true, message: 'Please input your email!' }] },
+            ]"
+            placeholder="Email"
+          >
+            <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)" />
+          </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-input
+            v-decorator="[
+              'pwd',
+              { rules: [{ required: true, message: 'Please input your Password!' }] },
+            ]"
+            type="password"
+            placeholder="Password"
+          >
+            <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)" />
+          </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-checkbox
+            v-decorator="[
+              'remember',
+              {
+                valuePropName: 'checked',
+                initialValue: true,
+              },
+            ]"
+          >
+            Remember me
+          </a-checkbox>
+          <a class="login-form-forgot" href="">
+            Forgot password
+          </a>
+          <a-button type="primary" html-type="submit" class="login-form-button">
+            Log in
+          </a-button>
+          Or
+          <a href="5">
+            register now!
+          </a>
+        </a-form-item>
+      </a-form>
     </a-modal>
-    <!-- </div> -->
 </template>
 
 <style scoped>
@@ -48,44 +73,53 @@
 </style>
 
 <script>
-function hasErrors(fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field]);
-}
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      hasErrors,
-      form: this.$form.createForm(this, { name: 'horizontal_login' }),
+      request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
+      user_id:'',
+      token:'',
+      logState: this.GLOBAL.logState,
     };
   },
   props:{
       login_visible:Boolean
   },
-  mounted() {
-    this.$nextTick(() => {
-      // To disabled submit button at the beginning.
-      this.form.validateFields();
-    });
+  beforeCreate() {
+  this.form = this.$form.createForm(this, { name: 'normal_login' });
   },
   methods: {
-    // Only show error after a field is touched.
-    userNameError() {
-      const { getFieldError, isFieldTouched } = this.form;
-      return isFieldTouched('userName') && getFieldError('userName');
-    },
-    // Only show error after a field is touched.
-    passwordError() {
-      const { getFieldError, isFieldTouched } = this.form;
-      return isFieldTouched('password') && getFieldError('password');
-    },
     handleSubmit(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values);
+          values.pwd = this.$md5(values.pwd)
+          axios
+            .post(this.request_url)
+            .then((res) =>{
+              this.user_id = res.data.id
+              this.token = res.data.token
+              this.login_visible = false
+          })
         }
       });
     },
+
   },
+  
 };
 </script>
+
+<style scoped>
+#components-form-demo-normal-login .login-form {
+  max-width: 300px;
+}
+#components-form-demo-normal-login .login-form-forgot {
+  float: right;
+}
+#components-form-demo-normal-login .login-form-button {
+  width: 100%;
+}
+</style>

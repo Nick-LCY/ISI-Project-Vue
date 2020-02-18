@@ -29,6 +29,11 @@ export default new Router({
       name: 'Purchase Tracking',
       component: () => import('@/pages/PurchaseTracking.vue'),
     },
+    {
+      path: '/5',
+      name: 'Register',
+      component: () => import('@/pages/Register.vue'),
+    },
 
   ]
 })
