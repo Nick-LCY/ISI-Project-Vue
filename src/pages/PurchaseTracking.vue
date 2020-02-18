@@ -14,7 +14,7 @@
 		</div>
 
 		<div v-if="po === 'all'">
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="orderedPO">
+			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="allPO">
 				<a-list-item slot="renderItem" slot-scope="item">
 					<a-card :class="item.status" hoverable>
 						<a-card-meta>
@@ -84,7 +84,7 @@
 			</a-list-item>
 		</a-list> -->
 
-    <!--   <a-pagination 
+      <a-pagination 
         id="page"
         showQuickJumper
         :total="total_pages*20"
@@ -92,15 +92,8 @@
         :defaultPageSize="20"
         @change="onChangePage"
       />
- -->
-    </a-layout-content>
 
-<!--     <div id="box-container" v-if="search_visible" @click="closeSearchArea">
-      <div id="search-box">
-        <a-input-search size="large" @search="onSearch"/>
-      </div>
-    </div>
-      <Login v-bind:login_visible=login_visible /> -->
+    </a-layout-content>
 
   </a-layout>
 </template>
@@ -109,7 +102,7 @@
 
 
 <script>
-  // import axios from 'axios';
+  import axios from 'axios';
   import _ from 'lodash';
   import TopBar from '@/components/TopBar.vue';
   // import Login from '@/components/Login.vue';
@@ -123,81 +116,85 @@
     data() {
       return {
         total_pages: 0,
+        request_data: {
+          current_page: 0,
+          key: '%',
+          order_by: '1',
+          category: '____'
+        },
         po: 'current',
-        // search_visible: false,
-        // login_visible: false,
-        // request_data: {
-        //   current_page: 0,
-        //   key: '%',
-        //   order_by: '1',
-        //   category: '____'
-        // },
-        // request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
-        // request_url: 'http://localhost:9981/products'
-        po_info: [
-			{
-				po_no: 67580946,
-				purchase_date: '20/01/2020',
-				status: 'Pending',
-				total_amount: '100',
-			},
-			{
-				po_no: 67580946,
-				purchase_date: '21/01/2020',
-				status: 'Hold',
-				total_amount: '100',
-			},
-			{
-				po_no: 67580946,
-				purchase_date: '25/01/2020',
-				status: 'Shipped',
-				total_amount: '100',
-			},
-			{
-				po_no: 67580946,
-				purchase_date: '12/01/2020',
-				status: 'Canceled',
-				total_amount: '100',
-			},
-        ],
+        po_info: [],
+
+   //      po_info: [
+			// {
+			// 	po_no: 67580946,
+			// 	purchase_date: '20/01/2020',
+			// 	status: 'Pending',
+			// 	total_amount: '100',
+			// },
+			// {
+			// 	po_no: 67580946,
+			// 	purchase_date: '21/01/2020',
+			// 	status: 'Hold',
+			// 	total_amount: '100',
+			// },
+			// {
+			// 	po_no: 67580946,
+			// 	purchase_date: '25/01/2020',
+			// 	status: 'Shipped',
+			// 	total_amount: '100',
+			// },
+			// {
+			// 	po_no: 67580946,
+			// 	purchase_date: '12/01/2020',
+			// 	status: 'Canceled',
+			// 	total_amount: '100',
+			// },
+   //      ],
       }
     },
     
-    // created(){
-    //   axios
-    //   .get(this.request_url)
-    //   .then((res) =>{
-    //     this.product_list = res.data.item_list;
-    //     this.total_pages = res.data.total_pages;
-    //     this.request_data.current_page = res.data.current_page;
-    //   })
+    created(){
+      axios
+      .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_orders')
+      .then((res) =>{
+        this.po_info = res.data.po_info.item_list;
+        this.total_pages = res.data.po_info.total_pages;
+        this.request_data.current_page = res.data.current_page;
 
-    // },
+        // eslint-disable-next-line no-console
+			console.log(this.po_info);
+      })
+
+    },
 
     computed: {
 		currentPO: function () {
 			var c = [];
 			for (var i = this.po_info.length - 1; i >= 0; i--) {
-				var po = this.po_info[i];
-				if (po.status == "Pending" || po.status == "Hold") {
-					c.push(po);
+				var p = this.po_info[i];
+				if (p.status == "Pending" || p.status == "Hold") {
+					c.push(p);
 				}
 			}
+			// eslint-disable-next-line no-console
+			console.log(this.po);
 			return _.orderBy(c, 'purchase_date', 'desc');
+			
 		},
 
 		pastPO: function () {
 			var c = [];
 			for (var i = this.po_info.length - 1; i >= 0; i--) {
-				var po = this.po_info[i];
-				if (po.status == "Shipped" || po.status == "Canceled") {
-					c.push(po);
+				var p = this.po_info[i];
+				if (p.status == "Shipped" || p.status == "Canceled") {
+					c.push(p);
 				}
 			}
 			return _.orderBy(c, 'purchase_date', 'desc');
 		},
 
-		orderedPO: function () {
+		allPO: function () {
 			return _.orderBy(this.po_info, 'purchase_date', 'desc');
 		}
 
@@ -205,58 +202,30 @@
 	},
 
     methods: {
-      // onChangePage(page){
-      //   this.sendRequest(
-      //       page,
-      //       this.request_data.key,
-      //       this.request_data.category,
-      //       this.request_data.order_by
-      //     )
-      // },
-      // onSearch(value){
-      //   this.request_data.key = value;
-      //   this.sendRequest(
-      //       1,
-      //       this.request_data.key,
-      //       this.request_data.category,
-      //       this.request_data.order_by
-      //     )
-      //   this.visible = false;
-      // },
-      // closeSearchArea(e){
-      //   if(e.target.id === 'box-container'){
-      //     this.search_visible = false;
-      //   }
-      // },
-      // closeLoginArea(e){
-      //   if(e.target.id === 'box-container'){
-      //     this.login_visible = false;
-      //   }
-      // },
-      // sendRequest(page, key, category, order_by) {
-      //   axios
-      //   .get(this.request_url
-      //     + '?page=' + page
-      //     + '&key=' + key
-      //     + '&order_by=' + order_by
-      //     + '&category=' + category)
-      //   .then((res) => {
-      //     this.product_list = res.data.item_list;
-      //     this.request_data.current_page = res.data.current_page;
-      //     this.total_pages = res.data.total_pages;
-      //   })
-      // },
-      // loginVisible(){
-      //   this.login_visible = true
-      // },
       handlePOChange(e) {
         this.po = e.target.value;
       },
-  //     sort() {
-		// for (var i = po_info.length - 1; i >= 0; i--) {
-		// 	po_info[i]
-		// }
-  //     },
+      sendRequest(page, key, category, order_by) {
+        axios
+        .get(this.request_url
+          + '?page=' + page
+          + '&key=' + key
+          + '&order_by=' + order_by
+          + '&category=' + category)
+        .then((res) => {
+          this.product_list = res.data.item_list;
+          this.request_data.current_page = res.data.current_page;
+          this.total_pages = res.data.total_pages;
+        })
+      },
+      onChangePage(page){
+        this.sendRequest(
+            page,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
+      },
     },
   };
 </script>
