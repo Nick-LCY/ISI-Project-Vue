@@ -13,8 +13,8 @@
 			</a-radio-group>
 		</div>
 
-		<div v-if="po === 'all'">
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="allPO">
+		<div>
+			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="changePOStatus(po_info)">
 				<a-list-item slot="renderItem" slot-scope="item">
 					<a-card :class="item.status" hoverable>
 						<a-card-meta>
@@ -32,57 +32,6 @@
 				</a-list-item>
 			</a-list>
 		</div>
-
-		<div v-if="po === 'current'">
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="currentPO">
-				<a-list-item slot="renderItem" slot-scope="item">
-					<a-card :class="item.status" hoverable>
-						<a-card-meta>
-							<template slot="description">
-								<p>PO. Number: {{item.po_no}}</p>
-								<p>Purchase Date: {{item.purchase_date}}</p>
-								<p>Status: {{item.status}}</p>
-								<p>Total Amount: ${{item.total_amount}}</p>
-							</template>
-						</a-card-meta>
-						<template class="ant-card-actions" slot="actions">
-							<p><a-icon type="file-text" /> More Deatils <a-icon type="right" /></p>
-						</template>
-					</a-card>
-				</a-list-item>
-			</a-list>
-		</div>
-		
-		<div v-if="po === 'past'">
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="pastPO">
-				<a-list-item slot="renderItem" slot-scope="item">
-					<a-card :class="item.status" hoverable>
-						<a-card-meta>
-							<template slot="description">
-								<p>PO. Number: {{item.po_no}}</p>
-								<p>Purchase Date: {{item.purchase_date}}</p>
-								<p>Status: {{item.status}}</p>
-								<p>Total Amount: ${{item.total_amount}}</p>
-							</template>
-						</a-card-meta>
-						<template class="ant-card-actions" slot="actions">
-							<p><a-icon type="file-text" /> More Deatils <a-icon type="right" /></p>
-						</template>
-					</a-card>
-				</a-list-item>
-			</a-list>
-		</div>
-
-		<!-- <a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="product_list">
-			<a-list-item slot="renderItem" slot-scope="item">
-				<a-card hoverable>
-					<img :src="item.thumbnail_location" slot="cover"/>
-					<a-card-meta :title="'$'+item.price">
-						<template slot="description">{{item.name}}</template>
-					</a-card-meta>
-				</a-card>
-			</a-list-item>
-		</a-list> -->
 
       <a-pagination 
         id="page"
@@ -105,7 +54,6 @@
   import axios from 'axios';
   import _ from 'lodash';
   import TopBar from '@/components/TopBar.vue';
-  // import Login from '@/components/Login.vue';
 
   export default {
     name:'purchase-tracking',
@@ -124,33 +72,6 @@
         },
         po: 'current',
         po_info: [],
-
-   //      po_info: [
-			// {
-			// 	po_no: 67580946,
-			// 	purchase_date: '20/01/2020',
-			// 	status: 'Pending',
-			// 	total_amount: '100',
-			// },
-			// {
-			// 	po_no: 67580946,
-			// 	purchase_date: '21/01/2020',
-			// 	status: 'Hold',
-			// 	total_amount: '100',
-			// },
-			// {
-			// 	po_no: 67580946,
-			// 	purchase_date: '25/01/2020',
-			// 	status: 'Shipped',
-			// 	total_amount: '100',
-			// },
-			// {
-			// 	po_no: 67580946,
-			// 	purchase_date: '12/01/2020',
-			// 	status: 'Canceled',
-			// 	total_amount: '100',
-			// },
-   //      ],
       }
     },
     
@@ -160,46 +81,13 @@
       .then((res) =>{
         this.po_info = res.data.po_info.item_list;
         this.total_pages = res.data.po_info.total_pages;
-        this.request_data.current_page = res.data.current_page;
+        this.request_data.current_page = res.data.po_info.current_page;
 
         // eslint-disable-next-line no-console
-			console.log(this.po_info);
+			// console.log(this.po_info);
       })
 
     },
-
-    computed: {
-		currentPO: function () {
-			var c = [];
-			for (var i = this.po_info.length - 1; i >= 0; i--) {
-				var p = this.po_info[i];
-				if (p.status == "Pending" || p.status == "Hold") {
-					c.push(p);
-				}
-			}
-			// eslint-disable-next-line no-console
-			console.log(this.po);
-			return _.orderBy(c, 'purchase_date', 'desc');
-			
-		},
-
-		pastPO: function () {
-			var c = [];
-			for (var i = this.po_info.length - 1; i >= 0; i--) {
-				var p = this.po_info[i];
-				if (p.status == "Shipped" || p.status == "Canceled") {
-					c.push(p);
-				}
-			}
-			return _.orderBy(c, 'purchase_date', 'desc');
-		},
-
-		allPO: function () {
-			return _.orderBy(this.po_info, 'purchase_date', 'desc');
-		}
-
-
-	},
 
     methods: {
       handlePOChange(e) {
@@ -207,15 +95,15 @@
       },
       sendRequest(page, key, category, order_by) {
         axios
-        .get(this.request_url
+        .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_orders'
           + '?page=' + page
           + '&key=' + key
           + '&order_by=' + order_by
           + '&category=' + category)
         .then((res) => {
-          this.product_list = res.data.item_list;
-          this.request_data.current_page = res.data.current_page;
-          this.total_pages = res.data.total_pages;
+          this.po_info = res.data.po_info.item_list;
+          this.request_data.current_page = res.data.po_info.current_page;
+          this.total_pages = res.data.po_info.total_pages;
         })
       },
       onChangePage(page){
@@ -226,6 +114,32 @@
             this.request_data.order_by
           )
       },
+      changePOStatus(po_info) {
+		var c = [];
+		var i = po_info.length - 1;
+		if (this.po == 'current') {
+			for (i; i >= 0; i--) {
+				var p = po_info[i];
+				if (p.status == "Pending" || p.status == "Hold") {
+					c.push(p);
+				}
+			}
+			// eslint-disable-next-line no-console
+			// console.log(this.po);
+			return _.orderBy(c, 'purchase_date', 'desc');
+		}
+		else if (this.po == 'past') {
+			for (i; i >= 0; i--) {
+				p = po_info[i];
+				if (p.status == "Shipped" || p.status == "Canceled") {
+					c.push(p);
+				}
+			}
+			return _.orderBy(c, 'purchase_date', 'desc');
+		}
+		else
+			return _.orderBy(po_info, 'purchase_date', 'desc');
+      }
     },
   };
 </script>
