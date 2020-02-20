@@ -4,6 +4,14 @@
     title="Login"
     footer=''
     >
+      <div v-if="!success">
+        <a-alert
+          message="Error"
+          :description="error_message"
+          type="error"
+          showIcon
+        />
+      </div>
       <a-form
         id="components-form-demo-normal-login"
         :form="form"
@@ -79,9 +87,11 @@ export default {
   data() {
     return {
       request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
-      user_id:'',
-      token:'',
-      logState: this.GLOBAL.logState,
+      user_id: '',
+      token: '',
+      user_name: '',
+      // log_state: this.GLOBAL.log_state,
+      success:true
     };
   },
   props:{
@@ -99,9 +109,18 @@ export default {
           axios
             .post(this.request_url)
             .then((res) =>{
-              this.user_id = res.data.id
-              this.token = res.data.token
-              this.login_visible = false
+              this.success = res.data.success
+              if(this.success){
+                this.user_id = res.data.id
+                this.token = res.data.token
+                this.user_name = res.data.name
+                // this.$emit('login_visible',false)
+                this.login_visible = false
+              }
+              else{
+                this.error_message = res.data.message
+              }
+
           })
         }
       });

@@ -2,12 +2,15 @@
     <a-layout>
         <TopBar></TopBar>
         <a-layout-content id="content">
-            <a-breadcrumb id="breadcrumb">
-                <a-breadcrumb-item>Home</a-breadcrumb-item>
-                <a-breadcrumb-item>Register</a-breadcrumb-item>
-            </a-breadcrumb>
+            <a-alert
+                v-if="!success"
+                message="Error"
+                :description="error_message"
+                type="error"
+                showIcon
+            />
             <div id="register-form">
-                <a-form :form="form" @submit="handleSubmit">
+                <a-form :form="form" @submit="handleSubmit" style="width: 60vw;">
                     <a-form-item v-bind="formItemLayout" label="E-mail">
                         <a-input
                             v-decorator="[
@@ -38,7 +41,7 @@
                                     message: 'Please input your password!',
                                 },
                                 {
-                                    validator: validateToNextPassword,
+                                    validator: validateToNextPassword && checkPasswordFormat
                                 },
                                 ],
                             },
@@ -105,6 +108,8 @@
 
 <script>
 import TopBar from '@/components/TopBar.vue'
+import axios from 'axios'
+
 export default {
     name:'register',
     components:{
@@ -113,10 +118,9 @@ export default {
     data() {
         return {
         confirmDirty: false,
-        autoCompleteResult: [],
         formItemLayout: {
             labelCol: {
-            xs: { span: 24 },
+            xs: { span: 16 },
             sm: { span: 8 },
             },
             wrapperCol: {
@@ -136,6 +140,12 @@ export default {
             },
             },
         },
+        request_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/user',
+        user_id: '',
+        token: '',
+        user_name:'',
+        error_message:'',
+        success:true
         };
     },
     beforeCreate() {
@@ -143,46 +153,72 @@ export default {
     },
     methods: {
         handleSubmit(e) {
-        e.preventDefault();
-        this.form.validateFieldsAndScroll((err, values) => {
-            if (!err) {
-            console.log('Received values of form: ', values);
-            }
-        });
+            e.preventDefault();
+            this.form.validateFieldsAndScroll((err, values) => {
+                if (!err) {
+                    values.pwd = this.$md5(values.pwd)
+                    axios
+                        .post(this.request_url)
+                        .then((res) =>{
+                            this.success = res.data.success
+                            if(this.success){
+                                this.user_id = res.data.id
+                                this.token = res.data.token
+                                this.user_name = res.data.name
+                            }
+                            else{
+                                this.error_message = res.data.message
+                            }
+
+                    })
+                }
+            });
         },
 
         handleConfirmBlur(e) {
-        const value = e.target.value;
-        this.confirmDirty = this.confirmDirty || !!value;
+            const value = e.target.value;
+            this.confirmDirty = this.confirmDirty || !!value;
         },
 
         compareToFirstPassword(rule, value, callback) {
-        const form = this.form;
-        if (value && value !== form.getFieldValue('password')) {
-            callback('Two passwords that you enter is inconsistent!');
-        } else {
-            callback();
-        }
+            const form = this.form;
+            if (value && value !== form.getFieldValue('pwd')) {
+                callback('Two passwords that you enter is inconsistent!');
+            } else {
+                callback();
+            }
         },
 
         validateToNextPassword(rule, value, callback) {
-        const form = this.form;
-        if (value && this.confirmDirty) {
-            form.validateFields(['confirm'], { force: true });
-        }
-        callback();
+            const form = this.form;
+            if (value && this.confirmDirty) {
+                form.validateFields(['confirm'], { force: true });
+            }
+            callback();
         },
+
+        checkPasswordFormat(rule, value, callback) {
+            var strongRegex = new RegExp("^(?=.*[A-Z])(?=.*[0-9])")
+            if (value.length>5 && strongRegex.test(value)) {
+                callback();
+            } else {
+                callback('The password should contain at least 6 characters, in which there must be at least one digit and one capital letter');
+            }
+        }
     },
 }
 </script>
 
 <style scoped>
-#breadcrumb {
-   margin: 32px 0;
-}
-
 #register-form {
-    width: 35vw;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    background-color: white;
 }
 
+.ant-form {
+    margin-top: 5%;
+    margin-right: 15%;
+}
 </style>
