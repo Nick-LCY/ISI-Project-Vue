@@ -75,9 +75,6 @@
 
       </div>
     </a-layout-content>
-<!--     <a-layout-footer :style="{ textAlign: 'center' }">
-      Ant Design ©2018 Created by Ant UED
-    </a-layout-footer> -->
 
    <!--  <div id="box-container" v-if="search_visible" @click="closeSearchArea">
       <div id="search-box">

@@ -23,6 +23,11 @@ export default new Router({
       name: 'JustForTest',
       component: () => import('@/pages/JustForTest.vue'),
     },
+    {
+      path: '/3',
+      name: 'Register',
+      component: () => import('@/pages/Register.vue'),
+    },
 
     {
       path: '/4',
@@ -31,9 +36,10 @@ export default new Router({
     },
     {
       path: '/5',
-      name: 'Register',
-      component: () => import('@/pages/Register.vue'),
+      name: 'Purchase Detail',
+      component: () => import('@/pages/PurchaseDetail.vue'),
     },
+    
 
   ]
 })
