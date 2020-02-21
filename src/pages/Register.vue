@@ -141,9 +141,6 @@ export default {
             },
         },
         request_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/user',
-        user_id: '',
-        token: '',
-        user_name:'',
         error_message:'',
         success:true
         };
@@ -162,9 +159,12 @@ export default {
                         .then((res) =>{
                             this.success = res.data.success
                             if(this.success){
-                                this.user_id = res.data.id
-                                this.token = res.data.token
-                                this.user_name = res.data.name
+                                const user_id = res.data.id
+                                window.localStorage.setItem('user_id', user_id)
+                                const user_name = res.data.user_name
+                                window.localStorage.setItem('user_name', user_name)
+                                const token = res.data.token
+                                window.localStorage.setItem('token', token)
                             }
                             else{
                                 this.error_message = res.data.message

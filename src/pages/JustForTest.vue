@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-button @click="showConfirm">
+    <a-button @click="showToken">
       Confirm
     </a-button>
   </div>
@@ -8,19 +8,9 @@
 <script>
   export default {
     methods: {
-      showConfirm() {
-        this.$confirm({
-          title: 'Do you Want to delete these items?',
-          content:  <div style="color:red;">Some descriptions</div>,
-          onOk() {
-            console.log('OK');
-          },
-          onCancel() {
-            console.log('Cancel');
-          },
-          class: 'test',
-        });
-      },
+      showToken(){
+        console.log(window.localStorage.getItem('token'))
+      }
     },
   };
 </script>

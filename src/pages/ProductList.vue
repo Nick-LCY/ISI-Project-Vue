@@ -45,7 +45,7 @@
       </div>
     </div>
     <!-- <div id="box-container" v-if="login_visible" @click="closeLoginArea"> -->
-      <Login v-bind:login_visible=login_visible />
+      <Login @login_visible=login_visible />
     <!-- </div> -->
 
   </a-layout>

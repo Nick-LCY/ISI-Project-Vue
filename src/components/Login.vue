@@ -87,10 +87,6 @@ export default {
   data() {
     return {
       request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
-      user_id: '',
-      token: '',
-      user_name: '',
-      // log_state: this.GLOBAL.log_state,
       success:true
     };
   },
@@ -98,7 +94,7 @@ export default {
       login_visible:Boolean
   },
   beforeCreate() {
-  this.form = this.$form.createForm(this, { name: 'normal_login' });
+    this.form = this.$form.createForm(this, { name: 'normal_login' });
   },
   methods: {
     handleSubmit(e) {
@@ -112,9 +108,14 @@ export default {
               this.success = res.data.success
               if(this.success){
                 this.user_id = res.data.id
-                this.token = res.data.token
                 this.user_name = res.data.name
-                // this.$emit('login_visible',false)
+                const user_id = res.data.id
+                window.localStorage.setItem('user_id', user_id)
+                const user_name = res.data.user_name
+                window.localStorage.setItem('user_name', user_name)
+                const token = res.data.token
+                window.localStorage.setItem('token', token)
+                this.$emit('login_visible',false)
                 this.login_visible = false
               }
               else{
