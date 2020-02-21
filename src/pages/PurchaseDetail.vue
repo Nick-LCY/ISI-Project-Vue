@@ -7,13 +7,16 @@
 			<div>
 				<h2>Basic Information:</h2>
 				<div class="basicInfo">
+					<p>Purchase Number: {{po_no}}</p>
+
 					<p>Purchase Date: {{purchase_date}}</p>
 					<p>Customer Name: {{customer_name}}</p>
 					<p>Shipping Address: {{shipping_address}}</p>
 					<p>Total Amount: ${{total_amount}}</p>
-					<p v-if="status === 'shipped'">Shipment Date: {{shipment_date}}</p>
-					<p v-if="status === 'canceled'">Cancel Date: {{cancel_date}}</p>
-					<p v-if="status === 'canceled'">Canceled By: {{canceled_by}}</p>
+					<p>Status: {{status}}</p>
+					<p v-if="status === 'Shipped'">Shipment Date: {{shipment_date}}</p>
+					<p v-if="status === 'Cancelled'">Cancel Date: {{cancel_date}}</p>
+					<p v-if="status === 'Cancelled'">Cancelled By: {{cancelled_by}}</p>
 				</div>
 			</div>
 
@@ -28,9 +31,9 @@
 								<a-card-meta>
 									<template slot="description">
 										<p>Product Name: {{item.product_name}}</p>
-										<p>Unit Price: ${{item.unit_price}}</p>
+										<p>Unit Price: ${{item.product_price}}</p>
 										<p>Quantity: {{item.quantity}}</p>
-										<p>Subtotal: ${{item.unit_price*item.quantity}}</p>
+										<p>Subtotal: ${{item.product_price*item.quantity}}</p>
 									</template>
 								</a-card-meta>
 							</a-card>
@@ -49,6 +52,7 @@
 </template>
 
 <script>
+	import axios from 'axios';
 	import TopBar from '@/components/TopBar.vue';
 	export default {
 		name: 'purchase-detail',
@@ -57,39 +61,67 @@
 		},
 		data() {
 			return {
-				disable: false,
+				dis: '',
 
 				status: '',
-				purchase_date: '20/01/2020',
-				customer_name: 'J',
-				shipping_address: 'Rua de Lalala',
-				total_amount: '100',
-				shipment_date: '21/01/2020',
-				cancel_date: '22/01/2020',
-				canceled_by: 'M',
+				po_no: '',
+				purchase_date: '',
+				customer_name: '',
+				shipping_address: '',
+				total_amount: '',
+				shipment_date: '',
+				cancel_date: '',
+				cancelled_by: '',
 
-				po_detail: [
-					{
-						product_name: 'chide',
-						unit_price: '10',
-						quantity: '3',
-					},
-					{
-						product_name: 'chide',
-						unit_price: '30',
-						quantity: '3',
-					},
-				]
+				po_detail: [],
 
 				
 			}
 
 		},
 
+		created(){
+			axios
+			.get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_order')
+			.then((res) =>{
+				this.po_detail = res.data.purchase_detail.purchase_items;
+				this.status = res.data.purchase_detail.status;
+				this.po_no = res.data.purchase_detail.po_no;
+				this.purchase_date = res.data.purchase_detail.purchase_date;
+				this.customer_name = res.data.purchase_detail.customer_name;
+				this.shipping_address = res.data.purchase_detail.shipping_address;
+				this.total_amount = res.data.purchase_detail.total_amount;
+				this.shipment_date = res.data.purchase_detail.shipment_date;
+				this.cancel_date = res.data.purchase_detail.cancel_date;
+				this.cancelled_by = res.data.purchase_detail.cancelled_by;
+
+				// eslint-disable-next-line no-console
+					// console.log(this.po_info);
+			})
+
+		},
+
+		computed: {
+			disable: function() {
+				var d =this.dis;
+				if (this.status == 'Pending' || this.status == 'Hold') {
+					d=false;
+				}
+				else d=true;
+				return d;
+			}
+		},
+
 		methods: {
+			// disable() {
+			// 	if (this.status == 'Pending' || this.status == 'Hold') {
+			// 		this.dis='false'
+			// 	}
+			// 	else this.dis='true'
+			// },
 			cancelPO() {
-				this.status='canceled';
-				this.disable='true';
+				this.status='Cancelled';
+				this.dis=true;
 			}
 		}
 
