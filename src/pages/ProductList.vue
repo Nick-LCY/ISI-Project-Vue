@@ -44,9 +44,7 @@
         <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
-    <!-- <div id="box-container" v-if="login_visible" @click="closeLoginArea"> -->
-      <Login @login_visible=login_visible />
-    <!-- </div> -->
+    <Login v-bind:login_visible=login_visible />
 
   </a-layout>
 </template>
@@ -117,7 +115,6 @@
           category: '____'
         },
         request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products'
-        // request_url: 'http://localhost:9981/products'
       }
     },
     
@@ -129,7 +126,6 @@
         this.total_pages = res.data.total_pages;
         this.request_data.current_page = res.data.current_page;
       })
-
     },
     methods: {
       onChangePage(page){
@@ -171,11 +167,6 @@
       closeSearchArea(e){
         if(e.target.id === 'box-container'){
           this.search_visible = false;
-        }
-      },
-      closeLoginArea(e){
-        if(e.target.id === 'box-container'){
-          this.login_visible = false;
         }
       },
       sendRequest(page, key, category, order_by) {

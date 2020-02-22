@@ -142,7 +142,7 @@ export default {
         },
         request_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/user',
         error_message:'',
-        success:true
+        success:true,
         };
     },
     beforeCreate() {
@@ -165,6 +165,7 @@ export default {
                                 window.localStorage.setItem('user_name', user_name)
                                 const token = res.data.token
                                 window.localStorage.setItem('token', token)
+                                window.localStorage.setItem('is_login', true)
                             }
                             else{
                                 this.error_message = res.data.message

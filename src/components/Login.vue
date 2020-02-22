@@ -60,25 +60,13 @@
             Log in
           </a-button>
           Or
-          <a href="5">
+          <a href="3">
             register now!
           </a>
         </a-form-item>
       </a-form>
     </a-modal>
 </template>
-
-<style scoped>
-#login-box{
- padding-top: 30px;
- padding-left: 20px;
- padding-right: 20px;
- margin:50px;
- width: 35vw;
- border-radius: 3px;
- background-color: white;
-}
-</style>
 
 <script>
 import axios from 'axios'
@@ -115,8 +103,9 @@ export default {
                 window.localStorage.setItem('user_name', user_name)
                 const token = res.data.token
                 window.localStorage.setItem('token', token)
-                this.$emit('login_visible',false)
+                window.localStorage.setItem('is_login', true)
                 this.login_visible = false
+                // console.log(user_name)
               }
               else{
                 this.error_message = res.data.message
