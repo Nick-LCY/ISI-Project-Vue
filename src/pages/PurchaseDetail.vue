@@ -27,13 +27,36 @@
 				<div>
 					<a-list :grid="{column: 1}" :dataSource="po_detail">
 						<a-list-item slot="renderItem" slot-scope="item">
-							<a-card>
+							<a-card :title="item.product_name">
 								<a-card-meta>
 									<template slot="description">
-										<p>Product Name: {{item.product_name}}</p>
 										<p>Unit Price: ${{item.product_price}}</p>
 										<p>Quantity: {{item.quantity}}</p>
 										<p>Subtotal: ${{item.product_price*item.quantity}}</p>
+										
+										<div slot="content">
+											<a-form-item>
+												<a-button 
+													v-if="status == 'Shipped'" 
+													size="large" 
+													@click="giveFeedback" 
+													:disabled="d">
+												Give a Feedback
+												</a-button>
+											</a-form-item>
+											<a-form-item v-show="isShow" >
+												<a-textarea :rows="4" @change="handleChange" :value="value"></a-textarea>
+											</a-form-item>
+											<a-form-item v-show="isShow">
+												<a-button 
+													htmlType="submit" 
+													:loading="submitting" 
+													@click="handleSubmit" 
+													type="primary">
+													Add Comment
+												</a-button>
+											</a-form-item>
+										</div>
 									</template>
 								</a-card-meta>
 							</a-card>
@@ -62,6 +85,9 @@
 		data() {
 			return {
 				dis: '',
+				d: false,
+				isShow: false,
+				value: '',
 
 				status: '',
 				po_no: '',
@@ -113,15 +139,48 @@
 		},
 
 		methods: {
-			// disable() {
-			// 	if (this.status == 'Pending' || this.status == 'Hold') {
-			// 		this.dis='false'
-			// 	}
-			// 	else this.dis='true'
-			// },
 			cancelPO() {
 				this.status='Cancelled';
 				this.dis=true;
+			},
+
+			giveFeedback() {
+				this.isShow = !this.isShow;
+			},
+			handleChange(e) {
+				this.value = e.target.value;
+
+			},
+			handleSubmit() {
+				if (!this.value) {return;}
+				this.value='';
+				this.d=true;
+				this.isShow=false;
+				const key = `open${Date.now()}`;
+				this.$notification.open({
+					placement: 'topLeft',
+					message: 'Adding comment successful!',
+					description:'Your comment has been added successfully. Click the button to see details.',
+					btn: h => {
+						return h(
+							'a-button',
+							{
+							props: {
+								type: 'primary',
+								size: 'small',
+							},
+							on: {
+								click: () => {this.$router.push({path: '/1'});
+								this.$notification.close(key);}
+
+							},
+						},
+							'Confirm',
+						);
+					},
+					key,
+					onClose: close,
+				});
 			}
 		}
 
@@ -163,6 +222,7 @@
     height: 40px;
     cursor: pointer;
 }
+
 	
 	
 	

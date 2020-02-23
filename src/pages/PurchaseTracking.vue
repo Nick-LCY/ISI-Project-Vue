@@ -131,7 +131,7 @@
 		else if (this.po == 'past') {
 			for (i; i >= 0; i--) {
 				p = po_info[i];
-				if (p.status == "Shipped" || p.status == "Canceled") {
+				if (p.status == "Shipped" || p.status == "Cancelled") {
 					c.push(p);
 				}
 			}
@@ -195,7 +195,7 @@
 	background-color: #cfefdf;
 }
 
-.Canceled {
+.Cancelled {
 	background-color: #e9e9e9;
 }
 
