@@ -1,7 +1,7 @@
 <template>
   <a-layout>
 
-    <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="loginVisible"></TopBar>
+    <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="login_visible = true" @loginFinish="login_visible = false" v-bind:login_visible=login_visible></TopBar>
 
     <a-row type="flex" justify="start" :gutter="8">
       <a-button-group>
@@ -22,7 +22,10 @@
           <a-card hoverable>
             <img :src="item.thumbnail_location" slot="cover"/>
             <a-card-meta :title="'$'+item.price">
-              <template slot="description">{{item.name}}</template>
+              <template slot="description">
+                {{item.name}}<br>
+                [{{item.category}}]
+              </template>
             </a-card-meta>
           </a-card>
         </a-list-item>
@@ -44,7 +47,6 @@
         <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
-    <Login v-bind:login_visible=login_visible />
 
   </a-layout>
 </template>
@@ -94,13 +96,11 @@
 <script>
   import TopBar from '@/components/TopBar.vue'
   import axios from 'axios'
-  import Login from '@/components/Login.vue'
 
   export default {
     name:'product-list',
     components:{
       TopBar,
-      Login
     },
     data() {
       return {
@@ -180,11 +180,12 @@
           this.product_list = res.data.item_list;
           this.request_data.current_page = res.data.current_page;
           this.total_pages = res.data.total_pages;
+          this.category = res.data.item_list.category;
         })
       },
-      loginVisible(){
-        this.login_visible = true
-      }
+      // loginVisible(){
+      //   this.login_visible = true
+      // }
     },
   };
 </script>
