@@ -159,13 +159,14 @@ export default {
                         .then((res) =>{
                             this.success = res.data.success
                             if(this.success){
-                                const user_id = res.data.id
+                                var user_id = res.data.id
                                 window.localStorage.setItem('user_id', user_id)
-                                const user_name = res.data.user_name
+                                var user_name = res.data.name
                                 window.localStorage.setItem('user_name', user_name)
-                                const token = res.data.token
+                                var token = res.data.token
                                 window.localStorage.setItem('token', token)
                                 window.localStorage.setItem('is_login', true)
+                                this.$router.push({path:'/'})
                             }
                             else{
                                 this.error_message = res.data.message

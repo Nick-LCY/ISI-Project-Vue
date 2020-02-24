@@ -145,11 +145,22 @@ import axios from 'axios'
       login_visible:Boolean
     },
     beforeCreate() {
-    this.form = this.$form.createForm(this, { name: 'normal_login' });
-    },
-    updated(){
-      this.is_login =  window.localStorage.getItem('is_login')
+      this.form = this.$form.createForm(this, { name: 'normal_login' })
       this.user_name = window.localStorage.getItem('user_name')
+      this.is_login = window.localStorage.getItem('is_login')
+    },
+    created(){
+      var login_state =  window.localStorage.getItem('is_login')
+      var login_name =  window.localStorage.getItem('user_name')
+      this.user_name = login_name
+      this.is_login = login_state
+    },
+
+    updated(){
+      var login_state =  window.localStorage.getItem('is_login')
+      var login_name =  window.localStorage.getItem('user_name')
+      this.user_name = login_name
+      this.is_login = login_state
     },
     methods:{
       showSearchBox() {
@@ -159,7 +170,7 @@ import axios from 'axios'
         this.$emit('clickLoginBtn',true)
       },
       logout(){
-        const user_id = window.localStorage.getItem('user_id')
+        var user_id = window.localStorage.getItem('user_id')
         window.localStorage.setItem('is_login', false)
         var login_state = window.localStorage.getItem('is_login')
         axios
@@ -181,9 +192,9 @@ import axios from 'axios'
               .then((res) =>{
                 this.login_success = res.data.success
                 if(this.login_success){
-                  const user_id = res.data.id
-                  const user_name = res.data.name
-                  const token = res.data.token
+                  var user_id = res.data.id
+                  var user_name = res.data.name
+                  var token = res.data.token
                   window.localStorage.setItem('user_id', user_id)
                   window.localStorage.setItem('user_name', user_name)
                   window.localStorage.setItem('token', token)
