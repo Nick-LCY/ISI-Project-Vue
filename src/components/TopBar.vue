@@ -150,7 +150,6 @@ import axios from 'axios'
     updated(){
       this.is_login =  window.localStorage.getItem('is_login')
       this.user_name = window.localStorage.getItem('user_name')
-      console.log(this.is_login)
     },
     methods:{
       showSearchBox() {
@@ -161,14 +160,16 @@ import axios from 'axios'
       },
       logout(){
         const user_id = window.localStorage.getItem('user_id')
+        window.localStorage.setItem('is_login', false)
+        var login_state = window.localStorage.getItem('is_login')
         axios
             .post(this.logout_url,{id:user_id})
             .then((res) =>{
               if(res.data.success){
                 window.localStorage.clear()
+                this.is_login = login_state
               }         
             })
-        this.is_login =  false
       },
       login(e) {
         e.preventDefault();
