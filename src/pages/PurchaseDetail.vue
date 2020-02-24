@@ -37,11 +37,18 @@
 										<div slot="content">
 											<a-form-item>
 												<a-button 
-													v-if="status == 'Shipped'" 
+													v-if="status == 'Shipped' && feedback == ''" 
 													size="large" 
-													@click="giveFeedback" 
-													:disabled="d">
+													@click="giveFeedback">
 												Give a Feedback
+												</a-button>
+											</a-form-item>
+											<a-form-item>
+												<a-button 
+													v-if="feedback == 'sent'" 
+													size="large" 
+													@click="changeFeedback">
+												Change Your Feedback
 												</a-button>
 											</a-form-item>
 											<a-form-item v-show="isShow" >
@@ -85,7 +92,7 @@
 		data() {
 			return {
 				dis: '',
-				d: false,
+				feedback: '',
 				isShow: false,
 				value: '',
 
@@ -154,7 +161,7 @@
 			handleSubmit() {
 				if (!this.value) {return;}
 				this.value='';
-				this.d=true;
+				this.feedback='sent';
 				this.isShow=false;
 				const key = `open${Date.now()}`;
 				this.$notification.open({
