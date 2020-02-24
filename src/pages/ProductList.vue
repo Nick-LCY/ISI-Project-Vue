@@ -183,9 +183,6 @@
           this.category = res.data.item_list.category;
         })
       },
-      // loginVisible(){
-      //   this.login_visible = true
-      // }
     },
   };
 </script>

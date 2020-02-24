@@ -155,7 +155,15 @@ export default {
                 if (!err) {
                     values.pwd = this.$md5(values.pwd)
                     axios
-                        .post(this.request_url)
+                        .post(
+                            this.request_url,
+                            {
+                                email: values.email,
+                                pwd: values.pwd,
+                                name: values.name,
+                                shipping_address: values.shipping_addr
+                            }
+                            )
                         .then((res) =>{
                             this.success = res.data.success
                             if(this.success){
