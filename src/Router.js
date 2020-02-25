@@ -8,7 +8,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
+      name: 'Product List',
       component: () => import('@/pages/ProductList.vue'),
     },
 
@@ -24,11 +24,16 @@ export default new Router({
       component: () => import('@/pages/JustForTest.vue'),
     },
     {
-      path: '/3',
+      path: '/register',
       name: 'Register',
       component: () => import('@/pages/Register.vue'),
     },
+    {
+      path:'/shopping-cart',
+      name:'Shopping Cart',
+      component: () => import('@/pages/ShoppingCart.vue'),
 
+    },
     {
       path: '/4',
       name: 'Purchase Tracking',

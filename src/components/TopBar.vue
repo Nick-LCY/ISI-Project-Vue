@@ -11,9 +11,9 @@
       </div>
 
       <a-menu theme="dark" mode="horizontal" style="line-height: 64px;" :defaultSelectedKeys="['products']">
-        <a-menu-item key="products">Products</a-menu-item>
-        <a-menu-item key="orders">Orders</a-menu-item>
-        <a-menu-item key="shipping_cart">Shopping Cart</a-menu-item>
+        <a-menu-item key="products" @click="toProductListPage">Products</a-menu-item>
+        <a-menu-item key="orders" @click="toPurchaseOrderPage">Orders</a-menu-item>
+        <a-menu-item key="shipping_cart" @click="toShoppingCart">Shopping Cart</a-menu-item>
         <a-sub-menu v-if="is_login">
           <span slot="title"><a-icon type="user" />{{user_name}}</span>
           <a-menu-item-group>
@@ -71,7 +71,7 @@
             Log in
           </a-button>
           Or
-          <a href="3">
+          <a href="register">
             register now!
           </a>
         </a-form-item>
@@ -357,7 +357,17 @@ import axios from 'axios'
         } else {
             callback('The password should contain at least 6 characters, in which there must be at least one digit and one capital letter');
         }
+      },
+      toProductListPage(){
+        this.$router.push({path:'/'})
+      },
+      toPurchaseOrderPage(){
+        this.$router.push({path:'5'})
+      },
+      toShoppingCart(){
+        this.$router.push({path:'shopping-cart'})
       }
+
 
     }
   }
