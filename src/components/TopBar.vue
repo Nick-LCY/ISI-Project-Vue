@@ -362,7 +362,7 @@ import axios from 'axios'
         this.$router.push({path:'/'})
       },
       toPurchaseOrderPage(){
-        this.$router.push({path:'5'})
+        this.$router.push({path:'purchase-tracking'})
       },
       toShoppingCart(){
         this.$router.push({path:'shopping-cart'})
