@@ -177,7 +177,7 @@
 								size: 'small',
 							},
 							on: {
-								click: () => {this.$router.push({path: '/1'});
+								click: () => {this.$router.push({path: '/product-detail'});
 								this.$notification.close(key);}
 
 							},

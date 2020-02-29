@@ -9,7 +9,8 @@
 				<a-form :form="form">
 					<a-form-item 
 						label="Product Name" 
-						v-bind="formItemLayout">
+						:label-col="formItemLayout.labelCol" 
+						:wrapper-col="formItemLayout.wrapperCol">
 						<a-input
 							v-decorator="[
 							'product_name', 
@@ -19,7 +20,8 @@
 
 					<a-form-item 
 						label="Category" 
-						v-bind="formItemLayout">
+						:label-col="formItemLayout.labelCol" 
+						:wrapper-col="formItemLayout.wrapperCol">
 						<a-select
 							v-decorator="[
 							'category',
@@ -38,21 +40,19 @@
 
 					<a-form-item 
 						label="Price" 
-						v-bind="formItemLayout">
+						:label-col="formItemLayout.labelCol" 
+						:wrapper-col="formItemLayout.wrapperCol">
 						<a-input
-							v-decorator="[
-							'price', 
-							{ rules: [{ required: true, message: 'Please input product price.' }] }]"
+							v-decorator="['price', { rules: [{ required: true, message: 'Please input product price.' }] }]"
 						/>
 					</a-form-item>
 
 					<a-form-item 
 						label="Thumbnail Image" 
-						v-bind="formItemLayout">
+						:label-col="formItemLayout.labelCol" 
+						:wrapper-col="formItemLayout.wrapperCol">
 						<a-upload
-							v-decorator="[
-							'thumbnail', 
-							{ rules: [{ required: true, message: 'Please upload thumbnail image.' }] }]"
+							v-decorator="['thumbnail', { rules: [{ required: true, message: 'Please upload thumbnail image.' }] }]"
 							listType="picture-card"
 							:fileList="thumb"
 							action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -69,52 +69,10 @@
 						</a-modal>
 					</a-form-item>
 
-					<a-form-item
-						v-for="(k, index) in form.getFieldValue('keys')"
-						:key="k"
-						v-bind="index === 0 ? formItemLayout : formItemLayoutWithOutLabel"
-						:label="index === 0 ? 'Properties' : ''"
-						:required="true">
-						<a-input-group 
-							compact
-							v-decorator="[
-							`names[${k}]`,
-							{validateTrigger: ['change', 'blur'],
-							rules: [{
-								required: true,
-								message: 'Please input product\'s description or delete this field.',
-								},],
-							},]"
-						>
-							<a-select defaultValue="Option1">
-								<a-select-option value="Option1">Option1</a-select-option>
-								<a-select-option value="Option2">Option2</a-select-option>
-							</a-select>
-
-							<a-input
-							placeholder="product description"
-							style="width: 60%; margin-right: 8px"
-							/>
-							
-							<a-icon
-							v-if="form.getFieldValue('keys').length > 2"
-							class="dynamic-delete-button"
-							type="minus-circle-o"
-							:disabled="form.getFieldValue('keys').length === 1"
-							@click="() => remove(k)"
-							/>
-						</a-input-group>
-					</a-form-item>
-
-					<a-form-item v-bind="formItemLayoutWithOutLabel">
-						<a-button type="dashed" style="width: 60%" @click="add">
-							<a-icon type="plus" /> Add field
-						</a-button>
-					</a-form-item>
-
 					<a-form-item 
 						label="Detailed Photographs" 
-						v-bind="formItemLayout">
+						:label-col="formItemLayout.labelCol" 
+						:wrapper-col="formItemLayout.wrapperCol">
 						<a-upload
 							listType="picture-card"
 							:fileList="photos"
@@ -151,16 +109,14 @@
 
 <script>
 	import TopBar from '@/components/TopBar.vue';
-	// const formItemLayout = {
-	// 	labelCol: { span: 4 },
-	// 	wrapperCol: { span: 8 },
-	// };
+	const formItemLayout = {
+		labelCol: { span: 4 },
+		wrapperCol: { span: 8 },
+	};
 	const formTailLayout = {
 		labelCol: { span: 4 },
 		wrapperCol: { span: 8, offset: 4 },
-	};      
-
-	let id = 2;
+	};
 
 	export default {
 		name: 'add-product',
@@ -169,37 +125,17 @@
 		},
 		data() {
 			return {
+				form: this.$form.createForm(this, { name: 'add_product' }),
 				loading: false,
 				imageUrl: '',
 				previewVisible: false,
 				previewImage: '',
 				thumb: [],
 				photos: [],
-				formItemLayout: {
-					labelCol: {
-						xs: { span: 24 },
-						sm: { span: 4 },
-					},
-					wrapperCol: {
-						xs: { span: 24 },
-						sm: { span: 20 },
-					},
-				},
+				formItemLayout,
 				formTailLayout,
-				formItemLayoutWithOutLabel: {
-					wrapperCol: {
-						xs: { span: 24, offset: 0 },
-						sm: { span: 20, offset: 4 },
-					},
-				},
 			}
 		},
-
-		beforeCreate() {
-			this.form = this.$form.createForm(this, { name: 'add_product' });
-			this.form.getFieldDecorator('keys', { initialValue: [0,1], preserve: true });
-		},
-
 		methods: {
 			check() {
 				this.form.validateFields(err => {
@@ -220,32 +156,6 @@
 			},
 			handleCancel() {
 				this.previewVisible = false;
-			},
-			remove(k) {
-				const { form } = this;
-				// can use data-binding to get
-				const keys = form.getFieldValue('keys');
-				// We need at least one passenger
-				if (keys.length === 1) {
-					return;
-				}
-
-				// can use data-binding to set
-				form.setFieldsValue({
-					keys: keys.filter(key => key !== k),
-				});
-			},
-
-			add() {
-				const { form } = this;
-				// can use data-binding to get
-				const keys = form.getFieldValue('keys');
-				const nextKeys = keys.concat(id++);
-				// can use data-binding to set
-				// important! notify form to detect changes
-				form.setFieldsValue({
-					keys: nextKeys,
-				});
 			},
 		}	
 	}
