@@ -69,6 +69,5 @@ export default new Router({
       component: () => import('@/pages/Try.vue'),
     },
 
-
   ]
 })
