@@ -151,10 +151,8 @@ export default {
     methods: {
         handleSubmit(e) {
             e.preventDefault();
-            console.log('submit')
             this.form.validateFieldsAndScroll((err, values) => {
                 if (!err) {
-                    console.log('submit')
                     values.pwd = this.$md5(values.pwd)
                     axios
                         .post(

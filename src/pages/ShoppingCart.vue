@@ -7,6 +7,13 @@
             <a-breadcrumb-item>Shopping Cart</a-breadcrumb-item>
         </a-breadcrumb>
         <a-row :gutter="16">
+            <a-alert
+            v-if="!success"
+            message="Error"
+            :description="error_message"
+            type="error"
+            showIcon
+            />
             <a-col class="left" :span="18">
                 <a-table 
                 :columns="columns" 
@@ -15,7 +22,9 @@
                 >
                 <img slot="thumbnail_location" slot-scope="thumbnail_location" :src="thumbnail_location" />
                 <!-- <a-input-number id="inputNumber" :min="1"  @change="onChange" slot="quantity" v-model="items.quantity"/> -->
-                <a-icon type="delete" slot="remove" @click="RemoveItem" />
+                <span slot="remove" @click="() => remove(record.rowKey)">
+                    <a-icon type="delete"/>
+                </span>
                 </a-table>
             </a-col>
             <a-col class="right" :span="6">
@@ -27,7 +36,7 @@
                         </a-card>
                     </a-row>
                     <a-row>
-                        <a-button id="checkout-btn" type='primary'>
+                        <a-button id="checkout-btn" type='primary' @click="checkout">
                             CHECK OUT
                         </a-button>
                     </a-row>
@@ -43,6 +52,7 @@
 <script>
 // import TopBar from '@/components/TopBar.vue'
 import axios from 'axios'
+
 const columns = [
     {
         title:'Product',
@@ -81,35 +91,67 @@ export default {
     data(){
         return{
             columns,
-            get_items_request_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
+            get_items_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
+            checkout_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_purchase_order',
             items:[],
-            total:''
+            total:'',
+            success:true,
+            error_message:'',
+
         }
     },
     created(){
         const user_id = window.localStorage.getItem('user_id')
         const token = window.localStorage.getItem('token')
         axios
-        .get(this.get_items_request_url+'?user_id=' + user_id
+        .get(this.get_items_url+'?user_id=' + user_id
           + '&token=' + token)
         .then((res) =>{
             this.items = res.data.shopping_cart_items
-        })
-        var total = 0
-        var item
-        for(item in this.items){
-            total += item.subtotal
-        }
-        this.total = total
-        
+            var total = 0
+            for(var item of this.items){
+                total += item.subtotal
+            }
+            this.total = total
+        })     
     },
     methods:{
-        removeItem(record){
+        remove(record){
             // const user_id = window.localStorage.getItem('user_id')
             // const token = window.localStorage.getItem('token')
             // const items = [...this.items]
-            console.log(record.rowKey)
+            console.log(record)
             // this.items = items.filter(item => item.key !== key);
+        },
+        checkout(){
+            const user_id = window.localStorage.getItem('user_id')
+            const token = window.localStorage.getItem('token')
+            const items = this.items
+            var purchase_items = []
+            var _ = require('lodash');
+            for (var item of items){
+                purchase_items.push(_.pick(item,['id', 'quantity']))
+            }
+            axios
+            .post(
+                this.checkout_url,
+                {
+                    user_id: user_id,
+                    token: token,
+                    purchase_items: purchase_items,
+                }
+                )
+            .then((res) =>{
+                this.success = res.data.success
+                if(this.success){
+                    this.items = []
+                    const po_no = res.data.purchase_detail.po_no
+                    this.$router.push({path:`/purchase-detail/${po_no}`})
+                }
+                else{
+                    this.error_message = res.data.message
+                }
+        })
         }
     }
 
