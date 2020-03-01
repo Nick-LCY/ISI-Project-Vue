@@ -22,13 +22,29 @@
             </a-carousel>
           </a-col>
 
-          <a-col :span="16" class="info">
+          <a-col v-if="status === 'done'" :span="16" class="info">
             <a-divider>{{product.name}}</a-divider>
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
                 <p>Price: ${{product.price}}</p>
                 <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
-                <!-- <p><a-button type="primary" size="large">Add to Cart</a-button></p> -->
+                <p class="cate">Category: {{product.category}}</p>
+              </a-col>
+              <a-col :span="15" class="description">
+                <p>Other Properties:</p>
+                <a-tabs tabPosition="left">
+                  <a-tab-pane v-for="des in product.product_descriptions" :tab=des.attribute_name :key=des.id>{{des.attribute_value}}</a-tab-pane>
+                </a-tabs>
+              </a-col>
+            </a-row>
+          </a-col>
+
+          <a-col v-if="status === 'edit'" :span="16" class="info">
+            <a-divider>{{product.name}}</a-divider>
+            <a-row type="flex" justify="space-around">
+              <a-col :span="7" class="basic_info">
+                <p>Price: ${{product.price}}</p>
+                <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
                 <p class="cate">Category: {{product.category}}</p>
               </a-col>
               <a-col :span="15" class="description">
@@ -68,7 +84,8 @@
       </div>
 
       <div class="edit">
-        <a-button type="primary" size="large" @click="editPD" :disabled="disable">Edit</a-button>
+        <a-button v-if="status === 'done'" type="primary" size="large" @click="editPD">Edit</a-button>
+        <a-button v-if="status === 'edit'" type="primary" size="large" @click="submit">Submit</a-button>
       </div>
     </a-layout-content>
 
@@ -90,7 +107,8 @@
     },
     data() {
       return {
-
+        dis: '',
+        status: 'done',
         product: '',
         collapsed: false,
         moment,
@@ -129,6 +147,18 @@
                         })
 
     },
+
+    // computed: {
+    //     disable: function() {
+    //         var d = this.dis;
+    //         if (this.status == 'done')
+    //             d = false;
+    //         else
+    //             d = true;
+    //         return d;
+    //     }
+    // },
+
     methods: {
       getValue() {
         var star = 0;
@@ -139,8 +169,11 @@
         return star; 
       },
       editPD() {
-        this.$router.push({path: '/edit-product'});
-      }
+        this.status = 'edit';
+      },
+      submit() {
+
+      },
 
     },
   };

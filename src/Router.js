@@ -54,12 +54,6 @@ export default new Router({
       name: 'Vendor Product Detail',
       component: () => import('@/pages/VendorPD.vue'),
     },
-    
-    {
-      path: '/edit-product',
-      name: 'Edit Product',
-      component: () => import('@/pages/EditProduct.vue'),
-    },
 
 
     

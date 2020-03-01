@@ -91,9 +91,10 @@
 								<a-select-option value="Option2">Option2</a-select-option>
 							</a-select>
 
-							<a-input
+							<a-textarea
 							placeholder="product description"
 							style="width: 60%; margin-right: 8px"
+							autosize
 							/>
 							
 							<a-icon

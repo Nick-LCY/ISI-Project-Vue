@@ -212,7 +212,6 @@
     height: 200px;
   }
 
-<<<<<<< Updated upstream
   .ant-carousel {
     width: 100%;
     padding-right: 15px;
