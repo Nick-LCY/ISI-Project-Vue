@@ -7,16 +7,16 @@
 			<div>
 				<h2>Basic Information:</h2>
 				<div class="basicInfo">
-					<p>Purchase Number: {{po_no}}</p>
+					<p>Purchase Number: {{po_detail.po_no}}</p>
 
-					<p>Purchase Date: {{purchase_date}}</p>
-					<p>Customer Name: {{customer_name}}</p>
-					<p>Shipping Address: {{shipping_address}}</p>
-					<p>Total Amount: ${{total_amount}}</p>
-					<p>Status: {{status}}</p>
-					<p v-if="status === 'Shipped'">Shipment Date: {{shipment_date}}</p>
-					<p v-if="status === 'Cancelled'">Cancel Date: {{cancel_date}}</p>
-					<p v-if="status === 'Cancelled'">Cancelled By: {{cancelled_by}}</p>
+					<p>Purchase Date: {{po_detail.purchase_date}}</p>
+					<p>Customer Name: {{po_detail.customer_name}}</p>
+					<p>Shipping Address: {{po_detail.shipping_address}}</p>
+					<p>Total Amount: ${{po_detail.total_amount}}</p>
+					<p>Status: {{po_detail.status}}</p>
+					<p v-if="po_detail.status === 'Shipped'">Shipment Date: {{po_detail.shipment_date}}</p>
+					<p v-if="po_detail.status === 'Cancelled'">Cancel Date: {{po_detail.cancel_date}}</p>
+					<p v-if="po_detail.status === 'Cancelled'">Cancelled By: {{po_detail.cancelled_by}}</p>
 				</div>
 			</div>
 
@@ -25,9 +25,10 @@
 			<div>
 				<h2>Details:</h2>
 				<div>
-					<a-list :grid="{column: 1}" :dataSource="po_detail">
+					<a-list :grid="{column: 1}" :dataSource="po_detail.purchase_items">
 						<a-list-item slot="renderItem" slot-scope="item">
-							<a-card :title="item.product_name">
+							<router-link :to="'/product-detail/'+item.product_id">
+							<a-card :title="item.product_name" hoverble>
 								<a-card-meta>
 									<template slot="description">
 										<p>Unit Price: ${{item.product_price}}</p>
@@ -37,20 +38,20 @@
 										<div slot="content">
 											<a-form-item>
 												<a-button 
-													v-if="status == 'Shipped' && feedback == ''" 
+													v-if="po_detail.status == 'Shipped' && feedback == ''" 
 													size="large" 
 													@click="giveFeedback">
 												Give a Feedback
 												</a-button>
 											</a-form-item>
-											<a-form-item>
+											<!-- <a-form-item>
 												<a-button 
 													v-if="feedback == 'sent'" 
 													size="large" 
 													@click="changeFeedback">
 												Change Your Feedback
 												</a-button>
-											</a-form-item>
+											</a-form-item> -->
 											<a-form-item v-show="isShow" >
 												<a-textarea :rows="4" @change="handleChange" :value="value"></a-textarea>
 											</a-form-item>
@@ -67,6 +68,7 @@
 									</template>
 								</a-card-meta>
 							</a-card>
+							</router-link>
 						</a-list-item>
 					</a-list>
 				</div>
@@ -95,18 +97,22 @@
 				feedback: '',
 				isShow: false,
 				value: '',
+				submitting: false,
 
-				status: '',
-				po_no: '',
-				purchase_date: '',
-				customer_name: '',
-				shipping_address: '',
-				total_amount: '',
-				shipment_date: '',
-				cancel_date: '',
-				cancelled_by: '',
+				
 
-				po_detail: [],
+				po_detail: {
+					status: '',
+					po_no: '',
+					purchase_date: '',
+					customer_name: '',
+					shipping_address: '',
+					total_amount: '',
+					shipment_date: '',
+					cancel_date: '',
+					cancelled_by: '',
+					purchase_items: [],
+				},
 
 				
 			}
@@ -117,16 +123,7 @@
 			axios
 			.get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_order')
 			.then((res) =>{
-				this.po_detail = res.data.purchase_detail.purchase_items;
-				this.status = res.data.purchase_detail.status;
-				this.po_no = res.data.purchase_detail.po_no;
-				this.purchase_date = res.data.purchase_detail.purchase_date;
-				this.customer_name = res.data.purchase_detail.customer_name;
-				this.shipping_address = res.data.purchase_detail.shipping_address;
-				this.total_amount = res.data.purchase_detail.total_amount;
-				this.shipment_date = res.data.purchase_detail.shipment_date;
-				this.cancel_date = res.data.purchase_detail.cancel_date;
-				this.cancelled_by = res.data.purchase_detail.cancelled_by;
+				this.po_detail = res.data.purchase_detail
 
 				// eslint-disable-next-line no-console
 					// console.log(this.po_info);
@@ -137,7 +134,7 @@
 		computed: {
 			disable: function() {
 				var d =this.dis;
-				if (this.status == 'Pending' || this.status == 'Hold') {
+				if (this.po_detail.status == 'Pending' || this.po_detail.status == 'Hold') {
 					d=false;
 				}
 				else d=true;
@@ -147,7 +144,7 @@
 
 		methods: {
 			cancelPO() {
-				this.status='Cancelled';
+				this.po_detail.status='Cancelled';
 				this.dis=true;
 			},
 
@@ -177,7 +174,9 @@
 								size: 'small',
 							},
 							on: {
-								click: () => {this.$router.push({path: '/product-detail'});
+								click: () => {this.$router.push({path: '/product-detail/'+this.$route.params.id});
+								// eslint-disable-next-line no-console
+								// console.log(this.$route.params);
 								this.$notification.close(key);}
 
 							},

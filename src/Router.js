@@ -13,7 +13,7 @@ export default new Router({
     },
 
     {
-      path: '/product-detail',
+      path: '/product-detail/:id',
       name: 'Product Detail',
       component: () => import('@/pages/ProductDetail.vue'),
     },
@@ -40,7 +40,7 @@ export default new Router({
       component: () => import('@/pages/PurchaseTracking.vue'),
     },
     {
-      path: '/purchase-detail',
+      path: '/purchase-detail/:id',
       name: 'Purchase Detail',
       component: () => import('@/pages/PurchaseDetail.vue'),
     },

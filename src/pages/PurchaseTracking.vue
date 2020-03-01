@@ -16,6 +16,7 @@
 		<div>
 			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="changePOStatus(po_info)">
 				<a-list-item slot="renderItem" slot-scope="item">
+          <router-link :to="'/purchase-detail/'+item.id">
 					<a-card :class="item.status" hoverable>
 						<a-card-meta>
 							<template slot="description">
@@ -29,6 +30,7 @@
 							<p><a-icon type="file-text" /> More Deatils <a-icon type="right" /></p>
 						</template>
 					</a-card>
+          </router-link>
 				</a-list-item>
 			</a-list>
 		</div>
@@ -59,7 +61,6 @@
     name:'purchase-tracking',
     components:{
       TopBar,
-      // Login
     },
     data() {
       return {
@@ -115,33 +116,34 @@
           )
       },
       changePOStatus(po_info) {
-		var c = [];
-		var i = po_info.length - 1;
-		if (this.po == 'current') {
-			for (i; i >= 0; i--) {
-				var p = po_info[i];
-				if (p.status == "Pending" || p.status == "Hold") {
-					c.push(p);
-				}
-			}
+        var c = [];
+        var i = po_info.length - 1;
+        if (this.po == 'current') {
+          for (i; i >= 0; i--) {
+            var p = po_info[i];
+            if (p.status == "Pending" || p.status == "Hold") {
+              c.push(p);
+            }
+          }
 			// eslint-disable-next-line no-console
 			// console.log(this.po);
-			return _.orderBy(c, 'purchase_date', 'desc');
-		}
-		else if (this.po == 'past') {
-			for (i; i >= 0; i--) {
-				p = po_info[i];
-				if (p.status == "Shipped" || p.status == "Cancelled") {
-					c.push(p);
-				}
-			}
-			return _.orderBy(c, 'purchase_date', 'desc');
-		}
-		else
-			return _.orderBy(po_info, 'purchase_date', 'desc');
-      }
-    },
-  };
+          return _.orderBy(c, 'purchase_date', 'desc');
+        }
+        else if (this.po == 'past') {
+          for (i; i >= 0; i--) {
+            p = po_info[i];
+            if (p.status == "Shipped" || p.status == "Cancelled") {
+              c.push(p);
+            }
+          }
+          return _.orderBy(c, 'purchase_date', 'desc');
+        }
+        else
+          return _.orderBy(po_info, 'purchase_date', 'desc');
+        }
+      },
+
+    };
 </script>
 
 <style scoped>
