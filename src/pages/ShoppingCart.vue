@@ -18,12 +18,13 @@
                 <a-table 
                 :columns="columns" 
                 :dataSource="items" 
-                :rowKey="record => record.id"
+                :rowKey="item => item.id"
                 >
                 <img slot="thumbnail_location" slot-scope="thumbnail_location" :src="thumbnail_location" />
                 <!-- <a-input-number id="inputNumber" :min="1"  @change="onChange" slot="quantity" v-model="items.quantity"/> -->
-                <span slot="remove" @click="() => remove(record.rowKey)">
+                <span slot="remove" @click="remove">
                     <a-icon type="delete"/>
+                    <!-- <p>{{ item.id }}</p> -->
                 </span>
                 </a-table>
             </a-col>
@@ -116,11 +117,17 @@ export default {
         })     
     },
     methods:{
-        remove(record){
+        remove(event){
             // const user_id = window.localStorage.getItem('user_id')
             // const token = window.localStorage.getItem('token')
             // const items = [...this.items]
-            console.log(record)
+            if(event.path[4].dataset.rowKey != undefined) {
+                console.log(event.path[4].dataset.rowKey);
+            } else if(event.path[5].dataset.rowKey != undefined) {
+                console.log(event.path[5].dataset.rowKey);
+            } else {
+                console.log(event.path[2].dataset.rowKey);
+            }
             // this.items = items.filter(item => item.key !== key);
         },
         checkout(){
