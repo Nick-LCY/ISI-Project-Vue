@@ -20,26 +20,29 @@
                 :dataSource="items" 
                 :rowKey="item => item.id"
                 >
-                <img
-                id="product-image"
-                slot="thumbnail_location" 
-                slot-scope="thumbnail_location,record" 
-                :src="thumbnail_location" 
-                @click="() => toProductDetailPage(record.id)" 
-                />
-                <!-- <a-input-number id="inputNumber" :min="1"  @change="onChange" slot="quantity" v-model="items.quantity"/> -->
-                <!-- <span slot="remove" @click="()=>remove(record.rowKey)">
-                    <a-icon type="delete"/>
-                </span> -->
-                <template slot="remove" slot-scope="text, record">
-                    <a-popconfirm
-                    v-if="items.length"
-                    title="Sure to remove?"
-                    @confirm="() => remove(record.id)"
-                    >
-                    <a href="javascript:;">Remove</a>
-                    </a-popconfirm>
-                </template>
+                    <img
+                    id="product-image"
+                    slot="thumbnail_location" 
+                    slot-scope="thumbnail_location,record" 
+                    :src="thumbnail_location" 
+                    @click="() => toProductDetailPage(record.id)" 
+                    />
+                    <a-input-number 
+                    :min="1" 
+                    slot="quantity" 
+                    slot-scope="text,record" 
+                    v-model="record.quantity"
+                    @change="() => changeQuantity(record.id,record.quantity)" 
+                    />
+                    <template slot="remove" slot-scope="text, record">
+                        <a-popconfirm
+                        v-if="items.length"
+                        title="Sure to remove?"
+                        @confirm="() => remove(record.id)"
+                        >
+                        <a href="javascript:;">Remove</a>
+                        </a-popconfirm>
+                    </template>
                 </a-table>
             </a-col>
             <a-col class="right" :span="6">
@@ -109,6 +112,7 @@ export default {
             get_items_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
             checkout_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_purchase_order',
             remove_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/delete_shopping_cart',
+            change_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/modify_shopping_cart',
             items:[],
             total:'',
             success:true,
@@ -153,7 +157,6 @@ export default {
                     this.error_message = res.data.message
                 }
         })
-
         },
         checkout(){
             const user_id = window.localStorage.getItem('user_id')
@@ -187,6 +190,34 @@ export default {
         },
         toProductDetailPage(product_id){
             this.$router.push({path:`/product-detail/${product_id}`})
+        },
+        changeQuantity(product_id, quantity){
+            const user_id = window.localStorage.getItem('user_id')
+            const token = window.localStorage.getItem('token')
+            axios
+            .post(
+                this.change_url,
+                {
+                    user_id: user_id,
+                    token: token,
+                    product_id: product_id,
+                    quantity: quantity
+                }
+                )
+            .then((res) =>{
+                this.success = res.data.success
+                if(this.success){
+                    this.items = res.data.shopping_cart_items
+                    var total = 0
+                    for(var item of this.items){
+                        total += item.subtotal
+                    }
+                    this.total = total
+                }
+                else{
+                    this.error_message = res.data.message
+                }
+        })            
         }
     }
 
