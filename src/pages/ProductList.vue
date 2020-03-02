@@ -1,7 +1,13 @@
 <template>
   <a-layout>
 
-    <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="login_visible = true" @loginFinish="login_visible = false" v-bind:login_visible=login_visible></TopBar>
+    <TopBar 
+    @clickSearchBtn="search_visible = true" 
+    @clickLoginBtn="login_visible = true" 
+    @loginFinish="login_visible = false" 
+    v-bind:login_visible=login_visible
+    >
+    </TopBar>
 
     <a-row type="flex" justify="start" :gutter="8">
       <a-button-group>

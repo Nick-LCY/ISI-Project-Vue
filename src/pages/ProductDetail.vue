@@ -1,6 +1,13 @@
 <template>
   <a-layout id="components-layout-demo-fixed">
-    <TopBar></TopBar>
+    <!-- <TopBar></TopBar> -->
+    <TopBar 
+    @clickSearchBtn="search_visible = true" 
+    @clickLoginBtn="login_visible = true" 
+    @loginFinish="login_visible = false" 
+    v-bind:login_visible=login_visible
+    >
+    </TopBar>
 
     <a-layout-content id="content">
       <a-breadcrumb :style="{ margin: '16px 0' }">
@@ -12,6 +19,13 @@
       <div id="main-content">
 
         <a-row type="flex" justify="space-around">
+          <a-alert
+          v-if="!success"
+          message="Error"
+          :description="error_message"
+          type="error"
+          showIcon
+          />
           <a-col :span="8">
             <a-carousel autoplay>
               <div><img src="..\\assets\\thumbnail.jpg"></div>
@@ -36,7 +50,7 @@
               <a-col :span="7" class="basic_info">
                 <p>Price: ${{product.price}}</p>
                 <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
-                <p><a-button type="primary" size="large">Add to Cart</a-button></p>
+                <p><a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button></p>
                 <p class="cate">Category: {{product.category}}</p>
               </a-col>
               <a-col :span="15" class="description">
@@ -119,6 +133,12 @@
             rate: 2.5,
           },
         ],
+        add_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/modify_shopping_cart',
+        check_duplicate_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
+        success:true,
+        error_message:'',
+        search_visible:false,
+        login_visible:false,
       };
     },
     created(){
@@ -131,7 +151,7 @@
 
     },
     methods: {
-      getValue() {
+      getValue(){
         var star = 0;
         for (var i = this.reviews.length - 1; i >= 0; i--) {
            star += this.reviews[i].rate;
@@ -139,8 +159,61 @@
         star = star/this.reviews.length;
         return star; 
       },
-     
-
+      addToCart(){
+        const user_id = window.localStorage.getItem('user_id')
+        const token = window.localStorage.getItem('token')
+        const is_login = window.localStorage.getItem('is_login')
+        const product_id = this.product.id
+        if(is_login){
+          axios
+          .post(
+              this.add_url,
+              {
+                  user_id: user_id,
+                  token: token,
+              }
+          )
+          .then((res) =>{
+          this.success = res.data.success
+          if(this.success){
+            const items = res.data.shopping_cart_items
+            for (var item of items){
+              if(item.id == product_id){
+                this.success =  false
+                this.error_message = 'The product has already existed'
+              }
+            }
+            if(this.success){
+              axios
+              .post(
+                this.add_url,
+                {
+                    user_id: user_id,
+                    token: token,
+                    product_id: product_id,
+                    quantity: 1
+                }
+              ) 
+              .then((res) =>{
+                this.success = res.data.success
+                if(!this.success){
+                  this.error_message = res.data.message
+                }
+                else{
+                  console.log(res.data)
+                }
+              })       
+            }
+          }
+          else{
+            this.error_message = res.data.message
+          }
+          })
+        }
+        else{
+          this.login_visible = true
+        }
+      }
     },
   };
 </script>
