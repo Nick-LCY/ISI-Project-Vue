@@ -20,12 +20,26 @@
                 :dataSource="items" 
                 :rowKey="item => item.id"
                 >
-                <img slot="thumbnail_location" slot-scope="thumbnail_location" :src="thumbnail_location" />
+                <img
+                id="product-image"
+                slot="thumbnail_location" 
+                slot-scope="thumbnail_location,record" 
+                :src="thumbnail_location" 
+                @click="() => toProductDetailPage(record.id)" 
+                />
                 <!-- <a-input-number id="inputNumber" :min="1"  @change="onChange" slot="quantity" v-model="items.quantity"/> -->
-                <span slot="remove" @click="remove">
+                <!-- <span slot="remove" @click="()=>remove(record.rowKey)">
                     <a-icon type="delete"/>
-                    <!-- <p>{{ item.id }}</p> -->
-                </span>
+                </span> -->
+                <template slot="remove" slot-scope="text, record">
+                    <a-popconfirm
+                    v-if="items.length"
+                    title="Sure to remove?"
+                    @confirm="() => remove(record.id)"
+                    >
+                    <a href="javascript:;">Remove</a>
+                    </a-popconfirm>
+                </template>
                 </a-table>
             </a-col>
             <a-col class="right" :span="6">
@@ -94,11 +108,11 @@ export default {
             columns,
             get_items_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
             checkout_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_purchase_order',
+            remove_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/delete_shopping_cart',
             items:[],
             total:'',
             success:true,
             error_message:'',
-
         }
     },
     created(){
@@ -117,18 +131,29 @@ export default {
         })     
     },
     methods:{
-        remove(event){
-            // const user_id = window.localStorage.getItem('user_id')
-            // const token = window.localStorage.getItem('token')
-            // const items = [...this.items]
-            if(event.path[4].dataset.rowKey != undefined) {
-                console.log(event.path[4].dataset.rowKey);
-            } else if(event.path[5].dataset.rowKey != undefined) {
-                console.log(event.path[5].dataset.rowKey);
-            } else {
-                console.log(event.path[2].dataset.rowKey);
-            }
-            // this.items = items.filter(item => item.key !== key);
+        remove(product_id){
+            const user_id = window.localStorage.getItem('user_id')
+            const token = window.localStorage.getItem('token')
+            axios
+            .post(
+                this.remove_url,
+                {
+                    user_id: user_id,
+                    token: token,
+                    product_id: product_id,
+                }
+                )
+            .then((res) =>{
+                this.success = res.data.success
+                if(this.success){
+                    const items = [...this.items];
+                    this.items = items.filter(item => item.id !== product_id)
+                }
+                else{
+                    this.error_message = res.data.message
+                }
+        })
+
         },
         checkout(){
             const user_id = window.localStorage.getItem('user_id')
@@ -159,6 +184,9 @@ export default {
                     this.error_message = res.data.message
                 }
         })
+        },
+        toProductDetailPage(product_id){
+            this.$router.push({path:`/product-detail/${product_id}`})
         }
     }
 
@@ -195,5 +223,11 @@ export default {
     text-align: center;
     font-weight: bold;
     font-size: 32px;
+}
+
+#product-image:hover {
+    transform: scale(1.2);
+    border-style: solid;
+    border-width: 1px;
 }
 </style>
