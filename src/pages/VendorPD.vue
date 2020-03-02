@@ -12,7 +12,7 @@
       <div id="main-content">
 
         <a-row type="flex" justify="space-around">
-          <a-col :span="8">
+          <a-col v-if="status === 'done'" :span="8">
             <a-carousel autoplay>
               <div><img src="..\\assets\\thumbnail.jpg"></div>
               <div><img src="..\\assets\\photo1.jpg"></div>
@@ -39,19 +39,47 @@
             </a-row>
           </a-col>
 
+          <a-col v-if="status === 'edit'">
+            <a-list></a-list>
+          </a-col>
+
           <a-col v-if="status === 'edit'" :span="16" class="info">
-            <a-divider>{{product.name}}</a-divider>
+            <p>
+                <a-input class="editName" :value=product.name @change="changeName"></a-input>
+            </p>
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
                 <p>Price: ${{product.price}}</p>
                 <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
-                <p class="cate">Category: {{product.category}}</p>
+                <p class="cate">
+                    Category: <a-input class="editCate" :value=product.category @change="changeCate"></a-input>
+                </p>
               </a-col>
               <a-col :span="15" class="description">
                 <p>Other Properties:</p>
-                <a-tabs tabPosition="left">
-                  <a-tab-pane v-for="des in product.product_descriptions" :tab=des.attribute_name :key=des.id>{{des.attribute_value}}</a-tab-pane>
-                </a-tabs>
+                <a-list :dataSource="product.product_descriptions">
+                    <a-list-item slot="renderItem" slot-scope="item">
+                        <a-input-group>
+							<a-select>
+								<a-select-option :value="item.id">{{item.attribute_name}}</a-select-option>
+							</a-select>
+
+							<a-textarea
+							:placeholder="item.attribute_value"
+							style="width: 60%; margin-right: 8px"
+							autosize
+							/>
+							
+							<!-- <a-icon
+							v-if="form.getFieldValue('keys').length > 2"
+							class="dynamic-delete-button"
+							type="minus-circle-o"
+							:disabled="form.getFieldValue('keys').length === 1"
+							@click="() => remove(k)"
+							/> -->
+                        </a-input-group>
+                    </a-list-item>
+                </a-list>
               </a-col>
             </a-row>
           </a-col>
@@ -107,9 +135,9 @@
     },
     data() {
       return {
-        dis: '',
+        // dis: '',
         status: 'done',
-        product: '',
+        product: {},
         collapsed: false,
         moment,
         value: 3.5,
@@ -172,7 +200,13 @@
         this.status = 'edit';
       },
       submit() {
-
+        this.status = 'done';
+      },
+      changeName(e) {
+        this.product.name = e.target.value;
+      },
+      changeCate(e) {
+        this.product.category = e.target.value;
       },
 
     },
@@ -240,6 +274,7 @@
     border-left: 2px solid rgb(220, 220, 220);
     padding: 10px;
     margin: 0;
+    height: 300px;
   }
 
   .ant-tabs {
@@ -295,5 +330,24 @@
     height: 40px;
     cursor: pointer;
 }
+
+	.editName {
+		font-size: 30px;
+		font-weight: bold;
+		text-align: center;
+		height: 65px;
+	}
+
+	.editPrice {
+		width: 70%;
+		margin-left: 3px;
+		font-size: 20px;
+	}
+
+	.editCate {
+		width: 70%;
+		margin-left: 3px;
+		font-size: 15px;
+	}
 
 </style>
