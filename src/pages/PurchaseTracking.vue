@@ -16,7 +16,7 @@
 		<div>
 			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="changePOStatus(po_info)">
 				<a-list-item slot="renderItem" slot-scope="item">
-          <router-link :to="'/purchase-detail/'+item.id">
+          <router-link :to="'/purchase-detail/'+item.po_no">
 					<a-card :class="item.status" hoverable>
 						<a-card-meta>
 							<template slot="description">

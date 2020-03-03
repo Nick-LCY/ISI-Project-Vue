@@ -20,7 +20,7 @@
 					<a-form-item 
 						label="Category" 
 						v-bind="formItemLayout">
-						<a-select
+						<!-- <a-select
 							v-decorator="[
 							'category',
 							{ rules: [{ required: true, message: 'Please select the category' }] },
@@ -33,7 +33,12 @@
 							<a-select-option value="female">
 								B
 							</a-select-option>
-						</a-select>
+						</a-select> -->
+						<a-input
+							v-decorator="[
+								'category',
+								{rules: [{ required: true, message: 'PLease input product category'}] }]"
+						/>
 					</a-form-item>
 
 					<a-form-item 
@@ -86,14 +91,12 @@
 								},],
 							},]"
 						>
-							<a-select defaultValue="Option1">
-								<a-select-option value="Option1">Option1</a-select-option>
-								<a-select-option value="Option2">Option2</a-select-option>
-							</a-select>
+							<a-input placeholder="Prodcut attribute name" style="width: 30%; margin-right: 2px;">
+							</a-input>
 
 							<a-textarea
-							placeholder="product description"
-							style="width: 60%; margin-right: 8px"
+							placeholder="Product attribute value"
+							style="width: 60%; margin-left: 8px"
 							autosize
 							/>
 							
@@ -101,7 +104,7 @@
 							v-if="form.getFieldValue('keys').length > 2"
 							class="dynamic-delete-button"
 							type="minus-circle-o"
-							:disabled="form.getFieldValue('keys').length === 1"
+							:disabled="form.getFieldValue('keys').length === 2"
 							@click="() => remove(k)"
 							/>
 						</a-input-group>
@@ -134,8 +137,7 @@
 					</a-form-item>
 
 					<a-form-item 
-						:label-col="formTailLayout.labelCol" 
-						:wrapper-col="formTailLayout.wrapperCol">
+						v-bind="formTailLayout">
 						<a-button type="primary" @click="check">
 							Submit
 						</a-button>
@@ -156,10 +158,10 @@
 	// 	labelCol: { span: 4 },
 	// 	wrapperCol: { span: 8 },
 	// };
-	const formTailLayout = {
-		labelCol: { span: 4 },
-		wrapperCol: { span: 8, offset: 4 },
-	};      
+	// const formTailLayout = {
+	// 	labelCol: { span: 4 },
+	// 	wrapperCol: { span: 8, offset: 4 },
+	// };      
 
 	let id = 2;
 
@@ -176,6 +178,7 @@
 				previewImage: '',
 				thumb: [],
 				photos: [],
+
 				formItemLayout: {
 					labelCol: {
 						xs: { span: 24 },
@@ -186,7 +189,10 @@
 						sm: { span: 20 },
 					},
 				},
-				formTailLayout,
+				formTailLayout: {
+					labelCol: {span: 4},
+					wrapperCol: {span: 8, offset: 4},
+				},
 				formItemLayoutWithOutLabel: {
 					wrapperCol: {
 						xs: { span: 24, offset: 0 },

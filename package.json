@@ -15,6 +15,7 @@
     "js-md5": "^0.7.3",
     "lodash": "^4.17.15",
     "vue": "^2.6.10",
+    "vue-infinite-scroll": "^2.0.2",
     "vue-lodash": "^2.1.1",
     "vue-router": "^3.1.5"
   },
