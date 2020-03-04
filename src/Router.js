@@ -65,10 +65,6 @@ const router =  new Router({
       name: 'Purchase Order Processing',
       component: () => import('@/pages/POProcessing.vue'),
     },
-
-
-    
-
     {
       path: '/try',
       name: 'Try',

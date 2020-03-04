@@ -226,7 +226,8 @@
         confirmDirty: false,
         is_vendor:false,
         search_visible:false,
-        search_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+        search_item_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+        search_po_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/search_po',
         search_result:{
           product_list:[],
           current_page:'',
@@ -309,7 +310,7 @@
           this.request_data.key = value;
           axios
           .get(
-            this.search_url
+            this.search_item_url
             + '?page=' + 1
             + '&key=' + this.request_data.key
             + '&order_by=' + this.request_data.order_by
@@ -326,7 +327,18 @@
         }
         else if(this.search_button.type == 'vendor_search_purchase_order')
         {
-          console.log('to prevent empty block')
+          axios
+          .get(
+            this.search_po_url
+            +'?token=' + window.localStorage.getItem('token')
+            +'&po_no' + value
+          )
+          .then((res) => {
+            if(res.data.success){
+              this.$router.push({path:`/purchase-detail/${res.data.po_no}`})
+            }
+          }
+          )
         }
       },
       logout(){
