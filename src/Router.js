@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
  
-export default new Router({
+const router =  new Router({
   mode: 'history',
   routes: [
     {
@@ -19,9 +19,9 @@ export default new Router({
     },
 
     {
-      path: '/2',
-      name: 'JustForTest',
-      component: () => import('@/pages/JustForTest.vue'),
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/pages/Login.vue'),
     },
     {
       path: '/register',
@@ -65,3 +65,35 @@ export default new Router({
 
   ]
 })
+
+router.beforeEach((to,from,next)=>{
+  if(to.path == '/')
+  {
+    next()
+  }
+  else if(to.path == '/login')
+  {
+    next()
+  }
+  else if(to.path == '/product-detail/:id')
+  {
+    next()
+  }
+  else if(to.path == '/register')
+  {
+    next()
+  }
+  else
+  {
+    if(window.localStorage.getItem('token'))
+    {
+      next()
+    }
+    else
+    {
+      next(to.path == '/login')
+    }
+  }
+})
+
+export default router

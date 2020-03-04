@@ -1,6 +1,6 @@
 <template>
     <a-layout>
-        <!-- <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="login_visible = true" @loginFinish="login_visible = false" v-bind:login_visible=login_visible></TopBar> -->
+        <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="login_visible = true" @loginFinish="login_visible = false" v-bind:login_visible=login_visible></TopBar>
         <a-layout-content>
         <a-breadcrumb id="breadcrumb">
             <a-breadcrumb-item>Home</a-breadcrumb-item>
@@ -68,7 +68,7 @@
 </template>
 
 <script>
-// import TopBar from '@/components/TopBar.vue'
+import TopBar from '@/components/TopBar.vue'
 import axios from 'axios'
 
 const columns = [
@@ -104,7 +104,7 @@ const columns = [
 export default {
     name:'shopping-cart',
     components:{
-    //   TopBar,
+      TopBar,
     },
     data(){
         return{
@@ -152,6 +152,11 @@ export default {
                 if(this.success){
                     const items = [...this.items];
                     this.items = items.filter(item => item.id !== product_id)
+                    var total = 0
+                    for(var item of this.items){
+                        total += item.subtotal
+                    }
+            this.total = total
                 }
                 else{
                     this.error_message = res.data.message

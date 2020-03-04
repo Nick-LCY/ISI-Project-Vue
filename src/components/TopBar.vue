@@ -13,7 +13,7 @@
       <a-menu theme="dark" mode="horizontal" style="line-height: 64px;" :defaultSelectedKeys="['products']">
         <a-menu-item key="products" @click="toProductListPage">Products</a-menu-item>
         <a-menu-item key="orders" @click="toPurchaseOrderPage">Orders</a-menu-item>
-        <a-menu-item key="shipping_cart" @click="toShoppingCart">Shopping Cart</a-menu-item>
+        <a-menu-item key="shipping_cart" @click="toShoppingCart" v-if="!is_vendor">Shopping Cart</a-menu-item>
         <a-sub-menu v-if="is_login">
           <span slot="title"><a-icon type="user" />{{user_name}}</span>
           <a-menu-item-group>
@@ -23,6 +23,12 @@
         </a-sub-menu>
       </a-menu>
     </a-layout-header>
+
+    <div id="box-container" v-if="search_visible" @click="closeSearchArea">
+      <div id="search-box">
+        <a-input-search size="large" @search="search"/>
+      </div>
+    </div>
     
     <a-modal 
     v-model="login_visible" 
@@ -199,7 +205,7 @@
 </style>
 
 <script>
-import axios from 'axios'
+  import axios from 'axios'
 
   export default {
     name: 'TopBar',
@@ -218,36 +224,98 @@ import axios from 'axios'
         change_pwd_error_message:'',
         change_pwd_success:true,
         confirmDirty: false,
+        is_vendor:false,
+        search_visible:false,
+        search_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+        search_result:{
+          product_list:[],
+          current_page:'',
+          total_pages:'',
+          category:''
+        }
       }
     },
     props:{
-      login_visible:Boolean
+      login_visible:Boolean,
+      request_data:
+      {
+          current_page: 0,
+          key: '%',
+          order_by: '1',
+          category: '____'
+      },
     },
     beforeCreate() {
       this.login_form = this.$form.createForm(this, { name: 'login' })
       this.change_pwd_form = this.$form.createForm(this, { name: 'change_pwd' })
       this.user_name = window.localStorage.getItem('user_name')
       this.is_login = window.localStorage.getItem('is_login')
+      this.is_vendor = window.localStorage.getItem('is_vendor')
+      console.log(this.is_vendor)
     },
     created(){
       var login_state =  window.localStorage.getItem('is_login')
       var login_name =  window.localStorage.getItem('user_name')
+      var is_vendor = window.localStorage.getItem('is_vendor')
       this.user_name = login_name
       this.is_login = login_state
+      this.is_vendor = is_vendor
+      console.log(this.is_vendor)
     },
-
     updated(){
       var login_state =  window.localStorage.getItem('is_login')
       var login_name =  window.localStorage.getItem('user_name')
+      var is_vendor = window.localStorage.getItem('is_vendor')
       this.user_name = login_name
       this.is_login = login_state
+      this.is_vendor = is_vendor
+      console.log(this.is_vendor)
     },
     methods:{
       showSearchBox() {
-        this.$emit('clickSearchBtn',true)
+        // this.$emit('clickSearchBtn',true)
+        this.search_visible = true
       },
       showLoginBox() {
         this.$emit('clickLoginBtn',true)
+      },
+      search(value){
+        this.request_data.key = value;
+        axios
+        .get(
+          this.search_url
+          + '?page=' + 1
+          + '&key=' + this.request_data.key
+          + '&order_by=' + this.request_data.order_by
+          + '&category=' + this.request_data.category
+          )
+        .then((res) => {
+          this.search_result.product_list = res.data.item_list;
+          this.search_result.current_page = res.data.current_page;
+          this.search_result.total_pages = res.data.total_pages;
+          this.search_result.category = res.data.item_list.category;
+          this.$emit('clickSearchBtn',this.search_result)
+        })
+      },
+      closeSearchArea(e){
+        if(e.target.id === 'box-container'){
+          this.search_visible = false;
+        }
+      },
+      sendRequest(page, key, category, order_by) {
+        axios
+        .get(this.request_url
+          + '?page=' + page
+          + '&key=' + key
+          + '&order_by=' + order_by
+          + '&category=' + category)
+        .then((res) => {
+          this.product_list = res.data.item_list;
+          this.request_data.current_page = res.data.current_page;
+          this.total_pages = res.data.total_pages;
+          this.category = res.data.item_list.category;
+
+        })
       },
       logout(){
         var user_id = window.localStorage.getItem('user_id')
@@ -283,13 +351,15 @@ import axios from 'axios'
               .then((res) =>{
                 this.login_success = res.data.success
                 if(this.login_success){
-                  var user_id = res.data.id
-                  var user_name = res.data.name
-                  var token = res.data.token
+                  const user_id = res.data.id
+                  const user_name = res.data.name
+                  const token = res.data.token
+                  const type = res.data.type
                   window.localStorage.setItem('user_id', user_id)
                   window.localStorage.setItem('user_name', user_name)
                   window.localStorage.setItem('token', token)
                   window.localStorage.setItem('is_login', true)
+                  window.localStorage.setItem('is_vendor', type)
                   this.$emit('loginFinish',false)
                 }
                 else{
@@ -363,10 +433,12 @@ import axios from 'axios'
       },
       toPurchaseOrderPage(){
         this.$router.push({path:'purchase-tracking'})
+
       },
       toShoppingCart(){
         this.$router.push({path:'shopping-cart'})
-      }
+      },
+
 
 
     }
