@@ -54,9 +54,6 @@ const router =  new Router({
       name: 'Vendor Product Detail',
       component: () => import('@/pages/VendorPD.vue'),
     },
-
-
-    
     {
       path: '/try',
       name: 'Try',
@@ -91,7 +88,7 @@ router.beforeEach((to,from,next)=>{
     }
     else
     {
-      next(to.path == '/login')
+      next('/login')
     }
   }
 })

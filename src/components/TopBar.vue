@@ -3,13 +3,13 @@
     <a-layout-header>
       <div class="right-align" style="float: right;">
         <div id="search-container">
-          <a-button type="primary" size="large" @click="showSearchBox"><a-icon type="search" />Search</a-button>
+          <a-button type="primary" size="large" @click="showSearchBox" v-if="this.search_button.visible"><a-icon type="search" />Search</a-button>
         </div>
         <div id="avatar-container" v-if="!is_login"  @click="showLoginBox">
           <a-avatar id="user-icon" icon="user" size="large" @click="showLoginBox"/>
         </div>
       </div>
-
+      
       <a-menu theme="dark" mode="horizontal" style="line-height: 64px;" :defaultSelectedKeys="['products']">
         <a-menu-item key="products" @click="toProductListPage">Products</a-menu-item>
         <a-menu-item key="orders" @click="toPurchaseOrderPage">Orders</a-menu-item>
@@ -24,7 +24,7 @@
       </a-menu>
     </a-layout-header>
 
-    <div id="box-container" v-if="search_visible" @click="closeSearchArea">
+    <div id="box-container" v-if="search_visible">
       <div id="search-box">
         <a-input-search size="large" @search="search"/>
       </div>
@@ -232,6 +232,10 @@
           current_page:'',
           total_pages:'',
           category:''
+        },
+        search_button:{
+          visible:true,
+          type:'',
         }
       }
     },
@@ -260,7 +264,28 @@
       this.user_name = login_name
       this.is_login = login_state
       this.is_vendor = is_vendor
-      console.log(this.is_vendor)
+      var path = this.$route.path
+      if(path == '/')
+      {
+        this.search_button.visible = true
+        if(this.is_vendor)
+        {
+          this.search_button.type = 'vendor_search_item'
+        }
+        else
+        {
+          this.search_button.type = 'user_search_item'
+        }
+      }
+      else if(path == '/po-list')
+      {
+        this.search_button.visible = true
+        this.search_button.type = 'vendor_search_purchase_order'
+      }
+      else
+      {
+        this.search_button.visible = false
+      }
     },
     updated(){
       var login_state =  window.localStorage.getItem('is_login')
@@ -273,49 +298,36 @@
     },
     methods:{
       showSearchBox() {
-        // this.$emit('clickSearchBtn',true)
         this.search_visible = true
       },
       showLoginBox() {
         this.$emit('clickLoginBtn',true)
       },
       search(value){
-        this.request_data.key = value;
-        axios
-        .get(
-          this.search_url
-          + '?page=' + 1
-          + '&key=' + this.request_data.key
-          + '&order_by=' + this.request_data.order_by
-          + '&category=' + this.request_data.category
-          )
-        .then((res) => {
-          this.search_result.product_list = res.data.item_list;
-          this.search_result.current_page = res.data.current_page;
-          this.search_result.total_pages = res.data.total_pages;
-          this.search_result.category = res.data.item_list.category;
-          this.$emit('clickSearchBtn',this.search_result)
-        })
-      },
-      closeSearchArea(e){
-        if(e.target.id === 'box-container'){
-          this.search_visible = false;
+        if(this.search_button.type == 'user_search_item'||this.search_button.type == 'vendor_search_item')
+        {
+          this.request_data.key = value;
+          axios
+          .get(
+            this.search_url
+            + '?page=' + 1
+            + '&key=' + this.request_data.key
+            + '&order_by=' + this.request_data.order_by
+            + '&category=' + this.request_data.category
+            )
+          .then((res) => {
+            this.search_result.product_list = res.data.item_list;
+            this.search_result.current_page = res.data.current_page;
+            this.search_result.total_pages = res.data.total_pages;
+            this.search_result.category = res.data.item_list.category;
+            this.$emit('clickSearchBtn',this.search_result)
+            this.search_visible = false
+          })
         }
-      },
-      sendRequest(page, key, category, order_by) {
-        axios
-        .get(this.request_url
-          + '?page=' + page
-          + '&key=' + key
-          + '&order_by=' + order_by
-          + '&category=' + category)
-        .then((res) => {
-          this.product_list = res.data.item_list;
-          this.request_data.current_page = res.data.current_page;
-          this.total_pages = res.data.total_pages;
-          this.category = res.data.item_list.category;
-
-        })
+        else if(this.search_button.type == 'vendor_search_purchase_order')
+        {
+          console.log('to prevent empty block')
+        }
       },
       logout(){
         var user_id = window.localStorage.getItem('user_id')
@@ -438,9 +450,6 @@
       toShoppingCart(){
         this.$router.push({path:'shopping-cart'})
       },
-
-
-
     }
   }
 </script>

@@ -1,13 +1,5 @@
 <template>
   <a-layout>
-<!-- 
-    <TopBar 
-    @clickSearchBtn="search_visible = true" 
-    @clickLoginBtn="login_visible = true" 
-    @loginFinish="login_visible = false" 
-    v-bind:login_visible=login_visible
-    >
-    </TopBar> -->
 
     <TopBar 
     @clickSearchBtn="gotSearchResult" 
@@ -60,12 +52,6 @@
 
     </a-layout-content>
 
-    <!-- <div id="box-container" v-if="search_visible" @click="closeSearchArea">
-      <div id="search-box">
-        <a-input-search size="large" @search="onSearch"/>
-      </div>
-    </div> -->
-
   </a-layout>
 </template>
 
@@ -89,25 +75,6 @@
  height: 300px;
  margin-bottom: 30px;
 }
-
-#box-container{
- margin:0 auto;
- height: 100vh;
- width: 100vw;
- position: fixed;
- display: flex;
- align-items: center;
- justify-content: center;
- z-index: 1;
- background-color: rgba(0, 0, 0, 0.5)
-}
-
-#search-box{
- margin-top: -20vh;
- width: 60vw;
-}
-
-
 </style>
 
 
@@ -124,7 +91,6 @@
       return {
         total_pages: 0,
         product_list: [],
-        // search_visible:false,
         login_visible:false,
         request_data: {
           current_page: 0,
@@ -172,21 +138,6 @@
             this.request_data.order_by
           )
       },
-      // onSearch(value){
-      //   this.request_data.key = value;
-      //   this.sendRequest(
-      //       1,
-      //       this.request_data.key,
-      //       this.request_data.category,
-      //       this.request_data.order_by
-      //     )
-      //   this.visible = false;
-      // },
-      // closeSearchArea(e){
-      //   if(e.target.id === 'box-container'){
-      //     this.search_visible = false;
-      //   }
-      // },
       gotSearchResult(value){
         this.product_list = value.product_list
         this.request_data.current_page = value.current_page
