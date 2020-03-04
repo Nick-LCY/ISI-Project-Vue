@@ -1,3 +1,5 @@
+<!-- for A6&7 -->
+
 <template>
   <a-layout id="components-layout-demo-fixed">
     <!-- <TopBar></TopBar> -->
@@ -106,7 +108,7 @@
     },
     data() {
       return {
-        product: '',
+        product: {},
         collapsed: false,
         moment,
         value: 3.5,
@@ -133,6 +135,7 @@
             rate: 2.5,
           },
         ],
+        get_product_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product',
         add_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/modify_shopping_cart',
         check_duplicate_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
         success:true,
@@ -142,8 +145,9 @@
       };
     },
     created(){
+      var id = this.product.id;
       axios
-        .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product')
+        .get(this.get_product_url+'?id='+id)
         .then((res) =>{ this.product = res.data;
                         // eslint-disable-next-line no-console
                         // console.log(this.product)

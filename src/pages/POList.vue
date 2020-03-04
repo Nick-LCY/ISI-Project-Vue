@@ -1,4 +1,4 @@
-<!-- for D1&2 -->
+<!-- for F1&2 -->
 
 <template>
 	<a-layout>
@@ -10,7 +10,8 @@
 		<div id="buttons">
 			<a-radio-group :value="po" @change="handlePOChange">
 				<a-radio-button value="all">Show All</a-radio-button>
-				<a-radio-button value="current">Current Purchase</a-radio-button>
+				<a-radio-button value="pending">Pending Purchase</a-radio-button>
+        <a-radio-button value="hold">Hold Purchase</a-radio-button>
 				<a-radio-button value="past">Past Purchase</a-radio-button>
 			</a-radio-group>
 		</div>
@@ -18,7 +19,7 @@
 		<div>
 			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="changePOStatus(po_info)">
 				<a-list-item slot="renderItem" slot-scope="item">
-          <router-link :to="'/purchase-detail/'+item.po_no">
+          <router-link :to="'/po-processing/'+item.po_no">
 					<a-card :class="item.status" hoverable>
 						<a-card-meta>
 							<template slot="description">
@@ -26,6 +27,7 @@
 								<p>Purchase Date: {{item.purchase_date}}</p>
 								<p>Status: {{item.status}}</p>
 								<p>Total Amount: ${{item.total_amount}}</p>
+                <p>Customer Name: {{item.customer_name}}</p>
 							</template>
 						</a-card-meta>
 						<template class="ant-card-actions" slot="actions">
@@ -60,7 +62,7 @@
   import TopBar from '@/components/TopBar.vue';
 
   export default {
-    name:'purchase-tracking',
+    name:'po-list',
     components:{
       TopBar,
     },
@@ -70,18 +72,17 @@
         request_data: {
           current_page: 0,
         },
-        po: 'current',
+        po: 'pending',
         po_info: [],
-        get_po_list_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_orders',
+        get_vendor_po_list_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/vendor_purchase_orders',
       }
     },
     
     created(){
       const user_id = window.localStorage.getItem('user_id');
       const token = window.localStorage.getItem('token');
-      // var page = this.request_data.current_page;
       axios
-      .get(this.get_po_list_url+'?user_id='+user_id+'&token='+token)
+      .get(this.get_vendor_po_list_url+'?user_id='+user_id+'&token='+token)
       .then((res) =>{
         this.po_info = res.data.po_info.item_list;
         this.total_pages = res.data.po_info.total_pages;
@@ -99,9 +100,8 @@
       },
       sendRequest(page) {
         axios
-        .get(this.get_po_list_url
-          + '?page=' + page
-          )
+        .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_orders'
+          + '?page=' + page)
         .then((res) => {
           this.po_info = res.data.po_info.item_list;
           this.request_data.current_page = res.data.po_info.current_page;
@@ -111,20 +111,29 @@
       onChangePage(page){
         this.sendRequest(
             page,
-          )
+        )
       },
       changePOStatus(po_info) {
         var c = [];
         var i = po_info.length - 1;
-        if (this.po == 'current') {
+        if (this.po == 'pending') {
           for (i; i >= 0; i--) {
             var p = po_info[i];
-            if (p.status == "Pending" || p.status == "Hold") {
+            if (p.status == "Pending") {
               c.push(p);
             }
           }
 			// eslint-disable-next-line no-console
 			// console.log(this.po);
+          return _.orderBy(c, 'purchase_date', 'desc');
+        }
+        else if (this.po == 'hold') {
+          for (i; i >= 0; i--) {
+            p = po_info[i];
+            if (p.status == "Hold") {
+              c.push(p);
+            }
+          }
           return _.orderBy(c, 'purchase_date', 'desc');
         }
         else if (this.po == 'past') {
@@ -157,7 +166,7 @@
 
 .ant-card{
  width: 300px;
- height: 182px;
+ height: 220px;
  margin-bottom: 30px;
 }
 

@@ -40,7 +40,7 @@ const router =  new Router({
       component: () => import('@/pages/PurchaseTracking.vue'),
     },
     {
-      path: '/purchase-detail/:id',
+      path: '/purchase-detail/:po_no',
       name: 'Purchase Detail',
       component: () => import('@/pages/PurchaseDetail.vue'),
     },
@@ -54,6 +54,21 @@ const router =  new Router({
       name: 'Vendor Product Detail',
       component: () => import('@/pages/VendorPD.vue'),
     },
+
+    {
+      path: '/po-list',
+      name: 'Purchase Order List',
+      component: () => import('@/pages/POList.vue'),
+    },
+    {
+      path: '/po-processing/:po_no',
+      name: 'Purchase Order Processing',
+      component: () => import('@/pages/POProcessing.vue'),
+    },
+
+
+    
+
     {
       path: '/try',
       name: 'Try',

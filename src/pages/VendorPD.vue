@@ -1,3 +1,6 @@
+<!-- for E5&6 -->
+
+
 <template>
   <a-layout id="components-layout-demo-fixed">
     <TopBar></TopBar>
