@@ -83,7 +83,7 @@ router.beforeEach((to,from,next)=>{
   {
     next()
   }
-  else if(to.path == '/product-detail/:id')
+  else if(to.path == '/product-detail/${id}')
   {
     next()
   }

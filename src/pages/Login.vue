@@ -1,8 +1,7 @@
 <template>
     <TopBar 
-    @clickLoginBtn="login_visible = true" 
-    @loginFinish="loginFinish" 
-    v-bind:login_visible=login_visible
+    @loginFinish="this.login_page = false" 
+    v-bind:login_page=login_page
     >
     </TopBar>
 </template>
@@ -15,14 +14,13 @@
     },
     data(){
       return{
-        login_visible : true
+        login_page:false
       }
     },
+    created(){
+      this.login_page = true
+    },
     methods:{
-      loginFinish(){
-        this.login_visible = false
-        this.$router.push({path:'/'})
-      }
     }
     
 
