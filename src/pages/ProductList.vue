@@ -3,12 +3,18 @@
 
     <TopBar 
     @clickSearchBtn="gotSearchResult" 
+    v-bind:request_data=request_data
+    >
+    </TopBar>
+
+    <!-- <TopBar 
+    @clickSearchBtn="gotSearchResult" 
     @clickLoginBtn="login_visible = true" 
     @loginFinish="login_visible = false" 
     v-bind:login_visible=login_visible
     v-bind:request_data=request_data
     >
-    </TopBar>
+    </TopBar> -->
 
     <a-row type="flex" justify="start" :gutter="8">
       <a-button-group>
@@ -91,17 +97,15 @@
       return {
         total_pages: 0,
         product_list: [],
-        login_visible:false,
         request_data: {
           current_page: 0,
           key: '%',
           order_by: '1',
           category: '____'
         },
-        request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products'
+        request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
       }
     },
-    
     created(){
       axios
       .get(this.request_url)

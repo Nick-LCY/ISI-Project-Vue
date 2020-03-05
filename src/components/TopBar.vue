@@ -5,23 +5,40 @@
         <div id="search-container">
           <a-button type="primary" size="large" @click="showSearchBox" v-if="this.search_button.visible"><a-icon type="search" />Search</a-button>
         </div>
-        <div id="avatar-container" v-if="!is_login"  @click="showLoginBox">
+        <div id="avatar-container" v-if="!login_data.state"  @click="showLoginBox">
           <a-avatar id="user-icon" icon="user" size="large" @click="showLoginBox"/>
         </div>
       </div>
-      
-      <a-menu theme="dark" mode="horizontal" style="line-height: 64px;" :defaultSelectedKeys="['products']">
-        <a-menu-item key="products" @click="toProductListPage">Products</a-menu-item>
-        <a-menu-item key="orders" @click="toPurchaseOrderPage">Orders</a-menu-item>
-        <a-menu-item key="shipping_cart" @click="toShoppingCart" v-if="!is_vendor">Shopping Cart</a-menu-item>
-        <a-sub-menu v-if="is_login">
-          <span slot="title"><a-icon type="user" />{{user_name}}</span>
+   
+      <a-menu theme="dark" mode="horizontal" style="line-height: 64px;" v-model="menu_selected">
+        <a-menu-item key="/">
+          Products
+          <router-link :to="{path: '/'}"></router-link>
+        </a-menu-item>
+        <a-menu-item key="/purchase-tracking">
+          Orders      
+          <router-link :to="{path: 'purchase-tracking'}"></router-link>
+        </a-menu-item>
+        <a-menu-item key="/shipping_cart" v-if="!is_vendor">
+          Shopping Cart
+          <router-link :to="{path: 'shopping-cart'}"></router-link>
+        </a-menu-item>
+        <a-sub-menu v-if="login_data.state">
+          <span slot="title"><a-icon type="user" />{{login_data.name}}</span>
           <a-menu-item-group>
             <a-menu-item key="change_pwd" @click="change_pwd_visible = true">Change Password</a-menu-item>
             <a-menu-item key="logout" @click="logout">Log Out</a-menu-item>
           </a-menu-item-group>
         </a-sub-menu>
       </a-menu>
+
+      <a-alert
+      v-if="!error.success"
+      message="Error"
+      :description="error_message"
+      type="error"
+      showIcon
+      />
     </a-layout-header>
 
     <div id="box-container" v-if="search_visible">
@@ -31,14 +48,15 @@
     </div>
     
     <a-modal 
-    v-model="login_visible" 
+    v-model="login_data.modal_visible" 
     title="Login"
     footer=''
+    :afterClose="closeLoginModal"
     >
-      <div v-if="!login_success">
+      <div v-if="!login_data.success">
         <a-alert
           message="Error"
-          :description="login_error_message"
+          :description="login_data.error_message"
           type="error"
           showIcon
         />
@@ -87,6 +105,7 @@
     v-model="change_pwd_visible" 
     title="Change Password"
     footer=''
+    :afterClose="closeChangePwdModal"
     >
       <div v-if="!change_pwd_success">
         <a-alert
@@ -187,18 +206,12 @@
   #components-form-login .login-form {
   max-width: 300px;
   }
-  /* #components-form-login .login-form-forgot {
-    float: right;
-  } */
   #components-form-login .login-form-button {
     width: 100%;
   }
   #components-form-change-pwd .change-pwd-form {
   max-width: 300px;
   }
-  /* #components-form-change-pwd .change-pwd-form-forgot {
-    float: right;
-  } */
   #components-form-change-pwd .change-pwd-form-button {
     width: 100%;
   }
@@ -213,12 +226,25 @@
     },
     data(){
       return {
-        is_login: '',
-        user_name: '',
-        logout_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/logout',
-        login_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
-        login_success:true,
-        login_error_message:'',
+        login_data:{
+          modal_visible:false,
+          state:'',
+          name:'',
+          login_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
+          logout_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/logout',
+          success:true,
+          error_message:'',
+        },
+        error:{
+          success:true,
+          error_message:''
+        },
+        // is_login: '',
+        // user_name: '',
+        // logout_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/logout',
+        // login_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
+        // login_success:true,
+        // login_error_message:'',
         change_pwd_visible:false,
         change_pwd_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_pwd',
         change_pwd_error_message:'',
@@ -237,11 +263,11 @@
         search_button:{
           visible:true,
           type:'',
-        }
+        },
+        menu_selected:this.$route.path,
       }
     },
     props:{
-      login_visible:Boolean,
       request_data:
       {
           current_page: 0,
@@ -249,60 +275,41 @@
           order_by: '1',
           category: '____'
       },
+      login_page:Boolean
+
     },
     beforeCreate() {
       this.login_form = this.$form.createForm(this, { name: 'login' })
       this.change_pwd_form = this.$form.createForm(this, { name: 'change_pwd' })
-      this.user_name = window.localStorage.getItem('user_name')
-      this.is_login = window.localStorage.getItem('is_login')
-      this.is_vendor = window.localStorage.getItem('is_vendor')
-      console.log(this.is_vendor)
+      // this.login_data.name = window.localStorage.getItem('user_name')
+      // this.login_data.state = window.localStorage.getItem('is_login')
+      // this.is_vendor = window.localStorage.getItem('is_vendor')
     },
     created(){
-      var login_state =  window.localStorage.getItem('is_login')
-      var login_name =  window.localStorage.getItem('user_name')
+      this.menu_selected =[this.$route.path]
+      var is_login =  window.localStorage.getItem('is_login')
+      var user_name =  window.localStorage.getItem('user_name')
       var is_vendor = window.localStorage.getItem('is_vendor')
-      this.user_name = login_name
-      this.is_login = login_state
+      this.login_data.name = user_name
+      this.login_data.state = is_login
       this.is_vendor = is_vendor
-      var path = this.$route.path
-      if(path == '/')
-      {
-        this.search_button.visible = true
-        if(this.is_vendor)
-        {
-          this.search_button.type = 'vendor_search_item'
-        }
-        else
-        {
-          this.search_button.type = 'user_search_item'
-        }
-      }
-      else if(path == '/po-list')
-      {
-        this.search_button.visible = true
-        this.search_button.type = 'vendor_search_purchase_order'
-      }
-      else
-      {
-        this.search_button.visible = false
-      }
+      this.searchBtnVisible()
+      this.checkRequestFromLoginPage()
     },
     updated(){
-      var login_state =  window.localStorage.getItem('is_login')
-      var login_name =  window.localStorage.getItem('user_name')
+      var is_login =  window.localStorage.getItem('is_login')
+      var user_name =  window.localStorage.getItem('user_name')
       var is_vendor = window.localStorage.getItem('is_vendor')
-      this.user_name = login_name
-      this.is_login = login_state
+      this.login_data.name = user_name
+      this.login_data.state = is_login
       this.is_vendor = is_vendor
-      console.log(this.is_vendor)
     },
     methods:{
       showSearchBox() {
         this.search_visible = true
       },
       showLoginBox() {
-        this.$emit('clickLoginBtn',true)
+        this.login_data.modal_visible = true
       },
       search(value){
         if(this.search_button.type == 'user_search_item'||this.search_button.type == 'vendor_search_item')
@@ -334,8 +341,12 @@
             +'&po_no' + value
           )
           .then((res) => {
+            this.error.success = res.data.success
             if(res.data.success){
               this.$router.push({path:`/purchase-detail/${res.data.po_no}`})
+            }
+            else{
+              this.error.error_message = res.data.message
             }
           }
           )
@@ -344,20 +355,31 @@
       logout(){
         var user_id = window.localStorage.getItem('user_id')
         window.localStorage.setItem('is_login', false)
-        var login_state = window.localStorage.getItem('is_login')
+        var is_login = window.localStorage.getItem('is_login')
         axios
             .post(
-              this.logout_url,
+              this.login_data.logout_url,
               {
                 id:user_id
               }
             )
             .then((res) =>{
+              this.error.success = res.data.success
               if(res.data.success){
                 window.localStorage.clear()
-                this.is_login = login_state
+                this.login_data.state = is_login
+                this.$router.push({path:'/'})
+              }
+              else{
+                this.error.error_message = res.data.error_message
               }         
             })
+      },
+      checkRequestFromLoginPage(){
+        if(this.login_page)
+        {
+          this.login_data.modal_visible = true
+        }
       },
       login(e) {
         e.preventDefault();
@@ -366,15 +388,16 @@
             values.pwd = this.$md5(values.pwd)
             axios
               .post(
-                this.login_url,
+                this.login_data.login_url,
                 {
                   email: values.email,
                   pwd: values.pwd
                 },
               )
               .then((res) =>{
-                this.login_success = res.data.success
-                if(this.login_success){
+                this.login_data.success = res.data.success
+                if(this.login_data.success)
+                {
                   const user_id = res.data.id
                   const user_name = res.data.name
                   const token = res.data.token
@@ -384,10 +407,16 @@
                   window.localStorage.setItem('token', token)
                   window.localStorage.setItem('is_login', true)
                   window.localStorage.setItem('is_vendor', type)
-                  this.$emit('loginFinish',false)
+                  this.login_data.modal_visible = false
+                  if(this.login_page)
+                  {
+                    this.$emit('LoginFinish', false)
+                    this.$router.push({path:'/'})
+                  }
                 }
-                else{
-                  this.login_error_message = res.data.message
+                else
+                {
+                  this.login_data.error_message = res.data.message
                 }
             })
           }
@@ -452,15 +481,35 @@
             callback('The password should contain at least 6 characters, in which there must be at least one digit and one capital letter');
         }
       },
-      toProductListPage(){
-        this.$router.push({path:'/'})
+      closeLoginModal(){
+        this.login_data.modal_visible = false
       },
-      toPurchaseOrderPage(){
-        this.$router.push({path:'purchase-tracking'})
-
+      closeChangePwdModal(){
+        this.change_pwd_visible = false
       },
-      toShoppingCart(){
-        this.$router.push({path:'shopping-cart'})
+      searchBtnVisible(){
+        var path = this.$route.path
+        if(path == '/')
+        {
+          this.search_button.visible = true
+          if(this.is_vendor)
+          {
+            this.search_button.type = 'vendor_search_item'
+          }
+          else
+          {
+            this.search_button.type = 'user_search_item'
+          }
+        }
+        else if(path == '/po-list')
+        {
+          this.search_button.visible = true
+          this.search_button.type = 'vendor_search_purchase_order'
+        }
+        else
+        {
+          this.search_button.visible = false
+        }
       },
     }
   }
