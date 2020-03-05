@@ -80,7 +80,7 @@
 		},
 		data() {
 			return {
-				get_vendor_po_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/vendor_purchase_order',
+				get_po_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_order',
 				update_po_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/update_purchase_order',
 
 				po_detail: {},
@@ -98,7 +98,7 @@
 			const token = window.localStorage.getItem('token');
 			var po_no = this.po_detail.po_no;
 			axios
-			.get(this.get_vendor_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
+			.get(this.get_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
 			.then((res) =>{
 				this.po_detail = res.data.purchase_detail
 

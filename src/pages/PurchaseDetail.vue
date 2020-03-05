@@ -91,10 +91,13 @@
 
 			<div class="cancel">
 				<a-button 
-					type="danger" 
-					size="large" 
-					@click="cancelPO(po_detail.po_no, po_detail.status)" 
-					:disabled="disable">Cancel</a-button>
+				type="danger" 
+				size="large" 
+				@click="cancelPO(po_detail.po_no, po_detail.status)" 
+				:disabled="disable"
+				>
+					Cancel
+				</a-button>
 			</div>
 			
 		</a-layout-content>
