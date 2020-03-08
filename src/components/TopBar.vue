@@ -354,8 +354,6 @@
       },
       logout(){
         var user_id = window.localStorage.getItem('user_id')
-        window.localStorage.setItem('is_login', false)
-        var is_login = window.localStorage.getItem('is_login')
         axios
             .post(
               this.login_data.logout_url,
@@ -367,7 +365,7 @@
               this.error.success = res.data.success
               if(res.data.success){
                 window.localStorage.clear()
-                this.login_data.state = is_login
+                this.login_data.state = false
                 this.$router.push({path:'/'})
               }
               else{
