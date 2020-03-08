@@ -354,6 +354,7 @@
       },
       logout(){
         var user_id = window.localStorage.getItem('user_id')
+        window.localStorage.setItem('is_login', false)
         axios
             .post(
               this.login_data.logout_url,
