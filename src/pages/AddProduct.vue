@@ -187,7 +187,6 @@
 </template>
 
 <script>
-<<<<<<< Updated upstream
 	import TopBar from '@/components/TopBar.vue';
 	import axios from 'axios';
 
