@@ -135,9 +135,9 @@
             rate: 2.5,
           },
         ],
-        get_product_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product',
-        add_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/modify_shopping_cart',
-        check_duplicate_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
+        get_product_url: 'http://localhost:9981/product',
+        add_url:'http://localhost:9981/shopping_cart',
+        check_duplicate_url:'http://localhost:9981/shopping_cart',
         success:true,
         error_message:'',
         search_visible:false,
@@ -152,7 +152,11 @@
                         // eslint-disable-next-line no-console
                         // console.log(this.product)
                         })
-
+      // axios
+      //     .get(this.get_product_url + '?id=1')
+      //     .then((res) => {
+      //       this.product = res.data;
+      //     })
     },
     methods: {
       getValue(){
