@@ -230,8 +230,8 @@
           modal_visible:false,
           state:'',
           name:'',
-          login_url:'http://localhost:9981/login',
-          logout_url:'http://localhost:9981/logout',
+          login_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
+          logout_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/logout',
           success:true,
           error_message:'',
         },
@@ -246,13 +246,13 @@
         // login_success:true,
         // login_error_message:'',
         change_pwd_visible:false,
-        change_pwd_url: 'http://localhost:9981/change_pwd',
+        change_pwd_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_pwd',
         change_pwd_error_message:'',
         change_pwd_success:true,
         confirmDirty: false,
         is_vendor:false,
         search_visible:false,
-        search_item_url:'http://localhost:9981/products',
+        search_item_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
         search_po_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/search_po',
         search_result:{
           product_list:[],
@@ -390,7 +390,7 @@
                 {
                   email: values.email,
                   pwd: values.pwd
-                }
+                },
               )
               .then((res) =>{
                 this.login_data.success = res.data.success
