@@ -133,26 +133,19 @@
 		},
 
 		created(){
-			// let self = this;
-			// self.getParams();
-
 			const user_id = window.localStorage.getItem('user_id');
 			const token = window.localStorage.getItem('token');
-			var po_no = this.$route.params.po_no;
+			var po_no = this.po_detail.po_no;
 			axios
 			.get(this.get_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
 			.then((res) =>{
 				this.po_detail = res.data.purchase_detail
 
 				// eslint-disable-next-line no-console
-					console.log(this.po_detail);
+					// console.log(this.po_info);
 			})
 
 		},
-
-		// watch: {
-		// 	'$route': 'getParams'
-		// },
 
 		computed: {
 			disable: function() {
@@ -166,9 +159,6 @@
 		},
 
 		methods: {
-			// getParams(){
-			// 	let po_no = this.$route.query.po_no;
-			// },
 			cancelPO(po_no, status) {
 				const user_id = window.localStorage.getItem('user_id');
 				const token = window.localStorage.getItem('token');
@@ -237,7 +227,7 @@
 			// 		onClose: close,
 			// 	});
 			// }
-		},
+		}
 
 	}
 </script>
