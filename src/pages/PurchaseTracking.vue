@@ -83,7 +83,7 @@
       axios
       .get(this.get_po_list_url+'?user_id='+user_id+'&token='+token)
       .then((res) =>{
-        this.po_info = res.data.po_info.item_list;
+        this.po_info = res.data.po_info;
         this.total_pages = res.data.po_info.total_pages;
         this.request_data.current_page = res.data.po_info.current_page;
 
@@ -140,6 +140,13 @@
           return _.orderBy(po_info, 'purchase_date', 'desc');
         }
       },
+      // toPurchaseDetail() {
+      //   var po_no=this.po_no;
+      //   this.$router.push({
+      //     path: '/purchase-detail',
+      //     query: {po_no: po_no}
+      //   })
+      // }
 
     };
 </script>

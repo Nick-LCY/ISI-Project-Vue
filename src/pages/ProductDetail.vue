@@ -145,12 +145,12 @@
       };
     },
     created(){
-      var id = this.product.id;
+      var id = this.$route.params.id;
       axios
         .get(this.get_product_url+'?id='+id)
         .then((res) =>{ this.product = res.data;
                         // eslint-disable-next-line no-console
-                        // console.log(this.product)
+                        console.log(this.product)
                         })
 
     },
