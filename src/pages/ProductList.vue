@@ -32,8 +32,22 @@
 
       <a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="product_list">
         
-        <a-list-item slot="renderItem" slot-scope="item">
+        <a-list-item slot="renderItem" slot-scope="item" v-if="!is_vendor">
           <router-link :to="'/product-detail/'+item.id">
+            <a-card hoverable>
+              <img :src="item.thumbnail_location" slot="cover"/>
+              <a-card-meta :title="'$'+item.price">
+                <template slot="description">
+                  {{item.name}}<br>
+                  [{{item.category}}]
+                </template>
+              </a-card-meta>
+            </a-card>
+          </router-link>
+        </a-list-item>
+
+        <a-list-item slot="renderItem" slot-scope="item" v-if="is_vendor">
+          <router-link :to="'/vendor-pd/'+item.id">
             <a-card hoverable>
               <img :src="item.thumbnail_location" slot="cover"/>
               <a-card-meta :title="'$'+item.price">
@@ -104,9 +118,12 @@
           category: '____'
         },
         request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+        is_vendor: false
       }
     },
     created(){
+      var is_vendor = window.localStorage.getItem('is_vendor')
+      this.is_vendor = is_vendor
       axios
       .get(this.request_url)
       .then((res) =>{

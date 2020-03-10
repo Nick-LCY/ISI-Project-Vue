@@ -2,11 +2,11 @@
     <a-layout>
         <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="login_visible = true" @loginFinish="login_visible = false" v-bind:login_visible=login_visible></TopBar>
         <a-layout-content>
-        <a-breadcrumb id="breadcrumb">
+        <!-- <a-breadcrumb id="breadcrumb">
             <a-breadcrumb-item>Home</a-breadcrumb-item>
             <a-breadcrumb-item>Shopping Cart</a-breadcrumb-item>
-        </a-breadcrumb>
-        <a-row :gutter="16">
+        </a-breadcrumb> -->
+        <a-row :gutter="16" id="row">
             <a-alert
             v-if="!success"
             message="Error"
@@ -231,8 +231,11 @@ export default {
 </script>
 
 <style scoped>
-#breadcrumb {
+/* #breadcrumb {
    margin: 32px 0;
+} */
+#row {
+    margin-top: 5vh;
 }
 
 #checkout-btn {

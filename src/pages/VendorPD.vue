@@ -29,6 +29,7 @@
             <a-divider>{{product.name}}</a-divider>
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
+                <p>ID: {{product.id}}</p>
                 <p>Price: ${{product.price}}</p>
                 <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
                 <p class="cate">Category: {{product.category}}</p>
@@ -209,6 +210,7 @@
             rate: 2.5,
           },
         ],
+        get_product_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product',
       };
     },
 
@@ -217,13 +219,13 @@
 			this.form.getFieldDecorator('keys', { initialValue: [0,1], preserve: true });
 	},
     created(){
+      var id = this.$route.params.id;
       axios
-        .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product')
+        .get(this.get_product_url+'?id='+id)
         .then((res) =>{ this.product = res.data;
                         // eslint-disable-next-line no-console
                         console.log(this.product)
                         })
-
     },
 
     // computed: {

@@ -3,12 +3,7 @@
 <template>
   <a-layout id="components-layout-demo-fixed">
     <!-- <TopBar></TopBar> -->
-    <TopBar 
-    @clickSearchBtn="search_visible = true" 
-    @clickLoginBtn="login_visible = true" 
-    @loginFinish="login_visible = false" 
-    v-bind:login_visible=login_visible
-    >
+    <TopBar>
     </TopBar>
 
     <a-layout-content id="content">
@@ -17,17 +12,18 @@
         <a-breadcrumb-item>List</a-breadcrumb-item>
         <a-breadcrumb-item>App</a-breadcrumb-item>
       </a-breadcrumb>
+
+      
+      <a-alert
+      v-if="!success"
+      message="Error"
+      :description="error_message"
+      type="error"
+      showIcon
+      />
       
       <div id="main-content">
-
         <a-row type="flex" justify="space-around">
-          <a-alert
-          v-if="!success"
-          message="Error"
-          :description="error_message"
-          type="error"
-          showIcon
-          />
           <a-col :span="8">
             <a-carousel autoplay>
               <div><img src="..\\assets\\thumbnail.jpg"></div>
@@ -87,7 +83,6 @@
             </a-list>
           </a-col>
         </a-row>
-        
 
       </div>
     </a-layout-content>
@@ -204,7 +199,7 @@
                   this.error_message = res.data.message
                 }
                 else{
-                  console.log(res.data)
+                  this.$message.success('This product has been added to your shopping cart')
                 }
               })       
             }

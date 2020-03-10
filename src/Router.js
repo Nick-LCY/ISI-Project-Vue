@@ -50,7 +50,7 @@ const router =  new Router({
       component: () => import('@/pages/AddProduct.vue'),
     },
     {
-      path: '/vendor-pd',
+      path: '/vendor-pd/:id',
       name: 'Vendor Product Detail',
       component: () => import('@/pages/VendorPD.vue'),
     },
