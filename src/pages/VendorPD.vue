@@ -211,6 +211,14 @@
           },
         ],
         get_product_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product',
+
+        formItemLayout: {
+          labelCol: {span: 4},
+          wrapperCol: {span: 16},
+        },
+        formItemLayoutWithOutLabel: {
+          wrapperCol: {span: 16, offset: 4},
+        },
       };
     },
 

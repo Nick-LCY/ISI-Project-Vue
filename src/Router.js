@@ -49,11 +49,7 @@ const router =  new Router({
       name: 'Add Product',
       component: () => import('@/pages/AddProduct.vue'),
     },
-    {
-      path: '/vendor-pd/:id',
-      name: 'Vendor Product Detail',
-      component: () => import('@/pages/VendorPD.vue'),
-    },
+
 
     {
       path: '/po-list',
@@ -65,12 +61,13 @@ const router =  new Router({
       name: 'Purchase Order Processing',
       component: () => import('@/pages/POProcessing.vue'),
     },
-    {
-      path: '/try',
-      name: 'Try',
-      component: () => import('@/pages/Try.vue'),
-    },
 
+    // for try
+    {
+      path: '/vendor-pd/:id',
+      name: 'Vendor Product Detail',
+      component: () => import('@/pages/VendorPD.vue'),
+    },
   ]
 })
 

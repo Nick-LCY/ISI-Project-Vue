@@ -23,7 +23,8 @@
       />
       
       <div id="main-content">
-        <a-row type="flex" justify="space-around">
+
+        <a-row v-if="status === 'done'" type="flex" justify="space-around">
           <a-col :span="8">
             <a-carousel autoplay>
               <div><img src="..\\assets\\thumbnail.jpg"></div>
@@ -46,9 +47,12 @@
             <a-divider>{{product.name}}</a-divider>
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
+                <p v-if="is_vendor === 'true'">ID: {{product.id}}</p>
                 <p>Price: ${{product.price}}</p>
                 <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
-                <p><a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button></p>
+                <p v-if="is_vendor === 'false' || is_vendor === ''">
+                  <a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button>
+                </p>
                 <p class="cate">Category: {{product.category}}</p>
               </a-col>
               <a-col :span="15" class="description">
@@ -59,7 +63,102 @@
               </a-col>
             </a-row>
           </a-col>
-        </a-row> 
+        </a-row>
+
+
+
+
+
+          <!-- 
+                    Still working on! Please use vendorPD.vue to modify, and then copy and paste.
+           -->
+        <a-row v-if="status === 'edit'" type="flex" justify="space-around">
+          <a-form></a-form>
+
+          <a-col :span="8">
+            <a-form></a-form>
+          </a-col>
+
+          <a-col :span="16" class="info">
+            <p>
+                <a-input class="editName" :value=product.name @change="changeName"></a-input>
+            </p>
+            <a-row type="flex" justify="space-around">
+              <a-col :span="7" class="basic_info">
+                <p>Price: ${{product.price}}</p>
+                <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
+                <p class="cate">
+                    Category: <a-input class="editCate" :value=product.category @change="changeCate"></a-input>
+                </p>
+              </a-col>
+              <a-col :span="15" class="description">
+                <p>Other Properties:</p>
+                <a-form :form="form">
+                    <!-- <a-list-item slot="renderItem" slot-scope="item">
+                        <a-input-group>
+                            
+              <a-select>
+                <a-select-option :value="item.id">{{item.attribute_name}}</a-select-option>
+              </a-select>
+
+              <a-textarea
+              :defaultValue="item.attribute_value"
+              style="width: 60%; margin-left: 8px"
+              autosize
+              @change="changeAttrValue"
+              />
+            </a-input-group>
+                    </a-list-item> -->
+                    <a-form-item
+            v-for="(k, index) in form.getFieldValue('keys')"
+            :key="k"
+            v-bind="index === 0 ? formItemLayout : formItemLayoutWithOutLabel"
+            :label="index === 0 ? 'Properties' : ''"
+            :required="true">
+            <a-input-group 
+              compact
+              v-decorator="[
+              `names[${k}]`,
+              {validateTrigger: ['change', 'blur'],
+              rules: [{
+                required: true,
+                message: 'Please input product\'s description or delete this field.',
+                },],
+              },]"
+            >
+              <a-select defaultValue="Option1">
+                <a-select-option value="Option1">Option1</a-select-option>
+                <a-select-option value="Option2">Option2</a-select-option>
+              </a-select>
+
+              <a-textarea
+              placeholder="product description"
+              style="width: 60%; margin-right: 8px"
+              autosize
+              />
+              
+              <a-icon
+              v-if="form.getFieldValue('keys').length > 2"
+              class="dynamic-delete-button"
+              type="minus-circle-o"
+              :disabled="form.getFieldValue('keys').length === 1"
+              @click="() => remove(k)"
+              />
+            </a-input-group>
+          </a-form-item>
+                </a-form>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+
+
+
+
+
+
+
+
 
         <br><br><br> 
 
@@ -85,6 +184,12 @@
         </a-row>
 
       </div>
+
+      <div v-if="is_vendor === 'true'" class="edit">
+        <a-button v-if="status === 'done'" type="primary" size="large" @click="editPD">Edit</a-button>
+        <a-button v-if="status === 'edit'" type="primary" size="large" @click="submit">Submit</a-button>
+      </div>
+
     </a-layout-content>
   </a-layout>
 </template>
@@ -135,12 +240,29 @@
         check_duplicate_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
         success:true,
         error_message:'',
-        search_visible:false,
-        login_visible:false,
+
+        is_vendor: '',
+        status: 'done',
+        formItemLayout: {
+          labelCol: {span: 4},
+          wrapperCol: {span: 16},
+        },
+        formItemLayoutWithOutLabel: {
+          wrapperCol: {span: 16, offset: 4},
+        },
       };
     },
+
+    beforeCreate() {
+      this.form = this.$form.createForm(this, { name: 'add_product' });
+      this.form.getFieldDecorator('keys', { initialValue: [0,1], preserve: true });
+    },
+
     created(){
+      var is_vendor = window.localStorage.getItem('is_vendor');
+      this.is_vendor = is_vendor;
       var id = this.$route.params.id;
+
       axios
         .get(this.get_product_url+'?id='+id)
         .then((res) =>{ this.product = res.data;
@@ -212,8 +334,24 @@
         else{
           this.login_visible = true
         }
-      }
+      },
+
+
+      editPD() {
+        this.status = 'edit';
+      },
+      submit() {
+        this.status = 'done';
+      },
+      changeName(e) {
+        this.product.name = e.target.value;
+      },
+      changeCate(e) {
+        this.product.category = e.target.value;
+      },
     },
+
+
   };
 </script>
 
@@ -336,5 +474,24 @@
    margin-top: -20vh;
    width: 60vw;
   }
+
+  .edit {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    font-feature-settings: 'tnum';
+    position: fixed;
+    right: 100px;
+    bottom: 50px;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
 
 </style>

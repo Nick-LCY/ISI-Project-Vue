@@ -32,7 +32,7 @@
 
       <a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="product_list">
         
-        <a-list-item slot="renderItem" slot-scope="item" v-if="!is_vendor">
+        <a-list-item slot="renderItem" slot-scope="item">
           <router-link :to="'/product-detail/'+item.id">
             <a-card hoverable>
               <img :src="item.thumbnail_location" slot="cover"/>
@@ -46,19 +46,6 @@
           </router-link>
         </a-list-item>
 
-        <a-list-item slot="renderItem" slot-scope="item" v-if="is_vendor">
-          <router-link :to="'/vendor-pd/'+item.id">
-            <a-card hoverable>
-              <img :src="item.thumbnail_location" slot="cover"/>
-              <a-card-meta :title="'$'+item.price">
-                <template slot="description">
-                  {{item.name}}<br>
-                  [{{item.category}}]
-                </template>
-              </a-card-meta>
-            </a-card>
-          </router-link>
-        </a-list-item>
       </a-list>
 
       <a-pagination 
