@@ -10,9 +10,9 @@
 		<div id="buttons">
 			<a-radio-group :value="po" @change="handlePOChange">
 				<a-radio-button value="all">Show All</a-radio-button>
-				<a-radio-button value="pending">Pending Purchase</a-radio-button>
-        <a-radio-button value="hold">Hold Purchase</a-radio-button>
-				<a-radio-button value="past">Past Purchase</a-radio-button>
+				<a-radio-button value="pending">Pending Orders</a-radio-button>
+        <a-radio-button value="hold">Orders on Hold</a-radio-button>
+				<a-radio-button value="past">Past Orders</a-radio-button>
 			</a-radio-group>
 		</div>
 
