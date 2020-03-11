@@ -122,10 +122,11 @@
 </template>
 
 <script>
+
 	import axios from 'axios';
 	import TopBar from '@/components/TopBar.vue';
-	import addBasic from '@/components/AddBasicInfo.vue';
-	// import addDetail from '@/components/AddDetailInfo.vue';
+	import addBasic from '@/components/AddBasicInfo.vue';   
+
 
 	// let id = 2;
 
@@ -134,7 +135,6 @@
 		components: {
 			TopBar,
 			addBasic,
-			// addDetail,
 		},
 		data() {
 			return {
