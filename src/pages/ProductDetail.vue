@@ -50,7 +50,7 @@
                 <p v-if="is_vendor === 'true'">ID: {{product.id}}</p>
                 <p>Price: ${{product.price}}</p>
                 <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
-                <p v-if="is_vendor === 'false' || is_vendor === ''">
+                <p v-if="is_vendor === 'false' || is_vendor === null">
                   <a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button>
                 </p>
                 <p class="cate">Category: {{product.category}}</p>

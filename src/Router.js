@@ -79,6 +79,14 @@ const router =  new Router({
       component: () => import('@/pages/VendorPD.vue'),
       meta:{need_login:false}
     },
+
+    {
+      path: '/try',
+      name: 'Try',
+      component: () => import('@/pages/try.vue'),
+      meta:{need_login:false}
+    },
+
   ]
 })
 
