@@ -7,80 +7,14 @@
 
 		<a-layout-content>
 
-			<a-alert
-                v-if="!success"
-                message="Error"
-                :description="error_message"
-                type="error"
-                showIcon
-            />
-
-            <br><br>
-
 			<div class=steps>
 				<a-steps :current="current">
 					<a-step v-for="item in steps" :key="item.title" :title="item.title" />
 				</a-steps>
 			</div>
 
-
 			<div class="steps-content" v-if="current === 0">
-				<a-form :form="form" @submit="submitBasic">
-					<a-form-item 
-					label="Product Name" 
-					v-bind="formItemLayout"
-					>
-						<a-input
-						v-decorator="[
-							'product_name', 
-							{ rules: [
-								{ required: true, message: 'Please input product name' }
-							] },
-						]"
-						placeholder="Product name"
-						/>
-					</a-form-item>
-
-					<a-form-item 
-					label="Category" 
-					v-bind="formItemLayout"
-					>
-						<a-input
-						v-decorator="[
-							'category',
-							{rules: [{ required: true, message: 'PLease input product category'}] },
-						]"
-						placeholder="Product category"
-						/>
-					</a-form-item>
-
-					<a-form-item 
-					label="Price" 
-					v-bind="formItemLayout"
-					>
-						<a-input
-						v-decorator="[
-							'price', 
-							{ rules: [
-								{ required: true, message: 'Please input product price' },
-								{
-									type: 'number', 
-									message: 'Please input number only',
-									transform(value) {return Number(value);}
-								}
-							] },
-						]"
-						placeholder="Product price (Please input number only)"
-						/>
-					</a-form-item>
-
-					<a-form-item v-bind="formTailLayout">
-						<a-button type="primary" html-type="submit">
-							Submit
-						</a-button>
-					</a-form-item>
-
-				</a-form>
+				<addBasic @submitBasicBtn="changeCurrent"></addBasic>
 			</div>
 
 			<div class="steps-content" v-if="current === 1">
@@ -109,7 +43,7 @@
 						</a-modal>
 					</a-form-item>
 
-					<a-form-item
+					<!-- <a-form-item
 					v-for="(k, index) in form.getFieldValue('keys')"
 					:key="k"
 					v-bind="index === 0 ? formItemLayout : formItemLayoutWithOutLabel"
@@ -119,7 +53,7 @@
 						<a-input-group 
 						compact
 						v-decorator="[
-						`names[${k}]`,
+						`attributes[${k}]`,
 						{validateTrigger: ['change', 'blur'],
 						rules: [{
 							required: true,
@@ -144,13 +78,13 @@
 							@click="() => remove(k)"
 							/>
 						</a-input-group>
-					</a-form-item>
+					</a-form-item> -->
 
-					<a-form-item v-bind="formItemLayoutWithOutLabel">
+					<!-- <a-form-item v-bind="formItemLayoutWithOutLabel">
 						<a-button type="dashed" style="width: 60%" @click="add">
 							<a-icon type="plus" /> Add field
 						</a-button>
-					</a-form-item>
+					</a-form-item> -->
 
 					<a-form-item 
 						label="Detailed Photographs" 
@@ -179,6 +113,7 @@
 					</a-form-item>
 
 				</a-form>
+				<!-- <addDetail></addDetail> -->
 			</div>
 
 		</a-layout-content>
@@ -187,24 +122,28 @@
 </template>
 
 <script>
-	import TopBar from '@/components/TopBar.vue';
-	import axios from 'axios';
 
-	let id = 2;
+	import axios from 'axios';
+	import TopBar from '@/components/TopBar.vue';
+	import addBasic from '@/components/AddBasicInfo.vue';   
+
+
+	// let id = 2;
 
 	export default {
 		name: 'add-product',
 		components: {
 			TopBar,
+			addBasic,
 		},
 		data() {
 			return {
 
-				dis: '',
 				current: 0,
 				success: true,
 				submit: false,
 				error_message: '',
+				product_id: '',
 
 				steps: [
 					{
@@ -215,7 +154,6 @@
 					},
 				],
 
-				// loading: false,
 				imageUrl: '',
 				previewVisible: false,
 				previewImage: '',
@@ -243,47 +181,14 @@
 			this.form.getFieldDecorator('keys', { initialValue: [0,1], preserve: true });
 		},
 
-		// computed: {
-		// 	disable: function() {
-		// 		var d =this.dis;
-		// 		if (this.success&&this.submit) {
-		// 			d=false;
-		// 		}
-		// 		else d=true;
-		// 		return d;
-		// 	}
-		// },
-
 		methods: {
-
-			submitBasic(e) {
-				e.preventDefault();
-				this.form.validateFieldsAndScroll((err, values) => {
-					if (!err) {
-						axios
-						.post(
-							this.create_url,
-							{
-								name: values.name,
-								category: values.category,
-								price: values.price,
-							}
-						)
-						.then((res) =>{
-							this.success = res.data.success
-							if(this.success){
-								this.$message.success('Product has been created');
-								this.current++;
-							}
-							else{
-								this.error_message = res.data.message
-							}
-
-						})
-					}
-				});
+			changeCurrent(value) {
+				this.current = value.current;
+				this.product_id = value.product_id;
+				console.log(this.product_id);
 			},
 
+			
 			submitDetail(e) {
 				e.preventDefault();
 				this.form.validateFieldsAndScroll((err, values) => {
@@ -301,7 +206,6 @@
 							this.success = res.data.success
 							if(this.success){
 								this.$message.success('Product has been created');
-								this.current++;
 							}
 							else{
 								this.error_message = res.data.message
@@ -313,7 +217,8 @@
 			},
 
 			handleThumbChange({ fileList }) {
-				this.thumb = fileList; 
+				this.thumb = fileList;
+				console.log(this.thumb);
 			},
 			handlePhotoChange({ fileList }) {
 				this.photos = fileList; 
@@ -325,32 +230,32 @@
 			handleCancel() {
 				this.previewVisible = false;
 			},
-			remove(k) {
-				const { form } = this;
-				// can use data-binding to get
-				const keys = form.getFieldValue('keys');
-				// We need at least one passenger
-				if (keys.length === 1) {
-					return;
-				}
+			// remove(k) {
+			// 	const { form } = this;
+			// 	// can use data-binding to get
+			// 	const keys = form.getFieldValue('keys');
+			// 	// We need at least one passenger
+			// 	if (keys.length === 1) {
+			// 		return;
+			// 	}
 
-				// can use data-binding to set
-				form.setFieldsValue({
-					keys: keys.filter(key => key !== k),
-				});
-			},
+			// 	// can use data-binding to set
+			// 	form.setFieldsValue({
+			// 		keys: keys.filter(key => key !== k),
+			// 	});
+			// },
 
-			add() {
-				const { form } = this;
-				// can use data-binding to get
-				const keys = form.getFieldValue('keys');
-				const nextKeys = keys.concat(id++);
-				// can use data-binding to set
-				// important! notify form to detect changes
-				form.setFieldsValue({
-					keys: nextKeys,
-				});
-			},
+			// add() {
+			// 	const { form } = this;
+			// 	// can use data-binding to get
+			// 	const keys = form.getFieldValue('keys');
+			// 	const nextKeys = keys.concat(id++);
+			// 	// can use data-binding to set
+			// 	// important! notify form to detect changes
+			// 	form.setFieldsValue({
+			// 		keys: nextKeys,
+			// 	});
+			// },
 		}	
 	}
 </script>
@@ -360,10 +265,6 @@
 	background-color: #fff;
 	margin: 24px 16px;
 	padding: 24px;
-}
-
-h2 {
-	padding: 10px;
 }
 
 .ant-upload-select-picture-card i {

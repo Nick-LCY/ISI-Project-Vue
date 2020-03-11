@@ -123,6 +123,14 @@ const router =  new Router({
         user_type:'vendor'
       }
     },
+
+    {
+      path: '/try',
+      name: 'Try',
+      component: () => import('@/pages/try.vue'),
+      meta:{need_login:false}
+    },
+
   ]
 })
 
