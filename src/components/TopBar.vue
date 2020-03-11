@@ -16,10 +16,10 @@
           <router-link :to="{path: '/'}"></router-link>
         </a-menu-item>
         <a-menu-item key="/purchase-tracking">
-          Orders      
+          Orders     
           <router-link :to="{path: 'purchase-tracking'}"></router-link>
         </a-menu-item>
-        <a-menu-item key="/shipping_cart" v-if="!is_vendor">
+        <a-menu-item v-if="!is_vendor" key="/shopping_cart">
           Shopping Cart
           <router-link :to="{path: 'shopping-cart'}"></router-link>
         </a-menu-item>
@@ -295,6 +295,8 @@
       this.is_vendor = is_vendor
       this.searchBtnVisible()
       this.checkRequestFromLoginPage()
+      console.log(this.is_vendor)
+      console.log(is_vendor)
     },
     updated(){
       var is_login =  window.localStorage.getItem('is_login')

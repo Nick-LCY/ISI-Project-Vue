@@ -46,6 +46,7 @@
             </a-card>
           </router-link>
         </a-list-item>
+
       </a-list>
 
       <a-pagination 
@@ -109,9 +110,12 @@
           category: '____'
         },
         request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+        is_vendor: false
       }
     },
     created(){
+      var is_vendor = window.localStorage.getItem('is_vendor')
+      this.is_vendor = is_vendor
       axios
       .get(this.request_url)
       .then((res) =>{
