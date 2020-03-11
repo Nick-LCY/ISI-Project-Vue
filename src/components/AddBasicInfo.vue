@@ -71,7 +71,7 @@
 					:label="index === 0 ? 'Properties' : ''"
 					:required="true"
 					>
-						<a-input-group 
+						<!-- <a-input-group 
 						compact
 						v-decorator="[
 						`attributes[${k}]`,
@@ -116,7 +116,9 @@
 							:disabled="form.getFieldValue('keys').length === 2"
 							@click="() => remove(k)"
 							/>
-						</a-input-group>
+						</a-input-group> -->
+
+
 					</a-form-item>
 
 					<a-form-item v-bind="formItemLayoutWithOutLabel">
@@ -150,27 +152,9 @@
 		data() {
 			return {
 
-				// dis: '',
-				// current: 0,
 				success: true,
 				submit: false,
 				error_message: '',
-
-				// steps: [
-				// 	{
-				// 		title: 'Input product\'s basic information',
-				// 	},
-				// 	{
-				// 		title: 'Input product\'s detail information',
-				// 	},
-				// ],
-
-				// loading: false,
-				// imageUrl: '',
-				// previewVisible: false,
-				// previewImage: '',
-				// thumb: [],
-				// photos: [],
 
 				create_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_product',
 
@@ -190,7 +174,14 @@
 
 		beforeCreate() {
 			this.form = this.$form.createForm(this, { name: 'add_basic' });
-			this.form.getFieldDecorator('keys', { initialValue: [0,1], preserve: true });
+			// this.form.getFieldDecorator('keys', { 
+			// 	initialValue: [
+			// 		fields.attribute_name === undefined ? 0 :fields.attribute_name,
+			// 		fields.attribute_value === undefined ? 0 :fields.attribute_value,
+			// 	],
+			// 	getValueFromEvent: this.getDecoratorValue,
+			// 	preserve: true });
+			this.form.getFieldDecorator('keys', {initialValue: [0,1], preserve:true});
 		},
 
 		methods: {
@@ -254,6 +245,13 @@
 					keys: nextKeys,
 				});
 			},
+
+			// getDecoratorValue = (v) => {
+			// 	const setFieldsValue = this.props.form.setFieldsValue;
+			// 	const fieldName = v.name;
+			// 	const fieldValue = v.value;
+			// 	setFieldsValue({ [fieldName]: fieldValue });
+			// }
 		}	
 	}
 </script>
