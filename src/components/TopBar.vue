@@ -17,11 +17,11 @@
         </a-menu-item>
         <a-menu-item key="/purchase-tracking">
           Orders     
-          <router-link :to="{path: 'purchase-tracking'}"></router-link>
+          <router-link :to="{path: '/purchase-tracking'}"></router-link>
         </a-menu-item>
-        <a-menu-item v-if="!is_vendor" key="/shopping_cart">
+        <a-menu-item v-if="is_vendor === 'false' || is_vendor === null" key="/shopping_cart">
           Shopping Cart
-          <router-link :to="{path: 'shopping-cart'}"></router-link>
+          <router-link :to="{path: '/shopping-cart'}"></router-link>
         </a-menu-item>
         <a-sub-menu v-if="login_data.state">
           <span slot="title"><a-icon type="user" />{{login_data.name}}</span>
@@ -250,7 +250,6 @@
         change_pwd_error_message:'',
         change_pwd_success:true,
         confirmDirty: false,
-        is_vendor:false,
         search_visible:false,
         search_item_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
         search_po_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/search_po',
@@ -265,6 +264,7 @@
           type:'',
         },
         menu_selected:this.$route.path,
+        is_vendor:''
       }
     },
     props:{
