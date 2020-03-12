@@ -106,8 +106,8 @@
           order_by: '1',
           category: '____'
         },
-        request_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
-        is_vendor: false
+        is_vendor: false,
+        request_url: 'http://localhost:9981/products'
       }
     },
     created(){

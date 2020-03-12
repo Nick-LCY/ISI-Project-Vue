@@ -234,8 +234,8 @@
           modal_visible:false,
           state:'',
           name:'',
-          login_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
-          logout_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/logout',
+          login_url:'http://localhost:9981/login',
+          logout_url:'http://localhost:9981/logout',
           success:true,
           error_message:'',
         },
@@ -245,7 +245,7 @@
         },
         change_pwd:{
           modal_visible:false,
-          url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_pwd',
+          url: 'http://localhost:9981/change_pwd',
           error_message:'',
           success:true
         },
@@ -253,7 +253,7 @@
           box_visible:false,
           button_visible:true,
           button_type:'',
-          item_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+          item_url: 'http://localhost:9981/products',
           po_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/search_po',
           result:{
             product_list:[],
@@ -377,7 +377,7 @@
                 {
                   email: values.email,
                   pwd: values.pwd
-                },
+                }
               )
               .then((res) =>{
                 this.login_data.success = res.data.success
