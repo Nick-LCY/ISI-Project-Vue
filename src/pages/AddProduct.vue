@@ -150,6 +150,7 @@
 </template>
 
 <script>
+<<<<<<< Updated upstream
 
 	import axios from 'axios';
 	import TopBar from '@/components/TopBar.vue';
