@@ -15,9 +15,13 @@
           Products
           <router-link :to="{path: '/'}"></router-link>
         </a-menu-item>
-        <a-menu-item key="/purchase-tracking">
+        <a-menu-item v-if="is_vendor === 'false'" key="/purchase-tracking">
           Orders     
           <router-link :to="{path: '/purchase-tracking'}"></router-link>
+        </a-menu-item>
+        <a-menu-item v-if="is_vendor === 'true'" key="/po-list">
+          Orders     
+          <router-link :to="{path: '/po-list'}"></router-link>
         </a-menu-item>
         <a-menu-item v-if="is_vendor === 'false' || is_vendor === null" key="/shopping_cart">
           Shopping Cart
@@ -239,12 +243,6 @@
           success:true,
           error_message:''
         },
-        // is_login: '',
-        // user_name: '',
-        // logout_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/logout',
-        // login_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
-        // login_success:true,
-        // login_error_message:'',
         change_pwd_visible:false,
         change_pwd_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_pwd',
         change_pwd_error_message:'',
