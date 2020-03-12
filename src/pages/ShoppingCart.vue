@@ -1,11 +1,7 @@
 <template>
     <a-layout>
-        <TopBar @clickSearchBtn="search_visible = true" @clickLoginBtn="login_visible = true" @loginFinish="login_visible = false" v-bind:login_visible=login_visible></TopBar>
+        <TopBar></TopBar>
         <a-layout-content>
-        <!-- <a-breadcrumb id="breadcrumb">
-            <a-breadcrumb-item>Home</a-breadcrumb-item>
-            <a-breadcrumb-item>Shopping Cart</a-breadcrumb-item>
-        </a-breadcrumb> -->
         <a-row :gutter="16" id="row">
             <a-alert
             v-if="!success"
@@ -19,6 +15,7 @@
                 :columns="columns" 
                 :dataSource="items" 
                 :rowKey="item => item.id"
+                :pagination="false"
                 >
                     <img
                     id="product-image"
@@ -82,6 +79,11 @@ const columns = [
         title:'Name',
         dataIndex:'name',
         align: 'center'
+    },
+    {
+        title:'Unit Price',
+        dataIndex:'single_price',
+        align:'center'
     },
     {
         title:'Quantity',
@@ -231,9 +233,7 @@ export default {
 </script>
 
 <style scoped>
-/* #breadcrumb {
-   margin: 32px 0;
-} */
+
 #row {
     margin-top: 5vh;
 }

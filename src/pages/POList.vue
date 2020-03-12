@@ -74,7 +74,7 @@
         },
         po: 'pending',
         po_info: [],
-        get_vendor_po_list_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/vendor_purchase_orders',
+        vendor_po_list_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/vendor_purchase_orders',
       }
     },
     
@@ -82,7 +82,7 @@
       const user_id = window.localStorage.getItem('user_id');
       const token = window.localStorage.getItem('token');
       axios
-      .get(this.get_vendor_po_list_url+'?user_id='+user_id+'&token='+token)
+      .get(this.vendor_po_list_url+'?user_id='+user_id+'&token='+token)
       .then((res) =>{
         this.po_info = res.data.po_info.item_list;
         this.total_pages = res.data.po_info.total_pages;
@@ -100,8 +100,7 @@
       },
       sendRequest(page) {
         axios
-        .get('http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_orders'
-          + '?page=' + page)
+        .get(this.vendor_po_list_url + '?page=' + page)
         .then((res) => {
           this.po_info = res.data.po_info.item_list;
           this.request_data.current_page = res.data.po_info.current_page;

@@ -22,7 +22,7 @@
 					>
 						<a-input
 						v-decorator="[
-							'product_name', 
+							'name', 
 							{ rules: [
 								{ required: true, message: 'Please input product name' }
 							] },
@@ -64,69 +64,7 @@
 						/>
 					</a-form-item>
 
-					<a-form-item
-					v-for="(k, index) in form.getFieldValue('keys')"
-					:key="k"
-					v-bind="index === 0 ? formItemLayout : formItemLayoutWithOutLabel"
-					:label="index === 0 ? 'Properties' : ''"
-					:required="true"
-					>
-						<!-- <a-input-group 
-						compact
-						v-decorator="[
-						`attributes[${k}]`,
-						{validateTrigger: ['change', 'blur'],
-						rules: [{
-							required: true,
-							message: 'Please input product\'s description or delete this field',
-							},],
-						},]"
-						>
-							<a-input 
-							v-decorator="[
-							`attribute_name[${k}]`,
-							{validateTrigger: ['change', 'blur'],
-							rules: [{
-								required: true,
-								message: 'Please input product\'s description or delete this field',
-								},],
-							},]"
-							placeholder="Prodcut attribute name" 
-							style="width: 30%; margin-right: 2px;">
-							</a-input>
-
-							<a-textarea
-							v-decorator="[
-							`attribute_value[${k}]`,
-							{validateTrigger: ['change', 'blur'],
-							rules: [{
-								required: true,
-								message: 'Please input product\'s description or delete this field',
-								},],
-							},]"
-							placeholder="Product attribute value"
-							style="width: 66%; margin-left: 17px;"
-							autosize
-							/>
-							
-							<a-icon
-							v-if="form.getFieldValue('keys').length > 2"
-							class="dynamic-delete-button"
-							type="minus-circle-o"
-							:disabled="form.getFieldValue('keys').length === 2"
-							@click="() => remove(k)"
-							/>
-						</a-input-group> -->
-
-
-					</a-form-item>
-
-					<a-form-item v-bind="formItemLayoutWithOutLabel">
-						<a-button type="dashed" style="width: 60%" @click="add">
-							<a-icon type="plus" /> Add field
-						</a-button>
-					</a-form-item>
-
+					
 					<a-form-item v-bind="formTailLayout">
 						<a-button type="primary" html-type="submit">
 							Submit
@@ -143,7 +81,6 @@
 <script>
 	import axios from 'axios';
 
-	let id = 2;
 
 	export default {
 		name: 'addBasic',
@@ -174,14 +111,6 @@
 
 		beforeCreate() {
 			this.form = this.$form.createForm(this, { name: 'add_basic' });
-			// this.form.getFieldDecorator('keys', { 
-			// 	initialValue: [
-			// 		fields.attribute_name === undefined ? 0 :fields.attribute_name,
-			// 		fields.attribute_value === undefined ? 0 :fields.attribute_value,
-			// 	],
-			// 	getValueFromEvent: this.getDecoratorValue,
-			// 	preserve: true });
-			this.form.getFieldDecorator('keys', {initialValue: [0,1], preserve:true});
 		},
 
 		methods: {
@@ -189,8 +118,6 @@
 			submitBasic(e) {
 				e.preventDefault();
 				this.form.validateFieldsAndScroll((err, values) => {
-					console.log(values.attribute_name);
-					console.log(values.attribute_value);
 					if (!err) {
 						axios
 						.post(
@@ -219,39 +146,6 @@
 				});
 			},
 
-			remove(k) {
-				const { form } = this;
-				// can use data-binding to get
-				const keys = form.getFieldValue('keys');
-				// We need at least one passenger
-				if (keys.length === 1) {
-					return;
-				}
-
-				// can use data-binding to set
-				form.setFieldsValue({
-					keys: keys.filter(key => key !== k),
-				});
-			},
-
-			add() {
-				const { form } = this;
-				// can use data-binding to get
-				const keys = form.getFieldValue('keys');
-				const nextKeys = keys.concat(id++);
-				// can use data-binding to set
-				// important! notify form to detect changes
-				form.setFieldsValue({
-					keys: nextKeys,
-				});
-			},
-
-			// getDecoratorValue = (v) => {
-			// 	const setFieldsValue = this.props.form.setFieldsValue;
-			// 	const fieldName = v.name;
-			// 	const fieldValue = v.value;
-			// 	setFieldsValue({ [fieldName]: fieldValue });
-			// }
 		}	
 	}
 </script>
