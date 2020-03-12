@@ -15,7 +15,7 @@
           Products
           <router-link :to="{path: '/'}"></router-link>
         </a-menu-item>
-        <a-menu-item v-if="is_vendor === 'false'" key="/purchase-tracking">
+        <a-menu-item v-if="is_vendor === 'false' || is_vendor === null" key="/purchase-tracking">
           Orders     
           <router-link :to="{path: '/purchase-tracking'}"></router-link>
         </a-menu-item>
