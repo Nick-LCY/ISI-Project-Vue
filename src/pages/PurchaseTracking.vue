@@ -99,9 +99,7 @@
       },
       sendRequest(page) {
         axios
-        .get(this.get_po_list_url
-          + '?page=' + page
-          )
+        .get(this.get_po_list_url + '?page=' + page)
         .then((res) => {
           this.po_info = res.data.po_info.item_list;
           this.request_data.current_page = res.data.po_info.current_page;
