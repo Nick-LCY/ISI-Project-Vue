@@ -7,15 +7,6 @@
     >
     </TopBar>
 
-    <!-- <TopBar 
-    @clickSearchBtn="gotSearchResult" 
-    @clickLoginBtn="login_visible = true" 
-    @loginFinish="login_visible = false" 
-    v-bind:login_visible=login_visible
-    v-bind:request_data=request_data
-    >
-    </TopBar> -->
-
     <a-row type="flex" justify="start" :gutter="8">
       <a-button-group>
         <a-button icon="arrow-up" @click="onPriceAsc">Ascending Price</a-button>
@@ -36,7 +27,7 @@
         <a-list-item slot="renderItem" slot-scope="item">
           <router-link :to="'/product-detail/'+item.id">
             <a-card hoverable>
-              <img :src="item.thumbnail_location" slot="cover"/>
+              <img :src="item.thumbnail_location" slot="cover" class="thumbnail-image"/>
               <a-card-meta :title="'$'+item.price">
                 <template slot="description">
                   {{item.name}}<br>
@@ -82,6 +73,12 @@
  width: 300px;
  height: 300px;
  margin-bottom: 30px;
+}
+
+.thumbnail-image{
+  height: 180px;
+  object-fit: cover;
+  width: 100%;  
 }
 </style>
 
