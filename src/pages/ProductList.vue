@@ -12,7 +12,7 @@
         <a-button icon="arrow-up" @click="onPriceAsc">Ascending Price</a-button>
         <a-button icon="arrow-down" @click="onPriceDesc">Descending Price</a-button>
       </a-button-group>
-      <a-cascader :options="options" @change="onChange" placeholder="Please select" />
+      <a-cascader :options="options" @change="onChangeCategory" placeholder="Please select" />
     </a-row>
 
     <a-layout-content id="content">
@@ -125,6 +125,15 @@
       onChangePage(page){
         this.sendRequest(
             page,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
+      },
+      onChangeCategory(category){
+        this.request_data.category = category[category.length-1]
+        this.sendRequest(
+            1,
             this.request_data.key,
             this.request_data.category,
             this.request_data.order_by
