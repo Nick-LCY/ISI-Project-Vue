@@ -7,21 +7,12 @@
     >
     </TopBar>
 
-    <!-- <TopBar 
-    @clickSearchBtn="gotSearchResult" 
-    @clickLoginBtn="login_visible = true" 
-    @loginFinish="login_visible = false" 
-    v-bind:login_visible=login_visible
-    v-bind:request_data=request_data
-    >
-    </TopBar> -->
-
     <a-row type="flex" justify="start" :gutter="8">
       <a-button-group>
         <a-button icon="arrow-up" @click="onPriceAsc">Ascending Price</a-button>
         <a-button icon="arrow-down" @click="onPriceDesc">Descending Price</a-button>
       </a-button-group>
-      <a-cascader :options="options" @change="onChange" placeholder="Please select" />
+      <a-cascader :options="options" @change="onChangeCategory" placeholder="Please select" />
     </a-row>
 
     <a-layout-content id="content">
@@ -36,7 +27,7 @@
         <a-list-item slot="renderItem" slot-scope="item">
           <router-link :to="'/product-detail/'+item.id">
             <a-card hoverable>
-              <img :src="item.thumbnail_location" slot="cover"/>
+              <img :src="item.thumbnail_location" slot="cover" class="thumbnail-image"/>
               <a-card-meta :title="'$'+item.price">
                 <template slot="description">
                   {{item.name}}<br>
@@ -83,6 +74,12 @@
  height: 300px;
  margin-bottom: 30px;
 }
+
+.thumbnail-image{
+  height: 180px;
+  object-fit: cover;
+  width: 100%;  
+}
 </style>
 
 
@@ -128,6 +125,15 @@
       onChangePage(page){
         this.sendRequest(
             page,
+            this.request_data.key,
+            this.request_data.category,
+            this.request_data.order_by
+          )
+      },
+      onChangeCategory(category){
+        this.request_data.category = category[category.length-1]
+        this.sendRequest(
+            1,
             this.request_data.key,
             this.request_data.category,
             this.request_data.order_by

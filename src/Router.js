@@ -128,7 +128,11 @@ const router =  new Router({
       path: '/try',
       name: 'Try',
       component: () => import('@/pages/try.vue'),
-      meta:{need_login:false}
+      meta:
+      {
+        need_login:false,
+        user_type:'both'
+      }
     },
 
   ]

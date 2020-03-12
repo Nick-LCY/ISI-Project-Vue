@@ -3,7 +3,7 @@
     <a-layout-header>
       <div class="right-align" style="float: right;">
         <div id="search-container">
-          <a-button type="primary" size="large" @click="showSearchBox" v-if="this.search_button.visible"><a-icon type="search" />Search</a-button>
+          <a-button type="primary" size="large" @click="showSearchBox" v-if="this.search.button_visible"><a-icon type="search" />Search</a-button>
         </div>
         <div id="avatar-container" v-if="!login_data.state"  @click="showLoginBox">
           <a-avatar id="user-icon" icon="user" size="large" @click="showLoginBox"/>
@@ -15,9 +15,13 @@
           Products
           <router-link :to="{path: '/'}"></router-link>
         </a-menu-item>
-        <a-menu-item key="/purchase-tracking">
+        <a-menu-item v-if="is_vendor === 'false' || is_vendor === null" key="/purchase-tracking">
           Orders     
           <router-link :to="{path: '/purchase-tracking'}"></router-link>
+        </a-menu-item>
+        <a-menu-item v-if="is_vendor === 'true'" key="/po-list">
+          Orders     
+          <router-link :to="{path: '/po-list'}"></router-link>
         </a-menu-item>
         <a-menu-item v-if="is_vendor === 'false' || is_vendor === null" key="/shopping_cart">
           Shopping Cart
@@ -26,7 +30,7 @@
         <a-sub-menu v-if="login_data.state">
           <span slot="title"><a-icon type="user" />{{login_data.name}}</span>
           <a-menu-item-group>
-            <a-menu-item key="change_pwd" @click="change_pwd_visible = true">Change Password</a-menu-item>
+            <a-menu-item key="change_pwd" @click="change_pwd.modal_visible = true">Change Password</a-menu-item>
             <a-menu-item key="logout" @click="logout">Log Out</a-menu-item>
           </a-menu-item-group>
         </a-sub-menu>
@@ -41,9 +45,9 @@
       />
     </a-layout-header>
 
-    <div id="box-container" v-if="search_visible">
+    <div id="box-container" v-if="search.box_visible">
       <div id="search-box">
-        <a-input-search size="large" @search="search"/>
+        <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
     
@@ -102,12 +106,12 @@
       </a-form>
     </a-modal>
     <a-modal
-    v-model="change_pwd_visible" 
+    v-model="change_pwd.modal_visible" 
     title="Change Password"
     footer=''
     :afterClose="closeChangePwdModal"
     >
-      <div v-if="!change_pwd_success">
+      <div v-if="!change_pwd.success">
         <a-alert
           message="Error"
           :description="change_pwd_error_message"
@@ -239,30 +243,26 @@
           success:true,
           error_message:''
         },
-        // is_login: '',
-        // user_name: '',
-        // logout_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/logout',
-        // login_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/login',
-        // login_success:true,
-        // login_error_message:'',
-        change_pwd_visible:false,
-        change_pwd_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_pwd',
-        change_pwd_error_message:'',
-        change_pwd_success:true,
+        change_pwd:{
+          modal_visible:false,
+          url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_pwd',
+          error_message:'',
+          success:true
+        },
+        search:{
+          box_visible:false,
+          button_visible:true,
+          button_type:'',
+          item_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
+          po_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/search_po',
+          result:{
+            product_list:[],
+            current_page:'',
+            total_pages:'',
+            category:''
+          }
+        },
         confirmDirty: false,
-        search_visible:false,
-        search_item_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/products',
-        search_po_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/search_po',
-        search_result:{
-          product_list:[],
-          current_page:'',
-          total_pages:'',
-          category:''
-        },
-        search_button:{
-          visible:true,
-          type:'',
-        },
         menu_selected:this.$route.path,
         is_vendor:''
       }
@@ -281,64 +281,49 @@
     beforeCreate() {
       this.login_form = this.$form.createForm(this, { name: 'login' })
       this.change_pwd_form = this.$form.createForm(this, { name: 'change_pwd' })
-      // this.login_data.name = window.localStorage.getItem('user_name')
-      // this.login_data.state = window.localStorage.getItem('is_login')
-      // this.is_vendor = window.localStorage.getItem('is_vendor')
     },
     created(){
       this.menu_selected =[this.$route.path]
-      var is_login =  window.localStorage.getItem('is_login')
-      var user_name =  window.localStorage.getItem('user_name')
-      var is_vendor = window.localStorage.getItem('is_vendor')
-      this.login_data.name = user_name
-      this.login_data.state = is_login
-      this.is_vendor = is_vendor
+      this.setLoginData()
       this.searchBtnVisible()
       this.checkRequestFromLoginPage()
-      console.log(this.is_vendor)
-      console.log(is_vendor)
     },
     updated(){
-      var is_login =  window.localStorage.getItem('is_login')
-      var user_name =  window.localStorage.getItem('user_name')
-      var is_vendor = window.localStorage.getItem('is_vendor')
-      this.login_data.name = user_name
-      this.login_data.state = is_login
-      this.is_vendor = is_vendor
+      this.setLoginData()
     },
     methods:{
       showSearchBox() {
-        this.search_visible = true
+        this.search.box_visible = true
       },
       showLoginBox() {
         this.login_data.modal_visible = true
       },
-      search(value){
-        if(this.search_button.type == 'user_search_item'||this.search_button.type == 'vendor_search_item')
+      onSearch(value){
+        if(this.search.button_type == 'user_search_item'||this.search.button_type == 'vendor_search_item')
         {
           this.request_data.key = value;
           axios
           .get(
-            this.search_item_url
+            this.search.item_url
             + '?page=' + 1
             + '&key=' + this.request_data.key
             + '&order_by=' + this.request_data.order_by
             + '&category=' + this.request_data.category
             )
           .then((res) => {
-            this.search_result.product_list = res.data.item_list;
-            this.search_result.current_page = res.data.current_page;
-            this.search_result.total_pages = res.data.total_pages;
-            this.search_result.category = res.data.item_list.category;
-            this.$emit('clickSearchBtn',this.search_result)
-            this.search_visible = false
+            this.search.result.product_list = res.data.item_list;
+            this.search.result.current_page = res.data.current_page;
+            this.search.result.total_pages = res.data.total_pages;
+            this.search.result.category = res.data.item_list.category;
+            this.$emit('clickSearchBtn',this.search.result)
+            this.search.box_visible = false
           })
         }
-        else if(this.search_button.type == 'vendor_search_purchase_order')
+        else if(this.search.button_type == 'vendor_search_purchase_order')
         {
           axios
           .get(
-            this.search_po_url
+            this.search.po_url
             +'?token=' + window.localStorage.getItem('token')
             +'&po_no' + value
           )
@@ -405,8 +390,8 @@
                   window.localStorage.setItem('user_id', user_id)
                   window.localStorage.setItem('user_name', user_name)
                   window.localStorage.setItem('token', token)
-                  window.localStorage.setItem('is_login', true)
                   window.localStorage.setItem('is_vendor', type)
+                  window.localStorage.setItem('is_login', true)
                   this.login_data.modal_visible = false
                   if(this.login_page)
                   {
@@ -431,7 +416,7 @@
                 var user_id = window.localStorage.getItem('user_id')
                 axios
                     .post(
-                      this.change_pwd_url,
+                      this.change_pwd.url,
                       {
                         id: user_id,
                         current_pwd: current_pwd,
@@ -439,14 +424,15 @@
                       }
                     )
                     .then((res) =>{
-                        this.change_pwd_success = res.data.success
-                        if(this.change_pwd_success){
+                        this.change_pwd.success = res.data.success
+                        if(this.change_pwd.success){
                             var token = res.data.token
                             window.localStorage.setItem('token', token)
-                            this.change_pwd_visible = false
+                            this.change_pwd.modal_visible = false
+                            this.$message.success('Password changed successfully')
                         }
                         else{
-                            this.change_pwd_error_message = res.data.message
+                            this.change_pwd.error_message = res.data.message
                         }
 
                 })
@@ -485,32 +471,40 @@
         this.login_data.modal_visible = false
       },
       closeChangePwdModal(){
-        this.change_pwd_visible = false
+        this.change_pwd.modal_visible = false
       },
       searchBtnVisible(){
         var path = this.$route.path
         if(path == '/')
         {
-          this.search_button.visible = true
+          this.search.button_visible = true
           if(this.is_vendor)
           {
-            this.search_button.type = 'vendor_search_item'
+            this.search.button_type = 'vendor_search_item'
           }
           else
           {
-            this.search_button.type = 'user_search_item'
+            this.search.button_type = 'user_search_item'
           }
         }
         else if(path == '/po-list')
         {
-          this.search_button.visible = true
-          this.search_button.type = 'vendor_search_purchase_order'
+          this.search.button_visible = true
+          this.search.button_type = 'vendor_search_purchase_order'
         }
         else
         {
-          this.search_button.visible = false
+          this.search.button_visible = false
         }
       },
+      setLoginData(){
+        var is_login =  window.localStorage.getItem('is_login')
+        var user_name =  window.localStorage.getItem('user_name')
+        var is_vendor = window.localStorage.getItem('is_vendor')
+        this.login_data.name = user_name
+        this.login_data.state = is_login
+        this.is_vendor = is_vendor
+      }
     }
   }
 </script>
