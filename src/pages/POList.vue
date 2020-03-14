@@ -74,7 +74,7 @@
         },
         po: 'pending',
         po_info: [],
-        vendor_po_list_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/vendor_purchase_orders',
+        vendor_po_list_url: 'http://localhost:9981/vendor_purchase_orders',
       }
     },
     
