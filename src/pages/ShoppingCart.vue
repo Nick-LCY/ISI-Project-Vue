@@ -111,10 +111,10 @@ export default {
     data(){
         return{
             columns,
-            get_items_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/shopping_cart',
-            checkout_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_purchase_order',
-            remove_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/delete_shopping_cart',
-            change_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/modify_shopping_cart',
+            get_items_url:'http://localhost:9981/shopping_cart',
+            checkout_url:'http://localhost:9981/purchase_order',
+            remove_url:'http://localhost:9981/shopping_cart',
+            change_url:'http://localhost:9981/shopping_cart',
             items:[],
             total:'',
             success:true,
@@ -141,14 +141,17 @@ export default {
             const user_id = window.localStorage.getItem('user_id')
             const token = window.localStorage.getItem('token')
             axios
-            .post(
+            .delete(
                 this.remove_url,
                 {
-                    user_id: user_id,
-                    token: token,
-                    product_id: product_id,
+                    params: 
+                        {
+                            user_id: user_id,
+                            token: token,
+                            product_id: product_id
+                        }
                 }
-                )
+            )
             .then((res) =>{
                 this.success = res.data.success
                 if(this.success){

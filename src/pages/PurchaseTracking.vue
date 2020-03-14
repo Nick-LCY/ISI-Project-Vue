@@ -72,7 +72,7 @@
         },
         po: 'current',
         po_info: [],
-        get_po_list_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_orders',
+        get_po_list_url: 'http://localhost:9981/purchase_orders',
       }
     },
     

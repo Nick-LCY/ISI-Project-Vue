@@ -140,7 +140,7 @@ export default {
             },
             },
         },
-        request_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/user',
+        request_url:'http://localhost:9981/user',
         error_message:'',
         success:true,
         };
@@ -158,10 +158,10 @@ export default {
                         .post(
                             this.request_url,
                             {
-                                email: values.email,
+                                email: values.email.toLowerCase(),
                                 pwd: values.pwd,
                                 name: values.name,
-                                shipping_address: values.shipping_addr
+                                shipping_addr: values.shipping_addr
                             }
                             )
                         .then((res) =>{
