@@ -17,7 +17,10 @@
 		</div>
 
 		<div>
-			<a-list :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }" :dataSource="changePOStatus(po_info)">
+			<a-list
+      :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 4, xxl: 4 }"
+      :dataSource="changePOStatus(po_info)"
+      :pagination="pagination">
 				<a-list-item slot="renderItem" slot-scope="item">
           <router-link :to="'/po-processing/'+item.po_no">
 					<a-card :class="item.status" hoverable>
@@ -39,15 +42,6 @@
 			</a-list>
 		</div>
 
-      <a-pagination 
-        id="page"
-        showQuickJumper
-        :total="total_pages*20"
-        :current=request_data.current_page
-        :defaultPageSize="20"
-        @change="onChangePage"
-      />
-
     </a-layout-content>
 
   </a-layout>
@@ -68,10 +62,11 @@
     },
     data() {
       return {
-        total_pages: 0,
-        request_data: {
-          current_page: 0,
+
+        pagination: {
+          pageSize: 20,
         },
+
         po: 'pending',
         po_info: [],
         vendor_po_list_url: 'http://localhost:9981/vendor_purchase_orders',
@@ -84,9 +79,7 @@
       axios
       .get(this.vendor_po_list_url+'?user_id='+user_id+'&token='+token)
       .then((res) =>{
-        this.po_info = res.data.po_info.item_list;
-        this.total_pages = res.data.po_info.total_pages;
-        this.request_data.current_page = res.data.po_info.current_page;
+        this.po_info = res.data.po_info;
 
         // eslint-disable-next-line no-console
 			// console.log(this.po_info);
@@ -94,31 +87,28 @@
 
     },
 
+    computed: {
+      total_pages: function() {
+        var t = this.po_info.length;
+        console.log(t);
+        console.log(((t/20)+1));
+        return ((t/20)+1);
+      }
+
+    },
+
     methods: {
       handlePOChange(e) {
         this.po = e.target.value;
       },
-      sendRequest(page) {
-        axios
-        .get(this.vendor_po_list_url + '?page=' + page)
-        .then((res) => {
-          this.po_info = res.data.po_info.item_list;
-          this.request_data.current_page = res.data.po_info.current_page;
-          this.total_pages = res.data.po_info.total_pages;
-        })
-      },
-      onChangePage(page){
-        this.sendRequest(
-            page,
-        )
-      },
+
       changePOStatus(po_info) {
         var c = [];
         var i = po_info.length - 1;
         if (this.po == 'pending') {
           for (i; i >= 0; i--) {
             var p = po_info[i];
-            if (p.status == "Pending") {
+            if (p.status == "pending") {
               c.push(p);
             }
           }
@@ -129,7 +119,7 @@
         else if (this.po == 'hold') {
           for (i; i >= 0; i--) {
             p = po_info[i];
-            if (p.status == "Hold") {
+            if (p.status == "hold") {
               c.push(p);
             }
           }
@@ -138,7 +128,7 @@
         else if (this.po == 'past') {
           for (i; i >= 0; i--) {
             p = po_info[i];
-            if (p.status == "Shipped" || p.status == "Cancelled") {
+            if (p.status == "shipped" || p.status == "cancelled") {
               c.push(p);
             }
           }
@@ -155,30 +145,13 @@
 <style scoped>
 #content {
  padding: 0 50px;
- margin-top: 16px;
-}
-
-#page {
- margin: 50px 0;
- text-align: center;
+ margin: 16px 0 50px 0;
 }
 
 .ant-card{
  width: 300px;
  height: 220px;
  margin-bottom: 30px;
-}
-
-#box-container{
- margin:0 auto;
- height: 100vh;
- width: 100vw;
- position: fixed;
- display: flex;
- align-items: center;
- justify-content: center;
- z-index: 1;
- background-color: rgba(0, 0, 0, 0.5)
 }
 
 #search-box{
@@ -191,20 +164,24 @@
 	text-align: center;
 }
 
-.Pending {
+.pending {
 	background-color: #fff3cf;
+  text-transform: capitalize;
 }
 
-.Hold {
+.hold {
 	background-color: #fcdbd9;
+  text-transform: capitalize;
 }
 
-.Shipped {
+.shipped {
 	background-color: #cfefdf;
+  text-transform: capitalize;
 }
 
-.Cancelled {
+.cancelled {
 	background-color: #e9e9e9;
+  text-transform: capitalize;
 }
 
 </style>
