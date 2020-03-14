@@ -71,14 +71,16 @@
 
 .ant-card{
  width: 300px;
- height: 300px;
+ height: 500px;
  margin-bottom: 30px;
 }
 
 .thumbnail-image{
-  height: 180px;
+  height: 270px;
   object-fit: cover;
   width: 100%;  
+  margin-bottom: 5vh;
+  margin-top: 3vh;
 }
 </style>
 
