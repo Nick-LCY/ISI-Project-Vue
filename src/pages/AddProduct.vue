@@ -42,7 +42,9 @@
 						:fileList="thumb"
 						:action="image_url"
 						@preview="handlePreview"
-						@change="handleThumbChange"	
+						@change="handleThumbChange"
+						:data="test"
+						:name="'file1'"
 						>
 							<div v-if="thumb.length < 1">
 								<a-icon type="plus" />
@@ -159,7 +161,7 @@
 		},
 		data() {
 			return {
-
+				
 				current: 0,
 				success: true,
 				submit: false,
@@ -193,7 +195,7 @@
 				photos: [],
 
 				description_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
-				image_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/upload_images',
+				image_url: 'http://localhost:9981/upload_example',
 
 				formItemLayout: {
 					labelCol: {span: 4},
@@ -236,6 +238,23 @@
 				console.log(this.product_id);
 			},
 
+			test() {
+				// var formatData = new FormData()
+				// formatData.append('file1', data.file)
+				// formatData.append('test', 'HelloWorld')
+				// axios.post("http://localhost:9981/upload_example", formatData).then((res) => {
+				// 	console.log(res)
+				// 	let file = {  
+				// 			uid: '123456',
+				// 			name: 'rua!',
+				// 			status: 'done',
+				// 			response: '{"status": "success"}',
+				// 			linkProps: '{"download": "http://localhost:9981/static/批注 2020-03-15 165833.png"}'
+				// 		}
+				// 	this.thumb.push(file);
+				// })
+				return {'test': 'HelloYou'}
+			},
 			
 			submitDetail(e) {
 				e.preventDefault();
