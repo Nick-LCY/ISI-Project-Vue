@@ -134,7 +134,6 @@ const router =  new Router({
         user_type:'both'
       }
     },
-
   ]
 })
 

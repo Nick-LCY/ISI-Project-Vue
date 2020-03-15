@@ -32,7 +32,7 @@
 						@preview="handlePreview"
 						@change="handleThumbChange"	
 						:customRequest="uploadThumb"
-						:beforeUpload="beforeUpload"
+
 						>
 							<div v-if="thumb.length < 1">
 								<a-icon type="plus" />
@@ -45,7 +45,7 @@
 					</a-form-item>
 
 					
-
+<!-- 
 					<a-form-item 
 						label="Detailed Photographs" 
 						v-bind="formItemLayout">
@@ -64,7 +64,7 @@
 						<a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
 							<img alt="example" style="width: 100%" :src="previewImage" />
 						</a-modal>
-					</a-form-item>
+					</a-form-item> -->
 
 					<a-form-item v-bind="formTailLayout">
 						<a-button type="primary" html-type="submit">
@@ -72,8 +72,7 @@
 						</a-button>
 					</a-form-item>
 
-				</a-form>
-			
+				</a-form>			
 
 		</a-layout-content>
 	</a-layout>
@@ -113,7 +112,6 @@
 				thumb: [],
 				photos: [],
 
-				// description_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
 				image_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/upload_images',
 
 				formItemLayout: {
@@ -199,21 +197,23 @@
 			},
 			upLoad(fileImage) {
 				// const {thumb} = this.thumb; 
+				const { form } = this;
 				const params = new FormData(); //创建一个form对象,必须是form对象否则后端接受不到数据
-				params.append('file', fileImage);
+				params.append('thumb', fileImage, 'thumb');
 				// thumb.forEach(file => {
 				// 	params.append('files[]', file);
 				// });
 				console.log(params);
 				console.log(fileImage);
 
+				console.log(form.getFieldValue('thumbnail'))
 				// params.append("prefix", "app/shop/factory");
 				//添加请求头  通过form添加的图片和文件的格式必须是multipart/form-data
-				let config = {
-					headers: { 'Content-Type': 'multipart/form-data' }
-				};
+				// let config = {
+				// 	headers: { 'Content-Type': 'multipart/form-data' }
+				// };
 				axios
-				.post(this.image_url, params, config)
+				.post(this.image_url, params)
 				.then(res => {
 					this.success = res.data.success
 						if(this.success){

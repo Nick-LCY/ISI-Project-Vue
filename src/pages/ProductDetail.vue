@@ -58,7 +58,7 @@
               <a-col :span="15" class="description">
                 <p>Other Properties:</p>
                 <a-tabs tabPosition="left">
-                  <a-tab-pane v-for="des in product.product_descriptions" :tab=des.attribute_name :key=des.id>{{des.attribute_value}}</a-tab-pane>
+                  <a-tab-pane v-for="des in product.product_descriptions" :tab="des.attribute_name" :key="des.id">{{des.attribute_value}}</a-tab-pane>
                 </a-tabs>
               </a-col>
             </a-row>
