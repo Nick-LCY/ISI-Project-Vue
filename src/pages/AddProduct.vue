@@ -14,22 +14,30 @@
             </div>
 
             <div class="steps-content" v-if="current === 0">
-                <addBasic @submitBasicBtn="changeCurrent"></addBasic>
+                <AddBasic @submitBasicBtn="changeCurrentB"></AddBasic>
             </div>
 
             <div class="steps-content" v-if="current === 1">
+                <ProductDescription
+                @submitDesBtn="changeCurrentD"
+                :product_id="product_id"
+                >
+                </ProductDescription>
+            </div>
+
+            <div class="steps-content" v-if="current === 2">
 
                 <a-alert
-                    v-if="!success"
-                    message="Error"
-                    :description="error_message"
-                    type="error"
-                    showIcon
+                v-if="!success"
+                message="Error"
+                :description="error_message"
+                type="error"
+                showIcon
                 />
 
                 <br>
 
-                <a-form :form="form" @submit="submitDetail">
+                <a-form :form="form" @submit="submitImage">
                     <!-- Preview Image Modal -->
                     <a-modal :visible="preview_visible" :footer="null" @cancel="preview_visible = false">
                         <img alt="example" style="box-sizing: border-box; width: 100%; padding: 15px;" :src="preview_image" />
@@ -52,62 +60,6 @@
                                 <div class="ant-upload-text">Upload</div>
                             </div>
                         </a-upload>
-                    </a-form-item>
-                    <!-- Properties Input Field -->
-                    <div
-                        v-for="(k, index) in descriptions"
-                        :key="index">
-                        <a-form-item
-                        v-bind="index === 0 ? formItemLayout : formItemLayoutWithOutLabel"
-                        :label="index === 0 ? 'Properties' : ''"
-                        :required="true"
-                        >
-                            <a-input 
-                                v-decorator="[
-                                `attribute_name[${index}]`,
-                                {validateTrigger: ['change', 'blur'],
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input product\'s description or delete this field',
-                                    },],
-                                },]"
-                                placeholder="Prodcut attribute name" 
-                                style="width: 40%;">
-                            </a-input>
-                        </a-form-item>
-
-
-                        <a-form-item v-bind="formItemLayoutWithOutLabel">
-                            <a-textarea
-                                v-decorator="[
-                                `attribute_value[${index}]`,
-                                {validateTrigger: ['change', 'blur'],
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input product\'s description or delete this field',
-                                    },],
-                                },]"
-                                placeholder="Product attribute value"
-                                style="width: 70%;"
-                                autosize
-                            />
-                        </a-form-item>
-
-                        <a-form-item v-bind="formItemLayoutWithOutLabel">
-                            <a-button
-                            v-if="form.getFieldValue('keys').length > 2"
-                            type="dashed" 
-                            style="width: 30%"
-                            @click="deleteFormItem(index)">
-                                <a-icon type="minus-circle-o" /> Delete this field
-                            </a-button>
-                        </a-form-item>
-                    </div>
-
-                    <a-form-item v-bind="formItemLayoutWithOutLabel">
-                        <a-button type="dashed" style="width: 60%" @click="addItem">
-                            <a-icon type="plus" /> Add field
-                        </a-button>
                     </a-form-item>
                     <!-- Photographs Upload Field -->
                     <a-form-item label="Detailed Photographs"
@@ -146,40 +98,34 @@
 
     import axios from 'axios';
     import TopBar from '@/components/TopBar.vue';
-    import addBasic from '@/components/AddBasicInfo.vue';
+    import AddBasic from '@/components/AddBasicInfo.vue';
+    import ProductDescription from '@/components/ProductDescription.vue';
 
     export default {
         name: 'add-product',
         components: {
             TopBar,
-            addBasic,
+            AddBasic,
+            ProductDescription,
         },
         data() {
             return {
                 
-                current: 0,
                 success: true,
                 submit: false,
                 error_message: '',
                 product_id: '',
 
+                current: 0,
                 steps: [
                     {
                         title: 'Input product\'s basic information',
                     },
                     {
-                        title: 'Input product\'s detail information',
-                    },
-                ],
-
-                descriptions: [
-                    {
-                        attribute_name: '',
-                        attribute_value: '',
+                        title: 'Input product\'s description',
                     },
                     {
-                        attribute_name: '',
-                        attribute_value: '',
+                        title: 'Upload product\'s thumbnail and photographs',
                     },
                 ],
 
@@ -188,7 +134,6 @@
                 thumbnail_file_list: [],
                 photograph_file_list: [],
 
-                description_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
                 thumbnail_processing_url: 'http://localhost:9981/thumbnail',
                 photograpth_processing_url: 'http://localhost:9981/photograph',
 
@@ -200,34 +145,23 @@
                     labelCol: {span: 4},
                     wrapperCol: {span: 8, offset: 4},
                 },
-                formItemLayoutWithOutLabel: {
-                    wrapperCol: {span: 16, offset: 4},
-                },
-            }
-        },
-
-        computed: {
-            keys () {
-                let arr = []
-                this.descriptions.forEach((val, index) => {
-                    arr.push(index)
-                })
-                return arr
             }
         },
 
         beforeCreate() {
             this.form = this.$form.createForm(this, { name: 'add_product' });
-            // this.form.getFieldDecorator('keys', { initialValue: [0,1], preserve: true });
-            this.form.getFieldDecorator('keys', { initialValue: [], preserve: true })
-            this.form.getFieldDecorator('attribute_name', { initialValue: [], preserve: false })
-            this.form.getFieldDecorator('attribute_value', { initialValue: [], preserve: false })
         },
 
         methods: {
-            changeCurrent(value) {
+            changeCurrentB(value) {
                 this.current = value.current;
                 this.product_id = value.product_id;
+                console.log(this.current);
+            },
+
+            changeCurrentD(value) {
+                this.current = value.current;
+                console.log(this.current);
             },
 
             handleThumbnailRequest(data) {
@@ -353,69 +287,16 @@
                 this.preview_visible = true;
             },
             
-            submitDetail(e) {
+            submitImage(e) {
                 e.preventDefault();
-                this.form.validateFieldsAndScroll((err, values) => {
-                    var product_descriptions = [];
-                    console.log(values);
-                    for (var i in this.form.getFieldValue('keys')) {
-                        console.log(i);
-                        var des = {};
-                        des.attribute_name = values.attribute_name[i];
-                        des.attribute_value = values.attribute_value[i];
-                        des.sequence = parseInt(i)+1
-                        des.product_id = this.product_id;
-                        console.log(des);
-                        product_descriptions.push(des);
-                    }
-
+                this.form.validateFieldsAndScroll((err) => {
                     if (!err) {
-                        axios
-                        .post(
-                            this.description_url,
-                            product_descriptions,			
-                        )
-                        .then((res) =>{
-                            this.success = res.data.success
-                            if(this.success){
-                                this.$message.success('Product description has been added');
-                                this.$router.push({path:`/product-detail/${this.product_id}`})
-                            }
-                            else{
-                                this.error_message = res.data.message
-                            }
-
-                        })
+                        this.$router.push({path:`/product-detail/${this.product_id}`})
                     }
-                                    
+                    // else{
+                    //     this.error_message = res.data.message
+                    // }                                    
                     
-                });
-            },
-
-            addItem () {
-                this.descriptions.push(
-                {
-                    attribute_name: '',
-                    attribute_value: '',
-                })
-                const { form } = this;
-                form.setFieldsValue({
-                keys: this.keys
-                })
-            },
-            deleteFormItem (index) {
-                const { form } = this;
-                console.log(index);
-                // can use data-binding to set
-                this.descriptions.splice(index, 1);
-                var aname = form.getFieldValue('attribute_name');
-                var avalue = form.getFieldValue('attribute_value');
-                aname.splice(index, 1);
-                avalue.splice(index, 1)
-                form.setFieldsValue({
-                keys: this.keys,
-                attribute_name: aname,
-                attribute_value: avalue
                 })
             },
 
@@ -449,8 +330,8 @@
 }
 
 .steps {
-    width: 700px;
-    text-align: center;
+    width: 1300px;
+    margin-left: 30px;
 }
 
 </style>

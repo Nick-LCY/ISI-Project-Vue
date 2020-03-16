@@ -2,9 +2,8 @@
 
 <template>
   <a-layout id="components-layout-demo-fixed">
-    <!-- <TopBar></TopBar> -->
-    <TopBar>
-    </TopBar>
+
+    <TopBar></TopBar>
 
     <a-layout-content id="content">
       <a-breadcrumb :style="{ margin: '16px 0' }">
@@ -27,11 +26,10 @@
         <a-row v-if="status === 'done'" type="flex" justify="space-around">
           <a-col :span="8">
             <a-carousel autoplay>
-              <div><img src="..\\assets\\thumbnail.jpg"></div>
-              <div><img src="..\\assets\\photo1.jpg"></div>
-              <div><img src="..\\assets\\photo2.jpg"></div>
-              <div><img src="..\\assets\\photo3.jpg"></div>
-              <div><img src="..\\assets\\photo4.jpg"></div>
+              <div><img :src="product.thumbnail_location"></div>
+              <div v-for="photo in product.product_photographs" v-bind:key="photo.id">
+                <img :src="photo.file_location">
+              </div>
             </a-carousel>
             <!-- <a-carousel autoplay arrows dotsClass="slick-dots slick-thumb">
               <a slot="customPaging" slot-scope="props">
@@ -48,12 +46,12 @@
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
                 <p v-if="is_vendor === 'true'">ID: {{product.id}}</p>
+                <p>Category: {{product.category}}</p>
                 <p>Price: ${{product.price}}</p>
                 <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
                 <p v-if="is_vendor === 'false' || is_vendor === null">
                   <a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button>
                 </p>
-                <p class="cate">Category: {{product.category}}</p>
               </a-col>
               <a-col :span="15" class="description">
                 <p>Other Properties:</p>
@@ -68,92 +66,31 @@
 
 
 
+        <a-row v-if="status === 'edit'">
+          <div class=steps>
+              <a-steps :current="current">
+                  <a-step v-for="item in steps" :key="item.title" :title="item.title" />
+              </a-steps>
+          </div>
 
-          <!-- 
-                    Still working on! Please use vendorPD.vue to modify, and then copy and paste.
-           -->
-        <a-row v-if="status === 'edit'" type="flex" justify="space-around">
-          <a-form></a-form>
+          <div class="steps-content" v-if="current === 0">
+              <AddBasic
+              @submitBasicBtn="changeCurrentB"
+              :product_id="product.id"
+              :product_name="product.name"
+              :product_category="product.category"
+              :product_price="product.price"
+              ></AddBasic>
+          </div>
 
-          <a-col :span="8">
-            <a-form></a-form>
-          </a-col>
-
-          <a-col :span="16" class="info">
-            <p>
-                <a-input class="editName" :value=product.name @change="changeName"></a-input>
-            </p>
-            <a-row type="flex" justify="space-around">
-              <a-col :span="7" class="basic_info">
-                <p>Price: ${{product.price}}</p>
-                <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
-                <p class="cate">
-                    Category: <a-input class="editCate" :value=product.category @change="changeCate"></a-input>
-                </p>
-              </a-col>
-              <a-col :span="15" class="description">
-                <p>Other Properties:</p>
-                <a-form :form="form">
-                    <!-- <a-list-item slot="renderItem" slot-scope="item">
-                        <a-input-group>
-                            
-              <a-select>
-                <a-select-option :value="item.id">{{item.attribute_name}}</a-select-option>
-              </a-select>
-
-              <a-textarea
-              :defaultValue="item.attribute_value"
-              style="width: 60%; margin-left: 8px"
-              autosize
-              @change="changeAttrValue"
-              />
-            </a-input-group>
-                    </a-list-item> -->
-                    <a-form-item
-            v-for="(k, index) in form.getFieldValue('keys')"
-            :key="k"
-            v-bind="index === 0 ? formItemLayout : formItemLayoutWithOutLabel"
-            :label="index === 0 ? 'Properties' : ''"
-            :required="true">
-            <a-input-group 
-              compact
-              v-decorator="[
-              `names[${k}]`,
-              {validateTrigger: ['change', 'blur'],
-              rules: [{
-                required: true,
-                message: 'Please input product\'s description or delete this field.',
-                },],
-              },]"
-            >
-              <a-select defaultValue="Option1">
-                <a-select-option value="Option1">Option1</a-select-option>
-                <a-select-option value="Option2">Option2</a-select-option>
-              </a-select>
-
-              <a-textarea
-              placeholder="product description"
-              style="width: 60%; margin-right: 8px"
-              autosize
-              />
-              
-              <a-icon
-              v-if="form.getFieldValue('keys').length > 2"
-              class="dynamic-delete-button"
-              type="minus-circle-o"
-              :disabled="form.getFieldValue('keys').length === 1"
-              @click="() => remove(k)"
-              />
-            </a-input-group>
-          </a-form-item>
-                </a-form>
-              </a-col>
-            </a-row>
-          </a-col>
+          <div class="steps-content" v-if="current === 1">
+              <ProductDescription
+              @submitDesBtn="changeCurrentD"
+              :product_id="product.id"
+              >
+              </ProductDescription>
+          </div>
         </a-row>
-
-
-
 
 
 
@@ -162,7 +99,7 @@
 
         <br><br><br> 
 
-        <a-row>
+        <a-row v-if="status === 'done'">
           <a-col>
             <a-list
               class="comment-list"
@@ -187,7 +124,7 @@
 
       <div v-if="is_vendor === 'true'" class="edit">
         <a-button v-if="status === 'done'" type="primary" size="large" @click="editPD">Edit</a-button>
-        <a-button v-if="status === 'edit'" type="primary" size="large" @click="submit">Submit</a-button>
+        <a-button v-if="status === 'edit'" type="danger" size="large" @click="cancel">Cancel</a-button>
       </div>
 
     </a-layout-content>
@@ -200,11 +137,15 @@
   import moment from 'moment';
   import axios from 'axios';
   import TopBar from '@/components/TopBar.vue';
+  import AddBasic from '@/components/AddBasicInfo.vue';
+  import ProductDescription from '@/components/ProductDescription.vue';
 
   export default {
     name: "product-detail",
     components:{
       TopBar,
+      AddBasic,
+      ProductDescription,
     },
     data() {
       return {
@@ -241,6 +182,19 @@
         success:true,
         error_message:'',
 
+        current: 0,
+        steps: [
+            {
+                title: 'Change product\'s basic information',
+            },
+            {
+                title: 'Change product\'s description',
+            },
+            {
+                title: 'Change product\'s thumbnail and photographs',
+            },
+        ],
+
         is_vendor: '',
         status: 'done',
         formItemLayout: {
@@ -267,12 +221,7 @@
         .then((res) =>{ this.product = res.data;
                         // eslint-disable-next-line no-console
                         // console.log(this.product)
-                        })
-      // axios
-      //     .get(this.get_product_url + '?id=1')
-      //     .then((res) => {
-      //       this.product = res.data;
-      //     })
+                      })
     },
     methods: {
       getValue(){
@@ -343,7 +292,7 @@
       editPD() {
         this.status = 'edit';
       },
-      submit() {
+      cancel() {
         this.status = 'done';
       },
       changeName(e) {
@@ -351,6 +300,19 @@
       },
       changeCate(e) {
         this.product.category = e.target.value;
+      },
+
+      changeCurrentB(value) {
+        this.current = value.current;
+        this.product.name = value.name;
+        this.product.category = value.category;
+        this.product.price = value.price;
+        console.log(this.current);
+      },
+
+      changeCurrentD(value) {
+        this.current = value.current;
+        console.log(this.current);
       },
     },
 
@@ -409,10 +371,6 @@
     text-align: left;
     font-size: 20px;
     padding-left: 15px;
-  }
-
-  .cate {
-    font-size: 15px;
   }
 
   .description {
@@ -495,6 +453,21 @@
     width: 40px;
     height: 40px;
     cursor: pointer;
+}
+
+.steps-content {
+    margin-top: 16px;
+    min-height: 200px;
+    padding-top: 80px;
+}
+
+.steps-action {
+    margin-top: 24px;
+}
+
+.steps {
+    width: 1300px;
+    margin-left: 30px;
 }
 
 </style>
