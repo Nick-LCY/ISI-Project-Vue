@@ -31,35 +31,35 @@
 
 				<a-form :form="form" @submit="submitDetail">
 
-					<a-form-item 
-						label="Thumbnail Image" 
+					<!-- Preview Image Modal -->
+					<a-modal :visible="preview_visible" :footer="null" @cancel="handleCancel">
+						<img alt="example" style="box-sizing: border-box; width: 100%; padding: 15px;" :src="preview_image" />
+					</a-modal>
+
+					<a-form-item label="Thumbnail Image" 
 						v-bind="formItemLayout">
 						<a-upload
-						v-decorator="[
-						'thumbnail', 
-						{ rules: [{ required: true, message: 'Please upload thumbnail image' }] }]"
-						listType="picture-card"
-						:fileList="thumb"
-						:action="image_url"
-						@preview="handlePreview"
-						@change="handleThumbChange"
-						:data="test"
-						:name="'file1'"
-						>
-							<div v-if="thumb.length < 1">
+							v-decorator="[
+								'thumbnail',
+								{ rules: [{ required: true, message: 'Please upload thumbnail image' }] }
+							]"
+							listType="picture-card"
+							:name="'thumbnail'"
+							:data="uploadParams"
+							:fileList="thumbnail_file_list"
+							:action="upload_thumbnail_url"
+							@preview="handlePreview"
+							@change="handleThumbnailChange">
+							<div v-if="thumbnail_file_list.length < 1">
 								<a-icon type="plus" />
 								<div class="ant-upload-text">Upload</div>
 							</div>
 						</a-upload>
-						<a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-							<img alt="example" style="width: 100%" :src="previewImage" />
-						</a-modal>
 					</a-form-item>
 
 					<div
-					v-for="(k, index) in descriptions"
-					:key="index"
-					>
+						v-for="(k, index) in descriptions"
+						:key="index">
 						<a-form-item
 						v-bind="index === 0 ? formItemLayout : formItemLayoutWithOutLabel"
 						:label="index === 0 ? 'Properties' : ''"
@@ -113,24 +113,21 @@
 						</a-button>
 					</a-form-item>
 
-					<a-form-item 
-						label="Detailed Photographs" 
+					<a-form-item label="Detailed Photographs"
 						v-bind="formItemLayout">
 						<a-upload
-						listType="picture-card"
-						:fileList="photos"
-						:action="image_url"
-						@preview="handlePreview"
-						@change="handlePhotoChange"							
-						>
-							<div v-if="photos.length < 4">
+							listType="picture-card"
+							:fileList="photograph_file_list"
+							:action="upload_photograpth_url"
+							:data="uploadParams"
+							:name="'photograph'"
+							@preview="handlePreview"
+							@change="handlePhotoChange">
+							<div v-if="photograph_file_list.length < 4">
 								<a-icon type="plus" />
 								<div class="ant-upload-text">Upload</div>
 							</div>
 						</a-upload>
-						<a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-							<img alt="example" style="width: 100%" :src="previewImage" />
-						</a-modal>
 					</a-form-item>
 
 					<a-form-item v-bind="formTailLayout">
@@ -188,14 +185,14 @@
 					},
 				],
 
-				imageUrl: '',
-				previewVisible: false,
-				previewImage: '',
-				thumb: [],
-				photos: [],
+				preview_visible: false,
+				preview_image: '',
+				thumbnail_file_list: [],
+				photograph_file_list: [],
 
 				description_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
-				image_url: 'http://localhost:9981/upload_example',
+				upload_thumbnail_url: 'http://localhost:9981/thumbnail',
+				upload_photograpth_url: 'http://localhost:9981/photograph',
 
 				formItemLayout: {
 					labelCol: {span: 4},
@@ -235,25 +232,32 @@
 			changeCurrent(value) {
 				this.current = value.current;
 				this.product_id = value.product_id;
-				console.log(this.product_id);
+				// console.log(this.product_id);
 			},
 
-			test() {
-				// var formatData = new FormData()
-				// formatData.append('file1', data.file)
-				// formatData.append('test', 'HelloWorld')
-				// axios.post("http://localhost:9981/upload_example", formatData).then((res) => {
-				// 	console.log(res)
-				// 	let file = {  
-				// 			uid: '123456',
-				// 			name: 'rua!',
-				// 			status: 'done',
-				// 			response: '{"status": "success"}',
-				// 			linkProps: '{"download": "http://localhost:9981/static/批注 2020-03-15 165833.png"}'
-				// 		}
-				// 	this.thumb.push(file);
-				// })
-				return {'test': 'HelloYou'}
+			uploadParams() {
+				return {
+					'user_id': window.localStorage.getItem('user_id'),
+					'product_id': this.product_id,
+					'token': window.localStorage.getItem('token')
+				}
+			},
+
+			handleThumbnailChange({ fileList }) {
+				this.thumbnail_file_list = fileList;
+			},
+
+			handlePhotoChange({ fileList }) {
+				this.photograph_file_list = fileList;
+			},
+
+			handlePreview(e) {
+				this.preview_image = e.thumbUrl;
+				this.preview_visible = true;
+			},
+
+			handleCancel() {
+				this.preview_visible = false;
 			},
 			
 			submitDetail(e) {
@@ -293,21 +297,6 @@
 									
 					
 				});
-			},
-
-			handleThumbChange({ fileList }) {
-				this.thumb = fileList;
-				// console.log(this.thumb);
-			},
-			handlePhotoChange({ fileList }) {
-				this.photos = fileList; 
-			},
-			handlePreview(file) {
-				this.previewImage = file.url;
-				this.previewVisible = true;
-			},
-			handleCancel() {
-				this.previewVisible = false;
 			},
 
 			addItem () {
