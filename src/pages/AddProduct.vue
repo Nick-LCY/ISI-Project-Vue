@@ -30,12 +30,11 @@
                 <br>
 
                 <a-form :form="form" @submit="submitDetail">
-
                     <!-- Preview Image Modal -->
-                    <a-modal :visible="preview_visible" :footer="null" @cancel="handleModalCancel">
+                    <a-modal :visible="preview_visible" :footer="null" @cancel="preview_visible = false">
                         <img alt="example" style="box-sizing: border-box; width: 100%; padding: 15px;" :src="preview_image" />
                     </a-modal>
-
+                    <!-- Thumbnail Upload Field -->
                     <a-form-item label="Thumbnail Image" 
                         v-bind="formItemLayout">
                         <a-upload
@@ -54,7 +53,7 @@
                             </div>
                         </a-upload>
                     </a-form-item>
-
+                    <!-- Properties Input Field -->
                     <div
                         v-for="(k, index) in descriptions"
                         :key="index">
@@ -110,12 +109,18 @@
                             <a-icon type="plus" /> Add field
                         </a-button>
                     </a-form-item>
-
+                    <!-- Photographs Upload Field -->
                     <a-form-item label="Detailed Photographs"
                         v-bind="formItemLayout">
                         <a-upload
+                            v-decorator="[
+                                'photograph',
+                                { rules: [{ required: true, message: 'Please upload photograph image' }] }
+                            ]"
                             listType="picture-card"
                             :fileList="photograph_file_list"
+                            :customRequest="handlePhotographRequest"
+                            :remove="handlePhotographRemove"
                             @preview="handlePreview">
                             <div v-if="photograph_file_list.length < 4">
                                 <a-icon type="plus" />
@@ -123,13 +128,12 @@
                             </div>
                         </a-upload>
                     </a-form-item>
-
+                    <!-- Submit Button -->
                     <a-form-item v-bind="formTailLayout">
                         <a-button type="primary" html-type="submit">
                             Submit
                         </a-button>
                     </a-form-item>
-
                 </a-form>
             </div>
 
@@ -185,8 +189,8 @@
                 photograph_file_list: [],
 
                 description_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
-                upload_thumbnail_url: 'http://localhost:9981/thumbnail',
-                upload_photograpth_url: 'http://localhost:9981/photograph',
+                thumbnail_processing_url: 'http://localhost:9981/thumbnail',
+                photograpth_processing_url: 'http://localhost:9981/photograph',
 
                 formItemLayout: {
                     labelCol: {span: 4},
@@ -224,7 +228,6 @@
             changeCurrent(value) {
                 this.current = value.current;
                 this.product_id = value.product_id;
-                // console.log(this.product_id);
             },
 
             handleThumbnailRequest(data) {
@@ -255,7 +258,7 @@
                 formatData.append("token", window.localStorage.getItem('token'))
                 // Upload file
                 axios
-                .post(this.upload_thumbnail_url, formatData, config)
+                .post(this.thumbnail_processing_url, formatData, config)
                 .then((res) => {
                     // Display file when upload success
                     if(res.data.success) {
@@ -272,9 +275,55 @@
                 })
             },
 
+            handlePhotographRequest(data) {
+                var fileListObj = {
+                    "uid": data.file.uid,
+                    "lastModified": data.file.lastModified,
+                    "lastModifiedDate": data.file.lastModifiedDate,
+                    "name": data.file.name,
+                    "size": data.file.size,
+                    "type": data.file.type,
+                    "originFileObj": data.file,
+                    "status": "uploading",
+                    "percent": 0
+                }
+                // Init fileList
+                this.photograph_file_list.push(fileListObj)
+                // Display upload progress while uploading
+                var config = {
+                    onUploadProgress: progressEvent => {
+                        fileListObj.percent
+                            = (progressEvent.loaded / progressEvent.total * 100 | 0)
+                    }
+                }
+                // Organize upload needed data
+                var formatData = new FormData()
+                formatData.append("photograph", data.file)
+                formatData.append("user_id", window.localStorage.getItem('user_id'))
+                formatData.append("product_id", this.product_id)
+                formatData.append("token", window.localStorage.getItem('token'))
+                // Upload file
+                axios
+                .post(this.photograpth_processing_url, formatData, config)
+                .then((res) => {
+                    // Display file when upload success
+                    if(res.data.success) {
+                        fileListObj.status = "done"
+                        fileListObj.thumbUrl = res.data.file_link
+                        fileListObj.file_id = res.data.file_id
+                    } else {
+                        fileListObj.status = "error"
+                    }
+                })
+                .catch(() => {
+                    // Catch any probably error
+                    fileListObj.status = "error"
+                })
+            },
+
             handleThumbnailRemove() {
                 // Remove uploaded file if success
-                axios.delete(this.upload_thumbnail_url, {"params": {
+                axios.delete(this.thumbnail_processing_url, {"params": {
                     "user_id": window.localStorage.getItem("user_id"),
                     "token": window.localStorage.getItem("token"),
                     "product_id": this.product_id
@@ -285,13 +334,23 @@
                 })
             },
 
+            handlePhotographRemove(data) {
+                // Remove uploaded file if success
+                axios.delete(this.photograpth_processing_url, {"params": {
+                    "user_id": window.localStorage.getItem("user_id"),
+                    "token": window.localStorage.getItem("token"),
+                    "product_id": this.product_id,
+                    "photograph_id": data.file_id
+                }}).then((res) => {
+                    if(res.data.success) {
+                        this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
+                    }
+                })
+            },
+
             handlePreview(e) {
                 this.preview_image = e.thumbUrl;
                 this.preview_visible = true;
-            },
-
-            handleModalCancel() {
-                this.preview_visible = false;
             },
             
             submitDetail(e) {
