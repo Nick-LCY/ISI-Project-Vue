@@ -93,7 +93,7 @@
 				submit: false,
 				error_message: '',
 
-				create_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_product',
+				create_url: 'http://localhost:9981/product',
 
 				formItemLayout: {
 					labelCol: {span: 4},
@@ -126,6 +126,8 @@
 								name: values.name,
 								category: values.category,
 								price: values.price,
+								user_id: window.localStorage.getItem("user_id"),
+								token: window.localStorage.getItem("token")
 							}
 						)
 						.then((res) =>{
@@ -133,7 +135,7 @@
 							if(this.success){
 								this.$message.success('Product has been created');
 								var current = 1;
-								var product_id = res.data.product_detail.id;
+								var product_id = res.data.product_id;
 								this.$emit('submitBasicBtn',{current, product_id});
 								console.log(res.data);
 							}
