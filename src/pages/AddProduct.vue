@@ -268,17 +268,23 @@
             },
 
             handlePhotographRemove(data) {
-                // Remove uploaded file if success
-                axios.delete(this.photograpth_processing_url, {"params": {
-                    "user_id": window.localStorage.getItem("user_id"),
-                    "token": window.localStorage.getItem("token"),
-                    "product_id": this.product_id,
-                    "photograph_id": data.file_id
-                }}).then((res) => {
-                    if(res.data.success) {
-                        this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
-                    }
-                })
+                // If data.file_id exist, means back-end has this file in its local storage
+                // Then need to send delete request first
+                if(data.file_id) {
+                    // Remove uploaded file if success
+                    axios.delete(this.photograpth_processing_url, {"params": {
+                        "user_id": window.localStorage.getItem("user_id"),
+                        "token": window.localStorage.getItem("token"),
+                        "product_id": this.product_id,
+                        "photograph_id": data.file_id
+                    }}).then((res) => {
+                        if(res.data.success) {
+                            this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
+                        }
+                    })
+                } else {
+                    this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
+                }
             },
 
             handlePreview(e) {
