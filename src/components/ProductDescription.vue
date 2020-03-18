@@ -26,12 +26,16 @@
 						<a-input 
 							v-decorator="[
 							`attribute_name[${index}]`,
-							{validateTrigger: ['change', 'blur'],
-							rules: [{
-								required: true,
-								message: 'Please input product\'s description or delete this field',
-								},],
-							},]"
+							{
+								validateTrigger: ['change', 'blur'],
+								rules: [{
+									required: true,
+									message: 'Please input product\'s description or delete this field',
+									},
+								],
+								initialValue: descriptions[index].attribute_name
+							},
+							]"
 							placeholder="Prodcut attribute name" 
 							style="width: 40%;">
 						</a-input>
@@ -42,12 +46,16 @@
 						<a-textarea
 							v-decorator="[
 							`attribute_value[${index}]`,
-							{validateTrigger: ['change', 'blur'],
-							rules: [{
-								required: true,
-								message: 'Please input product\'s description or delete this field',
-								},],
-							},]"
+							{
+								validateTrigger: ['change', 'blur'],
+								rules: [{
+									required: true,
+									message: 'Please input product\'s description or delete this field',
+									},
+								],
+								initialValue: descriptions[index].attribute_value
+							},
+							]"
 							placeholder="Product attribute value"
 							style="width: 70%;"
 							autosize
@@ -81,21 +89,18 @@
 </template>
 
 <script>
-
     import axios from 'axios';
-
     export default {
         name: 'ProductDescription',
-        props: ['product_id'],
+        props: ['product_id', 'product_descriptions'],
         data() {
             return {   
-
                 success: true,
                 submit: false,
                 error_message: '',
                 p_id: this.product_id,
+                p_dess: this.product_descriptions,
                 
-
                 descriptions: [
                     {
                         attribute_name: '',
@@ -106,9 +111,7 @@
                         attribute_value: '',
                     },
                 ],
-
-                description_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
-
+                des_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
                 formItemLayout: {
                     labelCol: {span: 4},
                     wrapperCol: {span: 16},
@@ -122,7 +125,6 @@
                 },
             }
         },
-
         computed: {
             keys () {
                 let arr = []
@@ -132,26 +134,42 @@
                 return arr
             }
         },
-
         beforeCreate() {
-            this.form = this.$form.createForm(this, { name: 'add_description' });
-            // this.form.getFieldDecorator('keys', { initialValue: [0,1], preserve: true });
+            this.form = this.$form.createForm(this, { name: 'product_description' });
             this.form.getFieldDecorator('keys', { initialValue: [], preserve: true })
             this.form.getFieldDecorator('attribute_name', { initialValue: [], preserve: false })
             this.form.getFieldDecorator('attribute_value', { initialValue: [], preserve: false })
+            this.$nextTick(function() {
+                if (this.p_dess) {
+					this.descriptions = [];
+					var aname = [];
+					var avalue = [];
+					for (var p_des of this.p_dess) {
+						aname.push(p_des.attribute_name);
+						avalue.push(p_des.attribute_value);
+						this.descriptions.push(p_des);
+					}
+					// console.log(this.p_dess);
+					console.log(aname);
+					this.form.setFieldsValue({
+						keys: this.keys,
+						attribute_name: aname,
+						attribute_value: avalue
+					})
+					console.log(this.form.getFieldValue('attribute_name'))
+					console.log(this.descriptions)
+                }
+                
+            })
+                
+                
         },
-
-        // create() {
-
-        // },
 
         methods: {
             submitDetail(e) {
                 e.preventDefault();
                 this.form.validateFieldsAndScroll((err, values) => {
                     var product_descriptions = [];
-                    console.log(values);
-                    console.log(this.p_id);
                     for (var i in this.form.getFieldValue('keys')) {
                         
                         var des = {};
@@ -161,32 +179,33 @@
                         des.product_id = this.p_id;
                         product_descriptions.push(des);
                     }
-
                     if (!err) {
                         axios
                         .post(
-                            this.description_url,
-                            product_descriptions,			
+                            this.des_url,
+                            {
+                                product_descriptions: product_descriptions,
+								user_id: window.localStorage.getItem("user_id"),
+								token: window.localStorage.getItem("token")
+                            }
+                            
                         )
                         .then((res) =>{
                             this.success = res.data.success
                             if(this.success){
-                                this.$message.success('Product description has been added');
-                                // this.$router.push({path:`/product-detail/${this.product_id}`})
+                                this.$message.success('Success');
                                 var current = 2;
 								this.$emit('submitDesBtn', {current});
                             }
                             else{
                                 this.error_message = res.data.message
                             }
-
                         })
                     }
                                     
                     
                 });
             },
-
             addItem () {
                 this.descriptions.push(
                 {
@@ -213,7 +232,6 @@
                 attribute_value: avalue
                 })
             },
-
         }	
     }
 </script>

@@ -14,7 +14,7 @@
             </div>
 
             <div class="steps-content" v-if="current === 0">
-                <AddBasic @submitBasicBtn="changeCurrentB"></AddBasic>
+                <ProductBasic @submitBasicBtn="changeCurrentB"></ProductBasic>
             </div>
 
             <div class="steps-content" v-if="current === 1">
@@ -67,7 +67,6 @@
                         <a-upload
                             v-decorator="[
                                 'photograph',
-                                { rules: [{ required: true, message: 'Please upload photograph image' }] }
                             ]"
                             listType="picture-card"
                             :fileList="photograph_file_list"
@@ -98,14 +97,14 @@
 
     import axios from 'axios';
     import TopBar from '@/components/TopBar.vue';
-    import AddBasic from '@/components/AddBasicInfo.vue';
+    import ProductBasic from '@/components/ProductBasicInfo.vue';
     import ProductDescription from '@/components/ProductDescription.vue';
 
     export default {
         name: 'add-product',
         components: {
             TopBar,
-            AddBasic,
+            ProductBasic,
             ProductDescription,
         },
         data() {

@@ -23,7 +23,6 @@
 						<a-input
 						v-decorator="[
 							'name',
-
 							{
 								rules: [
 									{ required: true, message: 'Please input product name' }
@@ -85,7 +84,7 @@
 	import axios from 'axios';
 
 	export default {
-		name: 'AddBasic',
+		name: 'ProductBasic',
 		props: ['product_id', 'product_name', 'product_category', 'product_price'],
 		data() {
 			return {
@@ -93,7 +92,7 @@
 				success: true,
 				submit: false,
 				error_message: '',
-				p_id: this.p_id,
+				p_id: this.product_id,
 				p_name: this.product_name,
 				p_category: this.product_category,
 				p_price: this.product_price,
@@ -101,6 +100,7 @@
 
 				create_url: 'http://localhost:9981/product',
 				get_product_url: 'http://localhost:9981/product',
+
 				change_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_product',
 
 				formItemLayout: {
@@ -118,7 +118,7 @@
 		},
 
 		beforeCreate() {
-			this.form = this.$form.createForm(this, { name: 'add_basic' });
+			this.form = this.$form.createForm(this, { name: 'product_basic' });
 		},
 
 		mounted() {
@@ -135,8 +135,7 @@
 				e.preventDefault();
 				this.form.validateFieldsAndScroll((err, values) => {
 					if (!err) {
-						if (!this.p_id) {
-							console.log("change");
+						if (this.p_id) {
 							axios
 							.post(
 								this.change_url,
@@ -145,6 +144,8 @@
 									name: values.name,
 									category: values.category,
 									price: values.price,
+									user_id: window.localStorage.getItem("user_id"),
+									token: window.localStorage.getItem("token")
 								}
 							)
 							.then((res) =>{
@@ -152,7 +153,7 @@
 								if(this.success){
 									this.$message.success('Success');
 									var name = res.data.product_detail.name;
-									console.log(name);
+									// console.log(name);
 									var category = res.data.product_detail.category;
 									var price = res.data.product_detail.price;
 									var current = 1;
