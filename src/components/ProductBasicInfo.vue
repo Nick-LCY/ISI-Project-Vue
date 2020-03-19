@@ -98,7 +98,7 @@
 				p_price: this.product_price,
 
 
-				create_url: 'http://localhost:9981/product',
+				create_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_product',
 				get_product_url: 'http://localhost:9981/product',
 
 				change_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_product',

@@ -136,9 +136,9 @@
         },
         beforeCreate() {
             this.form = this.$form.createForm(this, { name: 'product_description' });
-            this.form.getFieldDecorator('keys', { initialValue: [], preserve: true })
-            this.form.getFieldDecorator('attribute_name', { initialValue: [], preserve: false })
-            this.form.getFieldDecorator('attribute_value', { initialValue: [], preserve: false })
+            this.form.getFieldDecorator('keys', { initialValue: [], preserve: true });
+            this.form.getFieldDecorator('attribute_name', { initialValue: [], preserve: false });
+            this.form.getFieldDecorator('attribute_value', { initialValue: [], preserve: false });
             this.$nextTick(function() {
                 if (this.p_dess) {
 					this.descriptions = [];
@@ -170,8 +170,8 @@
                 e.preventDefault();
                 this.form.validateFieldsAndScroll((err, values) => {
                     var product_descriptions = [];
-                    for (var i in this.form.getFieldValue('keys')) {
-                        
+                    var l = this.form.getFieldValue('attribute_name').length;
+                    for (var i = l-1; i >= 0; i--) {
                         var des = {};
                         des.attribute_name = values.attribute_name[i];
                         des.attribute_value = values.attribute_value[i];
@@ -179,6 +179,7 @@
                         des.product_id = this.p_id;
                         product_descriptions.push(des);
                     }
+                    console.log(product_descriptions);
                     if (!err) {
                         axios
                         .post(
@@ -220,7 +221,7 @@
             },
             deleteFormItem (index) {
                 const { form } = this;
-                console.log(index);
+                console.log(form.getFieldValue('keys'));
                 // can use data-binding to set
                 this.descriptions.splice(index, 1);
                 var aname = form.getFieldValue('attribute_name');
