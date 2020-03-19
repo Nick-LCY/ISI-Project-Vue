@@ -56,7 +56,13 @@
               <a-col :span="15" class="description">
                 <p>Other Properties:</p>
                 <a-tabs tabPosition="left">
-                  <a-tab-pane v-for="des in product.product_descriptions" :tab="des.attribute_name" :key="des.id">{{des.attribute_value}}</a-tab-pane>
+                  <a-tab-pane
+                  v-for="des in product.product_descriptions"
+                  :tab="des.attribute_name"
+                  :key="des.id"
+                  >
+                    {{des.attribute_value}}
+                  </a-tab-pane>
                 </a-tabs>
               </a-col>
             </a-row>
@@ -93,66 +99,9 @@
           </div>
 
           <div class="steps-content" v-if="current === 2">
+            <a-button @click="yep"> Yep </a-button>
 
-            <a-alert
-            v-if="!success"
-            message="Error"
-            :description="error_message"
-            type="error"
-            showIcon
-            />
-
-            <br>
-
-            <a-form :form="form" @submit="submitImage">
-              <!-- Preview Image Modal -->
-              <a-modal :visible="preview_visible" :footer="null" @cancel="preview_visible = false">
-                <img alt="example" style="box-sizing: border-box; width: 100%; padding: 15px;" :src="preview_image" />
-              </a-modal>
-              <!-- Thumbnail Upload Field -->
-              <a-form-item label="Thumbnail Image" 
-                v-bind="formItemLayout">
-                <a-upload
-                    v-decorator="[
-                        'thumbnail',
-                        { rules: [{ required: true, message: 'Please upload thumbnail image' }] }
-                    ]"
-                    listType="picture-card"
-                    :fileList="thumbnail_file_list"
-                    :customRequest="handleThumbnailRequest"
-                    :remove="handleThumbnailRemove"
-                    @preview="handlePreview">
-                    <div v-if="thumbnail_file_list.length < 1">
-                        <a-icon type="plus" />
-                        <div class="ant-upload-text">Upload</div>
-                    </div>
-                </a-upload>
-              </a-form-item>
-              <!-- Photographs Upload Field -->
-              <a-form-item label="Detailed Photographs"
-                v-bind="formItemLayout">
-                <a-upload
-                    v-decorator="[
-                        'photograph',
-                    ]"
-                    listType="picture-card"
-                    :fileList="photograph_file_list"
-                    :customRequest="handlePhotographRequest"
-                    :remove="handlePhotographRemove"
-                    @preview="handlePreview">
-                    <div v-if="photograph_file_list.length < 4">
-                        <a-icon type="plus" />
-                        <div class="ant-upload-text">Upload</div>
-                    </div>
-                </a-upload>
-              </a-form-item>
-              <!-- Submit Button -->
-              <a-form-item v-bind="formTailLayout">
-                <a-button type="primary" html-type="submit">
-                    Submit
-                </a-button>
-              </a-form-item>
-            </a-form>
+           
           </div>
         </a-row>
 
@@ -190,7 +139,7 @@
         <a-button v-if="status === 'done'" type="primary" size="large" @click="editPD">Edit</a-button>
         <a-popconfirm placement="top" okText="Yes" cancelText="No" @confirm="cancel">
           <template slot="title">
-            <p>Are you sure to give up this and later pages modification?</p>
+            <p>Are you sure to give up current and later pages modification?</p>
           </template>
           <a-button v-if="status === 'edit'" type="danger" size="large">Cancel</a-button>
         </a-popconfirm>
@@ -303,7 +252,7 @@
                       })
     },
     methods: {
-      getValue(){
+      getValue() {
         var star = 0;
         for (var i = this.reviews.length - 1; i >= 0; i--) {
            star += this.reviews[i].rate;
@@ -311,7 +260,7 @@
         star = star/this.reviews.length;
         return star; 
       },
-      addToCart(){
+      addToCart() {
         const user_id = window.localStorage.getItem('user_id')
         const token = window.localStorage.getItem('token')
         const is_login = window.localStorage.getItem('is_login')
@@ -391,6 +340,7 @@
 
       changeCurrentD(value) {
         this.current = value.current;
+        this.product.product_descriptions = value.product_descriptions;
         console.log(this.current);
       },
 
@@ -437,98 +387,9 @@
             // Catch any probably error
             this.thumbnail_file_list[0].status = "error"
         })
-    },
-
-      handlePhotographRequest(data) {
-          var fileListObj = {
-              "uid": data.file.uid,
-              "lastModified": data.file.lastModified,
-              "lastModifiedDate": data.file.lastModifiedDate,
-              "name": data.file.name,
-              "size": data.file.size,
-              "type": data.file.type,
-              "originFileObj": data.file,
-              "status": "uploading",
-              "percent": 0
-          }
-          // Init fileList
-          this.photograph_file_list.push(fileListObj)
-          // Display upload progress while uploading
-          var config = {
-              onUploadProgress: progressEvent => {
-                  fileListObj.percent
-                      = (progressEvent.loaded / progressEvent.total * 100 | 0)
-              }
-          }
-          // Organize upload needed data
-          var formatData = new FormData()
-          formatData.append("photograph", data.file)
-          formatData.append("user_id", window.localStorage.getItem('user_id'))
-          formatData.append("product_id", this.product_id)
-          formatData.append("token", window.localStorage.getItem('token'))
-          // Upload file
-          axios
-          .post(this.photograpth_processing_url, formatData, config)
-          .then((res) => {
-              // Display file when upload success
-              if(res.data.success) {
-                  fileListObj.status = "done"
-                  fileListObj.thumbUrl = res.data.file_link
-                  fileListObj.file_id = res.data.file_id
-              } else {
-                  fileListObj.status = "error"
-              }
-          })
-          .catch(() => {
-              // Catch any probably error
-              fileListObj.status = "error"
-          })
       },
 
-      handleThumbnailRemove() {
-          // Remove uploaded file if success
-          axios.delete(this.thumbnail_processing_url, {"params": {
-              "user_id": window.localStorage.getItem("user_id"),
-              "token": window.localStorage.getItem("token"),
-              "product_id": this.product_id
-          }}).then((res) => {
-              if(res.data.success) {
-                  this.thumbnail_file_list = []
-              }
-          })
-      },
-
-      handlePhotographRemove(data) {
-          // Remove uploaded file if success
-          axios.delete(this.photograpth_processing_url, {"params": {
-              "user_id": window.localStorage.getItem("user_id"),
-              "token": window.localStorage.getItem("token"),
-              "product_id": this.product_id,
-              "photograph_id": data.file_id
-          }}).then((res) => {
-              if(res.data.success) {
-                  this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
-              }
-          })
-      },
-
-      handlePreview(e) {
-          this.preview_image = e.thumbUrl;
-          this.preview_visible = true;
-      },
       
-      submitImage(e) {
-          e.preventDefault();
-          this.form.validateFieldsAndScroll((err) => {
-              if (!err) {
-                  this.$router.push({path:`/product-detail/${this.product_id}`})
-              }
-              // else{
-              //     this.error_message = res.data.message
-              // }                                    
-              
-          })
-      },
     },
 
 

@@ -195,7 +195,8 @@
                             if(this.success){
                                 this.$message.success('Success');
                                 var current = 2;
-								this.$emit('submitDesBtn', {current});
+                                var product_descriptions = res.data.product_descriptions
+								this.$emit('submitDesBtn', {current, product_descriptions});
                             }
                             else{
                                 this.error_message = res.data.message
