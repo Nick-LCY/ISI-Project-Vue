@@ -98,10 +98,7 @@
 				p_price: this.product_price,
 
 
-				create_url: 'http://localhost:9981/product',
-				get_product_url: 'http://localhost:9981/product',
-
-				change_url: 'http://localhost:9981/product',
+				product_url: 'http://localhost:9981/product',
 
 				formItemLayout: {
 					labelCol: {span: 4},
@@ -138,7 +135,7 @@
 						if (this.p_id) {
 							axios
 							.patch(
-								this.change_url,
+								this.product_url,
 								{
 									id: this.p_id,
 									name: values.name,
@@ -169,7 +166,7 @@
 						else{
 							axios
 							.post(
-								this.create_url,
+								this.product_url,
 								{
 									name: values.name,
 									category: values.category,

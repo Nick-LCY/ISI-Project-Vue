@@ -112,6 +112,7 @@
                     },
                 ],
                 des_url: 'http://localhost:9981/product_description',
+                
                 formItemLayout: {
                     labelCol: {span: 4},
                     wrapperCol: {span: 16},
@@ -177,32 +178,60 @@
                         des.attribute_value = values.attribute_value[i];
                         des.sequence = parseInt(i)+1
                         des.product_id = this.p_id;
+                        if (this.p_dess) {des.id = this.p_dess[i].id}
+                        console.log(des)
                         product_descriptions.push(des);
                     }
                     console.log(product_descriptions);
                     if (!err) {
-                        axios
-                        .post(
-                            this.des_url,
-                            {
-                                product_descriptions: product_descriptions,
-								user_id: window.localStorage.getItem("user_id"),
-								token: window.localStorage.getItem("token")
-                            }
-                            
-                        )
-                        .then((res) =>{
-                            this.success = res.data.success
-                            if(this.success){
-                                this.$message.success('Success');
-                                var current = 2;
-                                var product_descriptions = res.data.product_descriptions
-								this.$emit('submitDesBtn', {current, product_descriptions});
-                            }
-                            else{
-                                this.error_message = res.data.message
-                            }
-                        })
+                        if (this.p_dess) {
+                            axios
+                            .patch(
+                                this.des_url,
+                                {
+                                    product_descriptions: product_descriptions,
+                                    user_id: window.localStorage.getItem("user_id"),
+                                    token: window.localStorage.getItem("token")
+                                }
+                                
+                            )
+                            .then((res) =>{
+                                this.success = res.data.success
+                                if(this.success){
+                                    this.$message.success('Success');
+                                    var current = 2;
+                                    var product_descriptions = res.data.product_descriptions
+                                    this.$emit('submitDesBtn', {current, product_descriptions});
+                                }
+                                else{
+                                    this.error_message = res.data.message
+                                }
+                            })
+                        }
+                        else {
+                            axios
+                            .post(
+                                this.des_url,
+                                {
+                                    product_descriptions: product_descriptions,
+                                    user_id: window.localStorage.getItem("user_id"),
+                                    token: window.localStorage.getItem("token")
+                                }
+                                
+                            )
+                            .then((res) =>{
+                                this.success = res.data.success
+                                if(this.success){
+                                    this.$message.success('Success');
+                                    var current = 2;
+                                    var product_descriptions = res.data.product_descriptions
+                                    this.$emit('submitDesBtn', {current, product_descriptions});
+                                }
+                                else{
+                                    this.error_message = res.data.message
+                                }
+                            })
+                        }
                     }
                                     
                     

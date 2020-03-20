@@ -99,7 +99,69 @@
           </div>
 
           <div class="steps-content" v-if="current === 2">
-            <a-button @click="yep"> Yep </a-button>
+            <a-alert
+            v-if="!success"
+            message="Error"
+            :description="error_message"
+            type="error"
+            showIcon
+            />
+
+            <br>
+
+            <a-form :form="form" @submit="submitImage">
+              <!-- Preview Image Modal -->
+              <a-modal :visible="preview_visible" :footer="null" @cancel="preview_visible = false">
+                <img
+                alt="example"
+                style="box-sizing: border-box; width: 100%; padding: 15px;"
+                :src="preview_image"
+                />
+              </a-modal>
+              <!-- Thumbnail Upload Field -->
+              <a-form-item label="Thumbnail Image" 
+                v-bind="formItemLayout">
+                <a-upload
+                  v-decorator="[
+                    'thumbnail',
+                    { rules: [{ required: true, message: 'Please upload thumbnail image' }] }
+                  ]"
+                  listType="picture-card"
+                  :fileList="thumbnail_file_list"
+                  :customRequest="handleThumbnailRequest"
+                  :remove="handleThumbnailRemove"
+                  @preview="handlePreview">
+                  <div v-if="thumbnail_file_list.length < 1">
+                    <a-icon type="plus" />
+                    <div class="ant-upload-text">Upload</div>
+                  </div>
+                </a-upload>
+              </a-form-item>
+              <!-- Photographs Upload Field -->
+              <a-form-item label="Detailed Photographs"
+                v-bind="formItemLayout">
+                <a-upload
+                  v-decorator="[
+                    'photograph',
+                  ]"
+                  listType="picture-card"
+                  :fileList="photograph_file_list"
+                  :customRequest="handlePhotographRequest"
+                  :remove="handlePhotographRemove"
+                  @preview="handlePreview">
+                  <div v-if="photograph_file_list.length < 4">
+                    <a-icon type="plus" />
+                    <div class="ant-upload-text">Upload</div>
+                  </div>
+                </a-upload>
+              </a-form-item>
+              <!-- Submit Button -->
+              <a-form-item v-bind="formTailLayout">
+                <a-button type="primary" html-type="submit">
+                  Submit
+                </a-button>
+              </a-form-item>
+            </a-form>
 
            
           </div>
@@ -345,49 +407,146 @@
       },
 
       handleThumbnailRequest(data) {
-        // Init fileList
-        this.thumbnail_file_list = [{
-            "uid": data.file.uid,
-            "lastModified": data.file.lastModified,
-            "lastModifiedDate": data.file.lastModifiedDate,
-            "name": data.file.name,
-            "size": data.file.size,
-            "type": data.file.type,
-            "originFileObj": data.file,
-            "status": "uploading",
-            "percent": 0
-        }]
-        // Display upload progress while uploading
-        var config = {
-            onUploadProgress: progressEvent => {
-                this.thumbnail_file_list[0].percent
-                    = (progressEvent.loaded / progressEvent.total * 100 | 0)
-            }
-        }
-        // Organize upload needed data
-        var formatData = new FormData()
-        formatData.append("thumbnail", data.file)
-        formatData.append("user_id", window.localStorage.getItem('user_id'))
-        formatData.append("product_id", this.product_id)
-        formatData.append("token", window.localStorage.getItem('token'))
-        // Upload file
-        axios
-        .post(this.thumbnail_processing_url, formatData, config)
-        .then((res) => {
-            // Display file when upload success
-            if(res.data.success) {
-                this.thumbnail_file_list[0].status = "done"
-                this.thumbnail_file_list[0].thumbUrl = res.data.file_link
-                this.thumbnail_file_list[0].file_id = res.data.file_id
-            } else {
-                this.thumbnail_file_list[0].status = "error"
-            }
-        })
-        .catch(() => {
-            // Catch any probably error
-            this.thumbnail_file_list[0].status = "error"
-        })
-      },
+                // Init fileList
+                this.thumbnail_file_list = [{
+                    "uid": data.file.uid,
+                    "lastModified": data.file.lastModified,
+                    "lastModifiedDate": data.file.lastModifiedDate,
+                    "name": data.file.name,
+                    "size": data.file.size,
+                    "type": data.file.type,
+                    "originFileObj": data.file,
+                    "status": "uploading",
+                    "percent": 0
+                }]
+                // Display upload progress while uploading
+                var config = {
+                    onUploadProgress: progressEvent => {
+                        this.thumbnail_file_list[0].percent
+                            = (progressEvent.loaded / progressEvent.total * 100 | 0)
+                    }
+                }
+                // Organize upload needed data
+                var formatData = new FormData()
+                formatData.append("thumbnail", data.file)
+                formatData.append("user_id", window.localStorage.getItem('user_id'))
+                formatData.append("product_id", this.product_id)
+                formatData.append("token", window.localStorage.getItem('token'))
+                // Upload file
+                axios
+                .post(this.thumbnail_processing_url, formatData, config)
+                .then((res) => {
+                    // Display file when upload success
+                    if(res.data.success) {
+                        this.thumbnail_file_list[0].status = "done"
+                        this.thumbnail_file_list[0].thumbUrl = res.data.file_link
+                        this.thumbnail_file_list[0].file_id = res.data.file_id
+                    } else {
+                        this.thumbnail_file_list[0].status = "error"
+                    }
+                })
+                .catch(() => {
+                    // Catch any probably error
+                    this.thumbnail_file_list[0].status = "error"
+                })
+            },
+
+            handlePhotographRequest(data) {
+                var fileListObj = {
+                    "uid": data.file.uid,
+                    "lastModified": data.file.lastModified,
+                    "lastModifiedDate": data.file.lastModifiedDate,
+                    "name": data.file.name,
+                    "size": data.file.size,
+                    "type": data.file.type,
+                    "originFileObj": data.file,
+                    "status": "uploading",
+                    "percent": 0
+                }
+                // Init fileList
+                this.photograph_file_list.push(fileListObj)
+                // Display upload progress while uploading
+                var config = {
+                    onUploadProgress: progressEvent => {
+                        fileListObj.percent
+                            = (progressEvent.loaded / progressEvent.total * 100 | 0)
+                    }
+                }
+                // Organize upload needed data
+                var formatData = new FormData()
+                formatData.append("photograph", data.file)
+                formatData.append("user_id", window.localStorage.getItem('user_id'))
+                formatData.append("product_id", this.product_id)
+                formatData.append("token", window.localStorage.getItem('token'))
+                // Upload file
+                axios
+                .post(this.photograpth_processing_url, formatData, config)
+                .then((res) => {
+                    // Display file when upload success
+                    if(res.data.success) {
+                        fileListObj.status = "done"
+                        fileListObj.thumbUrl = res.data.file_link
+                        fileListObj.file_id = res.data.file_id
+                    } else {
+                        fileListObj.status = "error"
+                    }
+                })
+                .catch(() => {
+                    // Catch any probably error
+                    fileListObj.status = "error"
+                })
+            },
+
+            handleThumbnailRemove() {
+                // Remove uploaded file if success
+                axios.delete(this.thumbnail_processing_url, {"params": {
+                    "user_id": window.localStorage.getItem("user_id"),
+                    "token": window.localStorage.getItem("token"),
+                    "product_id": this.product_id
+                }}).then((res) => {
+                    if(res.data.success) {
+                        this.thumbnail_file_list = []
+                    }
+                })
+            },
+
+            handlePhotographRemove(data) {
+                // If data.file_id exist, means back-end has this file in its local storage
+                // Then need to send delete request first
+                if(data.file_id) {
+                    // Remove uploaded file if success
+                    axios.delete(this.photograpth_processing_url, {"params": {
+                        "user_id": window.localStorage.getItem("user_id"),
+                        "token": window.localStorage.getItem("token"),
+                        "product_id": this.product_id,
+                        "photograph_id": data.file_id
+                    }}).then((res) => {
+                        if(res.data.success) {
+                            this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
+                        }
+                    })
+                } else {
+                    this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
+                }
+            },
+
+            handlePreview(e) {
+                this.preview_image = e.thumbUrl;
+                this.preview_visible = true;
+            },
+            
+            submitImage(e) {
+                e.preventDefault();
+                this.form.validateFieldsAndScroll((err) => {
+                    if (!err) {
+                        this.$router.push({path:`/product-detail/${this.product_id}`})
+                    }
+                    // else{
+                    //     this.error_message = res.data.message
+                    // }                                    
+                    
+                })
+            },
 
       
     },
