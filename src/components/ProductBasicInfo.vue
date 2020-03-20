@@ -98,10 +98,10 @@
 				p_price: this.product_price,
 
 
-				create_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/create_product',
+				create_url: 'http://localhost:9981/product',
 				get_product_url: 'http://localhost:9981/product',
 
-				change_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/change_product',
+				change_url: 'http://localhost:9981/product',
 
 				formItemLayout: {
 					labelCol: {span: 4},
@@ -137,7 +137,7 @@
 					if (!err) {
 						if (this.p_id) {
 							axios
-							.post(
+							.patch(
 								this.change_url,
 								{
 									id: this.p_id,

@@ -111,7 +111,7 @@
                         attribute_value: '',
                     },
                 ],
-                des_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/product_description',
+                des_url: 'http://localhost:9981/product_description',
                 formItemLayout: {
                     labelCol: {span: 4},
                     wrapperCol: {span: 16},
