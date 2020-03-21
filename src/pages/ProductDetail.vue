@@ -348,7 +348,6 @@
                 this.error_message = 'The product has already existed'
               }
             }
-            console.log(this.success);
             if(this.success){
               axios
               .post(
