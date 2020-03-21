@@ -329,11 +329,13 @@
         const product_id = this.product.id
         if(is_login){
           axios
-          .post(
-              this.add_url,
+          .get(
+              this.add_url, 
               {
-                  user_id: user_id,
-                  token: token,
+                  params: {
+                    user_id: user_id,
+                    token: token
+                  }
               }
           )
           .then((res) =>{
@@ -346,6 +348,7 @@
                 this.error_message = 'The product has already existed'
               }
             }
+            console.log(this.success);
             if(this.success){
               axios
               .post(
