@@ -80,9 +80,14 @@
 				</a-form-item>
 				<a-form-item v-bind="formTailLayout">
 					<a-button type="primary" html-type="submit">
-						Next	
+						Submit changes and next	
 					</a-button>
 				</a-form-item>
+                <a-form-item v-bind="formTailLayout" v-if="p_dess">
+                    <a-button type="primary" html-type="submit" @click="next">
+                        No descriptions are added or deleted    
+                    </a-button>
+                </a-form-item>
 			</a-form>
 		</a-layout-content>
 	</a-layout>
@@ -100,6 +105,9 @@
                 error_message: '',
                 p_id: this.product_id,
                 p_dess: this.product_descriptions,
+
+                pdess: [],
+                origin_length: 0,
                 
                 descriptions: [
                     {
@@ -142,6 +150,7 @@
             this.form.getFieldDecorator('attribute_value', { initialValue: [], preserve: false });
             this.$nextTick(function() {
                 if (this.p_dess) {
+                    this.origin_length = this.p_dess.length;
 					this.descriptions = [];
 					var aname = [];
 					var avalue = [];
@@ -170,74 +179,83 @@
             submitDetail(e) {
                 e.preventDefault();
                 this.form.validateFieldsAndScroll((err, values) => {
-                    var product_descriptions = [];
-                    var l = this.form.getFieldValue('attribute_name').length;
-                    for (var i = l-1; i >= 0; i--) {
-                        var des = {};
-                        des.attribute_name = values.attribute_name[i];
-                        des.attribute_value = values.attribute_value[i];
-                        des.sequence = parseInt(i)+1
-                        des.product_id = this.p_id;
-                        if (this.p_dess) {des.id = this.p_dess[i].id}
-                        console.log(des)
-                        product_descriptions.push(des);
-                    }
-                    console.log(product_descriptions);
+
                     if (!err) {
+
+                        var add_des = [];
+                        var delete_des = [];
+                        
+                        var n1 = this.form.getFieldValue('attribute_name');
+                        var n2 = [];
+                        var v1 = this.form.getFieldValue('attribute_value');
+                        var v2 = [];
+                        
                         if (this.p_dess) {
-                            axios
-                            .patch(
-                                this.des_url,
-                                {
-                                    product_descriptions: product_descriptions,
-                                    user_id: window.localStorage.getItem("user_id"),
-                                    token: window.localStorage.getItem("token")
+                            for (var d of this.p_dess) {
+                                n2.push(d.attribute_name);
+                                v2.push(d.attribute_value);
+                            }
+                            //Check if there's any description was added
+                            var n = n1.filter( function( el ) { return n2.indexOf( el ) < 0; });
+                            console.log(n);
+                            var v = v1.filter( function( el ) { return v2.indexOf( el ) < 0; });
+                            for (var i = n.length - 1; i >= 0; i--) {
+                                var des = {};
+                                des.attribute_name = n[i];
+                                des.attribute_value = v[i];
+                                add_des.push(des);
+                            }
+                            console.log(add_des);
+
+                            //Check if there's any description was deleted
+                            var delete_des_name = n2.filter( function( el ) { return n1.indexOf( el ) < 0 });
+                            console.log(delete_des_name);
+                            for (i = delete_des_name.length - 1; i >= 0; i--) {
+                                for (d of this.p_dess){
+                                    console.log(i);
+                                    console.log(d);
+                                    if (delete_des_name[i] === d.attribute_name) {
+                                        delete_des.push(d.id);
+                                    }
                                 }
-                                
-                            )
-                            .then((res) =>{
-                                this.success = res.data.success
-                                if(this.success){
-                                    this.$message.success('Success');
-                                    var current = 2;
-                                    var product_descriptions = res.data.product_descriptions
-                                    this.$emit('submitDesBtn', {current, product_descriptions});
+                            }
+                            console.log(delete_des);
+
+                            if (delete_des.length) {
+                                for (var del of delete_des) {
+                                    this.deleteDes(del)
                                 }
-                                else{
-                                    this.error_message = res.data.message
-                                }
-                            })
+                            }
+                            if (add_des.length) {
+                                this.addDes(add_des);
+                            }
                         }
                         else {
-                            axios
-                            .post(
-                                this.des_url,
-                                {
-                                    product_descriptions: product_descriptions,
-                                    user_id: window.localStorage.getItem("user_id"),
-                                    token: window.localStorage.getItem("token")
-                                }
-                                
-                            )
-                            .then((res) =>{
-                                this.success = res.data.success
-                                if(this.success){
-                                    this.$message.success('Success');
-                                    var current = 2;
-                                    var product_descriptions = res.data.product_descriptions
-                                    this.$emit('submitDesBtn', {current, product_descriptions});
-                                }
-                                else{
-                                    this.error_message = res.data.message
-                                }
-                            })
+                            for (i = n1.length-1; i >= 0; i--) {
+                                console.log(i);
+                                des = {};
+                                des.attribute_name = values.attribute_name[i];
+                                des.attribute_value = values.attribute_value[i];
+                                add_des.push(des);
+                            }
+                            console.log(add_des);
+                            this.addDes(add_des);
                         }
+                        
+                        var current = 2;
+                        this.$emit('submitDesBtn', {current});
                     }
                                     
                     
                 });
             },
-            addItem () {
+
+            next() {
+                var current = 2;
+                this.$emit('submitChangeDesBtn', {current});
+            },
+
+            addItem() {
                 this.descriptions.push(
                 {
                     attribute_name: '',
@@ -248,7 +266,7 @@
                 keys: this.keys
                 })
             },
-            deleteFormItem (index) {
+            deleteFormItem(index) {
                 const { form } = this;
                 console.log(form.getFieldValue('keys'));
                 // can use data-binding to set
@@ -256,13 +274,62 @@
                 var aname = form.getFieldValue('attribute_name');
                 var avalue = form.getFieldValue('attribute_value');
                 aname.splice(index, 1);
-                avalue.splice(index, 1)
+                avalue.splice(index, 1);
                 form.setFieldsValue({
                 keys: this.keys,
                 attribute_name: aname,
                 attribute_value: avalue
                 })
             },
+
+            addDes(add_des) {
+                console.log("add!");
+                axios
+                .post(
+                    this.des_url,
+                    {
+                        product_id: this.p_id,
+                        product_descriptions: add_des,
+                        user_id: window.localStorage.getItem("user_id"),
+                        token: window.localStorage.getItem("token")
+                    }
+                )
+                .then((res) =>{
+                    this.success = res.data.success
+                    if(this.success){
+                        this.$message.success('Add Success');
+                    }
+                    else{
+                        this.error_message = res.data.message
+                    }
+                })
+            },
+
+            deleteDes(des_id) {
+                console.log("delete!");
+                axios
+                .delete(
+                    this.des_url,
+                    {params:{
+                        "product_id": this.p_id,
+                        "des_id": des_id,
+                        "user_id": window.localStorage.getItem("user_id"),
+                        "token": window.localStorage.getItem("token")
+                    }
+                        
+                    }
+                )
+                .then((res) =>{
+                    this.success = res.data.success
+                    if(this.success){
+                        this.$message.success('Delete Success');
+                    }
+                    else{
+                        this.error_message = res.data.message
+                    }
+                })
+            },
+
         }	
     }
 </script>
