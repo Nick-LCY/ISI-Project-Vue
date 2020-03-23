@@ -254,7 +254,7 @@
           button_visible:true,
           button_type:'',
           item_url: 'http://localhost:9981/products',
-          po_url:'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/search_po',
+          po_url:'http://localhost:9981/purchase_order',
           result:{
             product_list:[],
             current_page:'',
@@ -299,7 +299,7 @@
         this.login_data.modal_visible = true
       },
       onSearch(value){
-        if(this.search.button_type == 'user_search_item'||this.search.button_type == 'vendor_search_item')
+        if(this.search.button_type == 'user_search_item' || this.search.button_type == 'vendor_search_item')
         {
           this.request_data.key = value;
           axios
@@ -325,12 +325,13 @@
           .get(
             this.search.po_url
             +'?token=' + window.localStorage.getItem('token')
-            +'&po_no' + value
+            +'&po_no=' + value
+            +'&user_id=' + window.localStorage.getItem('user_id')
           )
           .then((res) => {
             this.error.success = res.data.success
             if(res.data.success){
-              this.$router.push({path:`/purchase-detail/${res.data.po_no}`})
+              this.$router.push({path:`/po-processing/${res.data.purchase_detail.po_no}`})
             }
             else{
               this.error.error_message = res.data.message
