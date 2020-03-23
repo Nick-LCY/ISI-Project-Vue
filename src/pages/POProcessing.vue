@@ -29,14 +29,14 @@
 				</div>
 				<br>
 
-				<div class="buttons" v-if="po_detail.status === 'Pending'">
-					<a-button @click="shipPO(po_detail.po_no, po_detail.status)" type="primary">Ship</a-button>
-					<a-button @click="holdPO(po_detail.po_no, po_detail.status)">Hold</a-button>
-					<a-button @click="cancelPO(po_detail.po_no, po_detail.status)" type="danger">Cancel</a-button>
+				<div class="buttons" v-if="po_detail.status === 'pending'">
+					<a-button @click="shipPO(po_detail.po_no, 'shipped')" type="primary">Ship</a-button>
+					<a-button @click="holdPO(po_detail.po_no, 'hold')">Hold</a-button>
+					<a-button @click="cancelPO(po_detail.po_no, 'cancelled')" type="danger">Cancel</a-button>
 				</div>
-				<div class="buttons" v-if="po_detail.status === 'Hold'">
-					<a-button @click="shipPO(po_detail.po_no, po_detail.status)" type="primary">Unhold and Ship</a-button>
-					<a-button @click="cancelPO(po_detail.po_no, po_detail.status)" type="danger">Cancel</a-button>
+				<div class="buttons" v-if="po_detail.status === 'hold'">
+					<a-button @click="shipPO(po_detail.po_no, 'shipped')" type="primary">Unhold and Ship</a-button>
+					<a-button @click="cancelPO(po_detail.po_no, 'cancelled')" type="danger">Cancel</a-button>
 				</div>
 
 			</div>
@@ -80,8 +80,8 @@
 		},
 		data() {
 			return {
-				get_po_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_order',
-				update_po_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/update_purchase_order',
+				get_po_url: 'http://localhost:9981/purchase_order',
+				update_po_url: 'http://localhost:9981/purchase_order',
 
 				po_detail: {},
 
@@ -96,7 +96,7 @@
 		created(){
 			const user_id = window.localStorage.getItem('user_id');
 			const token = window.localStorage.getItem('token');
-			var po_no = this.po_detail.po_no;
+			var po_no = this.$route.params.po_no;
 			axios
 			.get(this.get_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
 			.then((res) =>{
@@ -112,7 +112,7 @@
 				const token = window.localStorage.getItem('token');
 
 				axios
-				.post(
+				.patch(
 					this.update_po_url,
 					{
 						user_id: user_id,
@@ -125,7 +125,7 @@
 					this.success = res.data.success;
 
 					if(this.success){
-						this.po_detail.status='Cancelled';
+						this.po_detail.status='cancelled';
 					}
 					else{
 						this.error_message = res.data.error_message;
@@ -138,7 +138,7 @@
 				const token = window.localStorage.getItem('token');
 
 				axios
-				.post(
+				.patch(
 					this.update_po_url,
 					{
 						user_id: user_id,
@@ -151,7 +151,7 @@
 					this.success = res.data.success;
 					console.log(res);
 					if(this.success){
-						this.po_detail.status='Shipped';
+						this.po_detail.status='shipped';
 					}
 					else{
 						this.error_message = res.data.error_message;
@@ -164,7 +164,7 @@
 				const token = window.localStorage.getItem('token');
 
 				axios
-				.post(
+				.patch(
 					this.update_po_url,
 					{
 						user_id: user_id,
@@ -176,7 +176,7 @@
 				.then((res) =>{
 					this.success = res.data.success;
 					if(this.success){
-						this.po_detail.status='Hold';
+						this.po_detail.status='hold';
 					}
 					else{
 						this.error_message = res.data.error_message;
