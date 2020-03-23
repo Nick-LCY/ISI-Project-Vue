@@ -173,25 +173,25 @@ export default {
             const token = window.localStorage.getItem('token')
             const items = this.items
             var purchase_items_with_id = []
-            var purchase_items_with_product_id = []
+            // var purchase_items_with_product_id = []
             var _ = require('lodash');
             for (var item of items){
                 purchase_items_with_id.push(_.pick(item,['id', 'quantity']))
             }
             ////CHANGE TO GET PURCHASE ITEMS WITH PRODUCT ID
-            var count = 0
-            for (var filtered_item of purchase_items_with_id){
-                purchase_items_with_product_id[count].product_id = filtered_item.id
-                purchase_items_with_product_id[count].quantity = filtered_item.quantity
-            }
-            console.log(purchase_items_with_product_id)
+            // var count = 0
+            // for (var filtered_item of purchase_items_with_id){
+            //     purchase_items_with_product_id[count].product_id = filtered_item.id
+            //     purchase_items_with_product_id[count].quantity = filtered_item.quantity
+            // }
+            // console.log(purchase_items_with_product_id)
             axios
             .post(
                 this.checkout_url,
                 {
                     user_id: user_id,
                     token: token,
-                    purchase_items: purchase_items_with_product_id,
+                    purchase_items: purchase_items_with_id,
                 }
                 )
             .then((res) =>{

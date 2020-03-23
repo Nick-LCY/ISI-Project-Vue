@@ -93,7 +93,7 @@
 				<a-button 
 				type="danger" 
 				size="large" 
-				@click="cancelPO(po_detail.po_no, po_detail.status)" 
+				@click="cancelPO(po_detail.po_no)" 
 				:disabled="disable"
 				>
 					Cancel
@@ -119,8 +119,8 @@
 				isShow: false,
 				value: '',
 				submitting: false,
-				get_po_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/purchase_order',
-				update_po_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/update_purchase_order',
+				get_po_url: 'http://localhost:9981/purchase_order',
+				update_po_url: 'http://localhost:9981/purchase_order',
 
 				po_detail: {},
 
@@ -135,7 +135,7 @@
 		created(){
 			const user_id = window.localStorage.getItem('user_id');
 			const token = window.localStorage.getItem('token');
-			var po_no = this.po_detail.po_no;
+			var po_no = this.$route.params.po_no;
 			axios
 			.get(this.get_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
 			.then((res) =>{
@@ -150,27 +150,28 @@
 		computed: {
 			disable: function() {
 				var d =this.dis;
-				if (this.po_detail.status == 'Pending' || this.po_detail.status == 'Hold') {
+				if (this.po_detail.status == 'pending' || this.po_detail.status == 'hold') {
 					d=false;
+				} else {
+					d=true;
 				}
-				else d=true;
 				return d;
 			}
 		},
 
 		methods: {
-			cancelPO(po_no, status) {
+			cancelPO(po_no) {
 				const user_id = window.localStorage.getItem('user_id');
 				const token = window.localStorage.getItem('token');
 
 				axios
-				.post(
+				.patch(
 					this.update_po_url,
 					{
 						user_id: user_id,
 						token: token,
 						po_no: po_no,
-						status: status,
+						status: "cancelled",
 					}
 				)
 				.then((res) =>{
