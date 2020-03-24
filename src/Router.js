@@ -112,18 +112,6 @@ const router =  new Router({
       }
     },
 
-    // for try
-    {
-      path: '/vendor-pd/:id',
-      name: 'Vendor Product Detail',
-      component: () => import('@/pages/VendorPD.vue'),
-      meta:
-      {
-        need_login:false,
-        user_type:'vendor'
-      }
-    },
-
   ]
 })
 

@@ -23,9 +23,9 @@
 					<p>Shipping Address: {{po_detail.shipping_address}}</p>
 					<p>Total Amount: ${{po_detail.total_amount}}</p>
 					<p>Status: {{po_detail.status}}</p>
-					<p v-if="po_detail.status === 'Shipped'">Shipment Date: {{po_detail.shipment_date}}</p>
-					<p v-if="po_detail.status === 'Cancelled'">Cancel Date: {{po_detail.cancel_date}}</p>
-					<p v-if="po_detail.status === 'Cancelled'">Cancelled By: {{po_detail.cancelled_by}}</p>
+					<p v-if="po_detail.status === 'shipped'">Shipment Date: {{po_detail.shipment_date}}</p>
+					<p v-if="po_detail.status === 'cancelled'">Cancel Date: {{po_detail.cancel_date}}</p>
+					<p v-if="po_detail.status === 'cancelled'">Cancelled By: {{po_detail.cancelled_by}}</p>
 				</div>
 				<br>
 
@@ -126,6 +126,7 @@
 
 					if(this.success){
 						this.po_detail.status='cancelled';
+						this.po_detail.cancelled_by = res.data.cancelled_by;
 					}
 					else{
 						this.error_message = res.data.error_message;
@@ -200,6 +201,7 @@
 .basicInfo {
 	padding: 20px;
 	border: 2px solid rgb(232, 232, 232);
+	text-transform: capitalize;
 }
 
 .ant-divider {

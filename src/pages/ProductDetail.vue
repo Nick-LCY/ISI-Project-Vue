@@ -140,7 +140,10 @@
                 <a-upload
                   v-decorator="[
                     'thumbnail',
-                    { rules: [{ required: true, message: 'Please upload thumbnail image' }] }
+                    { rules:
+                      [{
+                        required: !this.thumbnail_file_list.length,
+                        message: 'Please upload thumbnail image' }] }
                   ]"
                   listType="picture-card"
                   :fileList="thumbnail_file_list"
@@ -341,7 +344,8 @@
               uid: '-'+p.id,
               name: 'photograph'+p.id,
               status: 'done',
-              url: p.file_location
+              url: p.file_location,
+              file_id: p.id
             }
             this.photograph_file_list.push(photo);
           }
@@ -467,7 +471,7 @@
                 var formatData = new FormData()
                 formatData.append("thumbnail", data.file)
                 formatData.append("user_id", window.localStorage.getItem('user_id'))
-                formatData.append("product_id", this.product_id)
+                formatData.append("product_id", this.product.id)
                 formatData.append("token", window.localStorage.getItem('token'))
                 // Upload file
                 axios
@@ -513,7 +517,7 @@
                 var formatData = new FormData()
                 formatData.append("photograph", data.file)
                 formatData.append("user_id", window.localStorage.getItem('user_id'))
-                formatData.append("product_id", this.product_id)
+                formatData.append("product_id", this.product.id)
                 formatData.append("token", window.localStorage.getItem('token'))
                 // Upload file
                 axios
@@ -539,10 +543,11 @@
                 axios.delete(this.thumbnail_processing_url, {"params": {
                     "user_id": window.localStorage.getItem("user_id"),
                     "token": window.localStorage.getItem("token"),
-                    "product_id": this.product_id
+                    "product_id": this.product.id
                 }}).then((res) => {
                     if(res.data.success) {
                         this.thumbnail_file_list = []
+                        console.log('success!')
                     }
                 })
             },
@@ -555,7 +560,7 @@
                     axios.delete(this.photograpth_processing_url, {"params": {
                         "user_id": window.localStorage.getItem("user_id"),
                         "token": window.localStorage.getItem("token"),
-                        "product_id": this.product_id,
+                        "product_id": this.product.id,
                         "photograph_id": data.file_id
                     }}).then((res) => {
                         if(res.data.success) {
@@ -576,7 +581,6 @@
                 e.preventDefault();
                 this.form.validateFieldsAndScroll((err) => {
                     if (!err) {
-                        // this.$router.push({path:`/product-detail/${this.product_id}`})
                         location. reload()
                     }
                     // else{

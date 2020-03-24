@@ -24,9 +24,9 @@
 					<p>Shipping Address: {{po_detail.shipping_address}}</p>
 					<p>Total Amount: ${{po_detail.total_amount}}</p>
 					<p>Status: {{po_detail.status}}</p>
-					<p v-if="po_detail.status === 'Shipped'">Shipment Date: {{po_detail.shipment_date}}</p>
-					<p v-if="po_detail.status === 'Cancelled'">Cancel Date: {{po_detail.cancel_date}}</p>
-					<p v-if="po_detail.status === 'Cancelled'">Cancelled By: {{po_detail.cancelled_by}}</p>
+					<p v-if="po_detail.status === 'shipped'">Shipment Date: {{po_detail.shipment_date}}</p>
+					<p v-if="po_detail.status === 'cancelled'">Cancel Date: {{po_detail.cancel_date}}</p>
+					<p v-if="po_detail.status === 'cancelled'">Cancelled By: {{po_detail.cancelled_by}}</p>
 				</div>
 			</div>
 
@@ -37,13 +37,20 @@
 				<div>
 					<a-list :grid="{column: 1}" :dataSource="po_detail.purchase_items">
 						<a-list-item slot="renderItem" slot-scope="item">
-							<router-link :to="'/product-detail/'+item.product_id">
+							<PurchaseItem
+							:product_id="item.product_id"
+							:product_name="item.product_name"
+							:product_price="item.product_price"
+							:quantity="item.quantity"
+							:status="po_detail.status">
+							</PurchaseItem>
+							<!-- <router-link :to="'/product-detail/'+item.product_id">
 							<a-card :title="item.product_name" hoverble>
 								<a-card-meta>
 									<template slot="description">
 										<p>Unit Price: ${{item.product_price}}</p>
 										<p>Quantity: {{item.quantity}}</p>
-										<p>Subtotal: ${{item.product_price*item.quantity}}</p>
+										<p>Subtotal: ${{item.product_price*item.quantity}}</p> -->
 										
 										<!-- <div slot="content">
 											<a-form-item>
@@ -79,10 +86,10 @@
 												</a-button>
 											</a-form-item> -->
 										<!-- </div> -->
-									</template>
+								<!-- 	</template>
 								</a-card-meta>
 							</a-card>
-							</router-link>
+							</router-link> -->
 						</a-list-item>
 					</a-list>
 				</div>
@@ -107,10 +114,12 @@
 <script>
 	import axios from 'axios';
 	import TopBar from '@/components/TopBar.vue';
+	import PurchaseItem from '@/components/PurchaseItem.vue';
 	export default {
 		name: 'purchase-detail',
 		components: {
 			TopBar,
+			PurchaseItem,
 		},
 		data() {
 			return {
@@ -140,6 +149,7 @@
 			.get(this.get_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
 			.then((res) =>{
 				this.po_detail = res.data.purchase_detail
+				console.log(this.po_detail);
 
 				// eslint-disable-next-line no-console
 					// console.log(this.po_info);
@@ -177,8 +187,9 @@
 				.then((res) =>{
 					this.success = res.data.success;
 					if(this.success){
-						this.po_detail.status='Cancelled';
-						this.dis=true;
+						this.po_detail.status = 'cancelled';
+						this.po_detail.cancelled_by = res.data.cancelled_by;
+						this.dis = true;
 						console.log('success');
 					}
 					else{
@@ -244,6 +255,7 @@
 .basicInfo {
 	padding: 20px;
 	border: 2px solid rgb(232, 232, 232);
+	text-transform: capitalize;
 }
 
 .ant-divider {
