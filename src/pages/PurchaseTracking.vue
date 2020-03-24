@@ -76,6 +76,7 @@
       .get(this.get_po_list_url+'?user_id='+user_id+'&token='+token)
       .then((res) =>{
         this.po_info = res.data.po_info;
+        console.log(res.data);
 
         // eslint-disable-next-line no-console
 			// console.log(this.po_info);

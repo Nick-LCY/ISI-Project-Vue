@@ -176,6 +176,7 @@
                     "status": "uploading",
                     "percent": 0
                 }]
+                console.log(this.thumbnail_file_list);
                 // Display upload progress while uploading
                 var config = {
                     onUploadProgress: progressEvent => {

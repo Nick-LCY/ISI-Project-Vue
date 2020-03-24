@@ -327,7 +327,24 @@
       var id = this.$route.params.id;
       axios
         .get(this.get_product_url+'?id='+id)
-        .then((res) =>{ this.product = res.data;
+        .then((res) =>{
+          this.product = res.data;
+          var thumb = {
+            uid: '-1',
+            name: 'thumb',
+            status: 'done',
+            url: res.data.thumbnail_location
+          }
+          this.thumbnail_file_list.push(thumb);
+          for (var p of res.data.product_photographs) {
+            var photo = {
+              uid: '-'+p.id,
+              name: 'photograph'+p.id,
+              status: 'done',
+              url: p.file_location
+            }
+            this.photograph_file_list.push(photo);
+          }
                         // eslint-disable-next-line no-console
                         // console.log(this.product)
                       })
