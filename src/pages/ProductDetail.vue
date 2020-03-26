@@ -85,33 +85,16 @@
             :product_id="product.id"
             :product_name="product.name"
             :product_category="product.category"
-            :product_price="product.price"
             ></ProductBasic>
           </div>
 
           <div class="steps-content" v-if="current === 1">
-            <div class="son-steps">
-              <a-steps size="small" :current="des_current">
-                <a-step title="Change" description="Change the old descriptions" />
-                <a-step title="Add/Delete" description="Add new descriptions or delete the old ones" />
-              </a-steps>
-            </div>
-            <div class="son-steps-content" v-if="des_current === 0">
-              <ChangeDes
-              @submitChangeDesBtn="changeDesCurrent"
-              :product_id="product.id"
-              :product_descriptions="product.product_descriptions"
-              >
-              </ChangeDes>
-            </div>
-            <div class="son-steps-content" v-if="des_current === 1">
-              <ProductDescription
-              @submitDesBtn="changeCurrentD"
-              :product_id="product.id"
-              :product_descriptions="product.product_descriptions"
-              >
-              </ProductDescription>
-            </div>
+            <changeDes
+            @submitDesBtn="changeCurrentD"
+            :product_id="product.id"
+            :product_descriptions="product.product_descriptions">
+            </changeDes>
+            
           </div>
 
           <div class="steps-content" v-if="current === 2">
@@ -237,7 +220,6 @@
   import axios from 'axios';
   import TopBar from '@/components/TopBar.vue';
   import ProductBasic from '@/components/ProductBasicInfo.vue';
-  import ProductDescription from '@/components/ProductDescription.vue';
   import ChangeDes from '@/components/ChangeDes.vue';
 
   export default {
@@ -245,7 +227,6 @@
     components:{
       TopBar,
       ProductBasic,
-      ProductDescription,
       ChangeDes,
     },
     data() {
@@ -285,7 +266,7 @@
         success:true,
         error_message:'',
 
-        current: 0,
+        current: 1,
         steps: [
             {
                 title: 'Change product\'s basic information',
@@ -297,7 +278,6 @@
                 title: 'Change product\'s thumbnail and photographs',
             },
         ],
-        des_current: 0,
 
         thumbnail_file_list: [],
         photograph_file_list: [],
@@ -432,9 +412,8 @@
 
       changeCurrentB(value) {
         this.current = value.current;
-        this.product.name = value.name;
-        this.product.category = value.category;
-        this.product.price = value.price;
+        // this.product.name = value.name;
+        // this.product.category = value.category;
         console.log(this.current);
       },
 
@@ -442,9 +421,6 @@
         this.current = value.current;
         // this.product.product_descriptions = value.pdess;
         console.log(this.current);
-      },
-      changeDesCurrent(value) {
-        this.des_current = value.des_current;
       },
 
       handleThumbnailRequest(data) {

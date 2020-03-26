@@ -40,13 +40,14 @@
 						<a-input
 						v-decorator="[
 							'category',
-							{rules: [{ required: true, message: 'PLease input product category'}] },
+							{rules: [{ required: true, message: 'Please input product category'}] },
 						]"
 						placeholder="Product category"
 						/>
 					</a-form-item>
 
-					<a-form-item 
+					<a-form-item
+					v-if="!p_id"
 					label="Price" 
 					v-bind="formItemLayout"
 					>
@@ -85,7 +86,7 @@
 
 	export default {
 		name: 'ProductBasic',
-		props: ['product_id', 'product_name', 'product_category', 'product_price'],
+		props: ['product_id', 'product_name', 'product_category'],
 		data() {
 			return {
 
@@ -95,7 +96,6 @@
 				p_id: this.product_id,
 				p_name: this.product_name,
 				p_category: this.product_category,
-				p_price: this.product_price,
 
 
 				product_url: 'http://localhost:9981/product',
@@ -122,7 +122,6 @@
 			this.form.setFieldsValue({
 				"name": this.p_name,
 				"category": this.p_category,
-				"price": this.p_price,
 			})
 		},
 
@@ -140,7 +139,6 @@
 									id: this.p_id,
 									name: values.name,
 									category: values.category,
-									price: values.price,
 									user_id: window.localStorage.getItem("user_id"),
 									token: window.localStorage.getItem("token")
 								}
@@ -152,9 +150,8 @@
 									var name = res.data.product_detail.name;
 									// console.log(name);
 									var category = res.data.product_detail.category;
-									var price = res.data.product_detail.price;
 									var current = 1;
-									this.$emit('submitBasicBtn',{current, name, category, price});
+									this.$emit('submitBasicBtn',{current, name, category});
 									// console.log(res.data);
 								}
 								else{
