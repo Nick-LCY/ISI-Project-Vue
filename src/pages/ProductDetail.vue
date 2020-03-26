@@ -85,6 +85,7 @@
             :product_id="product.id"
             :product_name="product.name"
             :product_category="product.category"
+            :product_price="product.price"
             ></ProductBasic>
           </div>
 
@@ -412,14 +413,11 @@
 
       changeCurrentB(value) {
         this.current = value.current;
-        // this.product.name = value.name;
-        // this.product.category = value.category;
         console.log(this.current);
       },
 
       changeCurrentD(value) {
         this.current = value.current;
-        // this.product.product_descriptions = value.pdess;
         console.log(this.current);
       },
 
