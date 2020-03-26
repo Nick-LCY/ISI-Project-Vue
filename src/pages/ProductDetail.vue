@@ -266,7 +266,7 @@
         success:true,
         error_message:'',
 
-        current: 1,
+        current: 0,
         steps: [
             {
                 title: 'Change product\'s basic information',
