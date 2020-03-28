@@ -27,6 +27,10 @@
           Shopping Cart
           <router-link :to="{path: '/shopping-cart'}"></router-link>
         </a-menu-item>
+        <a-menu-item v-if="is_vendor === 'true'" key="/add-product">
+          Add Product
+          <router-link :to="{path: '/add-product'}"></router-link>
+        </a-menu-item> 
         <a-sub-menu v-if="login_data.state">
           <span slot="title"><a-icon type="user" />{{login_data.name}}</span>
           <a-menu-item-group>
