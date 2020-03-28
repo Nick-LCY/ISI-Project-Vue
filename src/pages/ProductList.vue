@@ -2024,7 +2024,13 @@
         this.product_list = res.data.item_list;
         this.total_pages = res.data.total_pages;
         this.request_data.current_page = res.data.current_page;
+        this.matchCategoryName(this.product_list, this.options, 1)
+
       })
+      
+    },
+    beforeUpdate(){
+      this.matchCategoryName(this.product_list, this.options, 1)
     },
     methods: {
       onChangePage(page){
@@ -2082,6 +2088,25 @@
           this.category = res.data.item_list.category;
         })
       },
+      matchCategoryName(product_list, options, count){
+        for(var item of product_list){
+          var category_code = item.category
+          for(var option of options){
+            if(option.value.slice(count-1,count) == category_code.slice(count-1,count)){
+              if (count == 4 || option.children==''){
+                item.category = option.label
+                break
+              }
+              else {
+                this.matchCategoryName(product_list, option.children, count+1 )
+                if(item.category.length == 4){
+                  item.category = 'Others'
+                }
+              }
+            }
+          }
+        }
+      }
     },
   };
 </script>
