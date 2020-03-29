@@ -127,6 +127,7 @@
 					if(this.success){
 						this.po_detail.status='cancelled';
 						this.po_detail.cancelled_by = res.data.cancelled_by;
+						location. reload();
 					}
 					else{
 						this.error_message = res.data.error_message;
@@ -153,6 +154,7 @@
 					console.log(res);
 					if(this.success){
 						this.po_detail.status='shipped';
+						location. reload();
 					}
 					else{
 						this.error_message = res.data.error_message;
@@ -178,6 +180,7 @@
 					this.success = res.data.success;
 					if(this.success){
 						this.po_detail.status='hold';
+						location. reload();
 					}
 					else{
 						this.error_message = res.data.error_message;
