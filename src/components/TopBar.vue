@@ -51,7 +51,7 @@
 
     <div id="box-container" v-if="search.box_visible">
       <div id="search-box">
-        <a-input-search size="large" @search="onSearch"/>
+        <a-input-search v-model="request_data.key" size="large" @search="onSearch"/>
       </div>
     </div>
     
