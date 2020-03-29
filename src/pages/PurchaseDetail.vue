@@ -191,6 +191,7 @@
 						this.po_detail.cancelled_by = res.data.cancelled_by;
 						this.dis = true;
 						console.log('success');
+						location. reload();
 					}
 					else{
 						this.error_message = res.data.message;
