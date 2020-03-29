@@ -611,9 +611,13 @@
 
   .ant-carousel img {
     margin: 0 auto;
-    width: 100%;
+/*    width: 100%;*/
     height: 100%;
     vertical-align: middle;
+  }
+
+  .ant-carousel >>> .slick-dots li button{
+    background: #C71585;
   }
 
   
