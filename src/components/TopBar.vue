@@ -287,7 +287,6 @@
       this.change_pwd_form = this.$form.createForm(this, { name: 'change_pwd' })
     },
     created(){
-      console.log("Upolalaalalala")
       this.menu_selected =[this.$route.path]
       this.setLoginData()
       this.searchBtnVisible()
