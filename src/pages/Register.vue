@@ -174,6 +174,7 @@ export default {
                                 var token = res.data.token
                                 window.localStorage.setItem('token', token)
                                 window.localStorage.setItem('is_login', true)
+                                window.localStorage.setItem('is_vendor', false)
                                 this.$router.push({path:'/'})
                             }
                             else{
