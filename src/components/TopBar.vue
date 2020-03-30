@@ -23,7 +23,7 @@
           Orders     
           <router-link :to="{path: '/po-list'}"></router-link>
         </a-menu-item>
-        <a-menu-item v-if="is_vendor === 'false' || is_vendor === null" key="/shopping_cart">
+        <a-menu-item v-if="is_vendor === 'false' || is_vendor === null" key="/shopping-cart">
           Shopping Cart
           <router-link :to="{path: '/shopping-cart'}"></router-link>
         </a-menu-item>
@@ -51,7 +51,7 @@
 
     <div id="box-container" v-if="search.box_visible">
       <div id="search-box">
-        <a-input-search v-model="request_data.key" size="large" @search="onSearch"/>
+        <a-input-search size="large" @search="onSearch"/>
       </div>
     </div>
     
@@ -279,8 +279,8 @@
           order_by: '1',
           category: '____'
       },
-      login_page:Boolean
-
+      login_page:Boolean,
+      login_box_visible:Boolean,
     },
     beforeCreate() {
       this.login_form = this.$form.createForm(this, { name: 'login' })
@@ -291,6 +291,14 @@
       this.setLoginData()
       this.searchBtnVisible()
       this.checkRequestFromLoginPage()
+    },
+    watch:{
+      login_box_visible(new_value){
+        this.login_box_visible = new_value
+        if(this.login_box_visible){
+        this.showLoginBox()
+      }
+     }
     },
     updated(){
       this.setLoginData()
@@ -398,10 +406,15 @@
                   window.localStorage.setItem('is_vendor', type)
                   window.localStorage.setItem('is_login', true)
                   this.login_data.modal_visible = false
+                  //tranfer data back to login page
                   if(this.login_page)
                   {
                     this.$emit('LoginFinish', false)
                     this.$router.push({path:'/'})
+                  }
+                  //transfer data back to product detail page(add to cart btn)
+                  if(this.login_box_visible){
+                    this.$emit('LoginFinish',false)
                   }
                 }
                 else
@@ -473,6 +486,11 @@
         }
       },
       closeLoginModal(){
+        //transfer data back to product detail page(add to cart btn)
+        if(this.login_box_visible){
+          this.$emit('LoginFinish',false)
+        } 
+        ////////
         this.login_data.modal_visible = false
       },
       closeChangePwdModal(){
@@ -509,7 +527,7 @@
         this.login_data.name = user_name
         this.login_data.state = is_login
         this.is_vendor = is_vendor
-      }
+      },
     }
   }
 </script>

@@ -3,7 +3,11 @@
 <template>
   <a-layout id="components-layout-demo-fixed">
 
-    <TopBar></TopBar>
+    <TopBar
+    v-bind:login_box_visible=login_box_visible
+    @LoginFinish="CloseLoginBox" 
+    >
+    </TopBar>
 
     <a-layout-content id="content">
       <a-breadcrumb :style="{ margin: '16px 0' }">
@@ -298,6 +302,7 @@
             labelCol: {span: 4},
             wrapperCol: {span: 8, offset: 4},
         },
+        login_box_visible:false
       };
     },
 
@@ -397,8 +402,12 @@
           })
         }
         else{
-          this.login_visible = true
+          this.login_box_visible = true
         }
+      },
+
+      CloseLoginBox(value){
+        this.login_box_visible = value
       },
 
 
