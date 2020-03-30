@@ -18,7 +18,6 @@
 				<h2>Basic Information:</h2>
 				<div class="basicInfo">
 					<p>Purchase Number: {{po_detail.po_no}}</p>
-
 					<p>Purchase Date: {{po_detail.purchase_date}}</p>
 					<p>Customer Name: {{po_detail.customer_name}}</p>
 					<p>Shipping Address: {{po_detail.shipping_address}}</p>
@@ -38,58 +37,13 @@
 					<a-list :grid="{column: 1}" :dataSource="po_detail.purchase_items">
 						<a-list-item slot="renderItem" slot-scope="item">
 							<PurchaseItem
+							:po_no="po_detail.po_no"
 							:product_id="item.product_id"
 							:product_name="item.product_name"
 							:product_price="item.product_price"
 							:quantity="item.quantity"
 							:status="po_detail.status">
 							</PurchaseItem>
-							<!-- <router-link :to="'/product-detail/'+item.product_id">
-							<a-card :title="item.product_name" hoverble>
-								<a-card-meta>
-									<template slot="description">
-										<p>Unit Price: ${{item.product_price}}</p>
-										<p>Quantity: {{item.quantity}}</p>
-										<p>Subtotal: ${{item.product_price*item.quantity}}</p> -->
-										
-										<!-- <div slot="content">
-											<a-form-item>
-												<a-button 
-													v-if="po_detail.status == 'Shipped' && feedback == ''" 
-													size="large" 
-													@click="giveFeedback">
-												Give a Feedback
-												</a-button>
-											</a-form-item> -->
-
-
-											<!-- <a-form-item>
-												<a-button 
-													v-if="feedback == 'sent'" 
-													size="large" 
-													@click="changeFeedback">
-												Change Your Feedback
-												</a-button>
-											</a-form-item> -->
-
-
-											<!-- <a-form-item v-show="isShow" >
-												<a-textarea :rows="4" @change="handleChange" :value="value"></a-textarea>
-											</a-form-item>
-											<a-form-item v-show="isShow">
-												<a-button 
-													htmlType="submit" 
-													:loading="submitting" 
-													@click="handleSubmit" 
-													type="primary">
-													Add Comment
-												</a-button>
-											</a-form-item> -->
-										<!-- </div> -->
-								<!-- 	</template>
-								</a-card-meta>
-							</a-card>
-							</router-link> -->
 						</a-list-item>
 					</a-list>
 				</div>
@@ -115,6 +69,7 @@
 	import axios from 'axios';
 	import TopBar from '@/components/TopBar.vue';
 	import PurchaseItem from '@/components/PurchaseItem.vue';
+	
 	export default {
 		name: 'purchase-detail',
 		components: {
@@ -124,18 +79,12 @@
 		data() {
 			return {
 				dis: '',
-				feedback: '',
-				isShow: false,
-				value: '',
-				submitting: false,
-				get_po_url: 'http://localhost:9981/purchase_order',
-				update_po_url: 'http://localhost:9981/purchase_order',
-
+				po_url: 'http://localhost:9981/purchase_order',
+				
 				po_detail: {},
 
 				success: true,
 				error_message: '',
-
 				
 			}
 
@@ -146,13 +95,10 @@
 			const token = window.localStorage.getItem('token');
 			var po_no = this.$route.params.po_no;
 			axios
-			.get(this.get_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
+			.get(this.po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
 			.then((res) =>{
 				this.po_detail = res.data.purchase_detail
 				console.log(this.po_detail);
-
-				// eslint-disable-next-line no-console
-					// console.log(this.po_info);
 			})
 
 		},
@@ -176,7 +122,7 @@
 
 				axios
 				.patch(
-					this.update_po_url,
+					this.po_url,
 					{
 						user_id: user_id,
 						token: token,
@@ -199,47 +145,6 @@
 					}
 				})
 			},
-
-			// giveFeedback() {
-			// 	this.isShow = !this.isShow;
-			// },
-			// handleChange(e) {
-			// 	this.value = e.target.value;
-
-			// },
-			// handleSubmit() {
-			// 	if (!this.value) {return;}
-			// 	this.value='';
-			// 	this.feedback='sent';
-			// 	this.isShow=false;
-			// 	const key = `open${Date.now()}`;
-			// 	this.$notification.open({
-			// 		placement: 'topLeft',
-			// 		message: 'Adding comment successful!',
-			// 		description:'Your comment has been added successfully. Click the button to see details.',
-			// 		btn: h => {
-			// 			return h(
-			// 				'a-button',
-			// 				{
-			// 				props: {
-			// 					type: 'primary',
-			// 					size: 'small',
-			// 				},
-			// 				on: {
-			// 					click: () => {this.$router.push({path: '/product-detail/'+this.$route.params.id});
-			// 					// eslint-disable-next-line no-console
-			// 					// console.log(this.$route.params);
-			// 					this.$notification.close(key);}
-
-			// 				},
-			// 			},
-			// 				'Confirm',
-			// 			);
-			// 		},
-			// 		key,
-			// 		onClose: close,
-			// 	});
-			// }
 		}
 
 	}

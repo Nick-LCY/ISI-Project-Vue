@@ -29,12 +29,12 @@
 				</div>
 				<br>
 
-				<div class="buttons" v-if="po_detail.status === 'pending'">
+				<div v-if="po_detail.status === 'pending'">
 					<a-button @click="shipPO(po_detail.po_no, 'shipped')" type="primary">Ship</a-button>
 					<a-button @click="holdPO(po_detail.po_no, 'hold')">Hold</a-button>
 					<a-button @click="cancelPO(po_detail.po_no, 'cancelled')" type="danger">Cancel</a-button>
 				</div>
-				<div class="buttons" v-if="po_detail.status === 'hold'">
+				<div v-if="po_detail.status === 'hold'">
 					<a-button @click="shipPO(po_detail.po_no, 'shipped')" type="primary">Unhold and Ship</a-button>
 					<a-button @click="cancelPO(po_detail.po_no, 'cancelled')" type="danger">Cancel</a-button>
 				</div>
@@ -80,8 +80,7 @@
 		},
 		data() {
 			return {
-				get_po_url: 'http://localhost:9981/purchase_order',
-				update_po_url: 'http://localhost:9981/purchase_order',
+				po_url: 'http://localhost:9981/purchase_order',
 
 				po_detail: {},
 
@@ -98,7 +97,7 @@
 			const token = window.localStorage.getItem('token');
 			var po_no = this.$route.params.po_no;
 			axios
-			.get(this.get_po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
+			.get(this.po_url+'?user_id='+user_id+'&token='+token+'&po_no='+po_no)
 			.then((res) =>{
 				this.po_detail = res.data.purchase_detail
 
@@ -113,7 +112,7 @@
 
 				axios
 				.patch(
-					this.update_po_url,
+					this.po_url,
 					{
 						user_id: user_id,
 						token: token,
@@ -141,7 +140,7 @@
 
 				axios
 				.patch(
-					this.update_po_url,
+					this.po_url,
 					{
 						user_id: user_id,
 						token: token,
@@ -168,7 +167,7 @@
 
 				axios
 				.patch(
-					this.update_po_url,
+					this.po_url,
 					{
 						user_id: user_id,
 						token: token,

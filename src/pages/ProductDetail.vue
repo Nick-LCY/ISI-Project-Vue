@@ -12,8 +12,8 @@
     <a-layout-content id="content">
       <a-breadcrumb :style="{ margin: '16px 0' }">
         <a-breadcrumb-item>Home</a-breadcrumb-item>
-        <a-breadcrumb-item>List</a-breadcrumb-item>
-        <a-breadcrumb-item>App</a-breadcrumb-item>
+        <a-breadcrumb-item>Product Detail</a-breadcrumb-item>
+        <a-breadcrumb-item>{{product.name}}</a-breadcrumb-item>
       </a-breadcrumb>
 
       
@@ -27,22 +27,16 @@
       
       <div id="main-content">
 
-        <a-row v-if="status === 'done'" type="flex" justify="space-around">
-          <a-col :span="8">
-            <a-carousel autoplay>
-              <div><img :src="product.thumbnail_location"></div>
-              <div v-for="photo in product.product_photographs" v-bind:key="photo.id">
-                <img :src="photo.file_location">
+        <a-row class="top" v-if="status === 'done'" type="flex" justify="space-around">
+          <a-col class="carousel" :span="8">
+            <a-carousel arrows dotsClass="slick-dots slick-thumb">
+              <a slot="customPaging" slot-scope="props">
+                <img :src="carousel[props.i]" />
+              </a>
+              <div v-for="i in carousel.length" v-bind:key="i">
+                <img :src="carousel[i-1]" />
               </div>
             </a-carousel>
-            <!-- <a-carousel autoplay arrows dotsClass="slick-dots slick-thumb">
-              <a slot="customPaging" slot-scope="props">
-                <img :src="getImgUrl(props.i)" />
-              </a>
-              <div v-for="item in 5" v-bind:key="item">
-                <img :src="baseUrl+'abstract0'+item+'.jpg'" />
-              </div>
-            </a-carousel> -->
           </a-col>
 
           <a-col :span="16" class="info">
@@ -188,13 +182,14 @@
             :header="`${reviews.length} reviews`"
             itemLayout="horizontal"
             :dataSource="reviews"
+            :pagination="pagination"
             >
               <a-list-item slot="renderItem" slot-scope="item">
                 <a-comment :author="item.author" :avatar="item.avatar">
                   <a-rate v-model="item.rate" disabled allowHalf/>
                   <p slot="content">{{item.content}}</p>
-                  <a-tooltip slot="datetime" :title="item.datetime.format('YYYY-MM-DD HH:mm:ss')">
-                    <span>{{item.datetime.fromNow()}}</span>
+                  <a-tooltip slot="datetime">
+                    <span>{{item.datetime}}</span>
                   </a-tooltip>
                 </a-comment>
               </a-list-item>
@@ -203,6 +198,10 @@
         </a-row>
 
       </div>
+
+
+
+      
 
       <div v-if="is_vendor === 'true'" class="edit">
         <a-button v-if="status === 'done'" type="primary" size="large" @click="editPD">Edit</a-button>
@@ -221,7 +220,6 @@
 
 
 <script>
-  import moment from 'moment';
   import axios from 'axios';
   import TopBar from '@/components/TopBar.vue';
   import ProductBasic from '@/components/ProductBasicInfo.vue';
@@ -238,36 +236,20 @@
       return {
         product: {},
         collapsed: false,
-        moment,
+        carousel: [],
         value: 3.5,
-        reviews: [
-          {
-            author: 'Jennifer Chun',
-            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-            content: 'Good.',
-            datetime: moment().subtract(1, 'days'),
-            rate: 4,
-          },
-          {
-            author: 'Monica Lyu',
-            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-            content: 'Great.',
-            datetime: moment().subtract(2, 'days'),
-            rate: 4.5,
-          },
-          {
-            author: 'Nick Lin',
-            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-            content: 'Just so so.',
-            datetime: moment().subtract(6, 'days'),
-            rate: 2.5,
-          },
-        ],
-        get_product_url: 'http://localhost:9981/product',
-        add_url:'http://localhost:9981/shopping_cart',
-        check_duplicate_url:'http://localhost:9981/shopping_cart',
+        reviews: [],
+        pagination: {
+          pageSize: 10,
+        },
+
+        product_url: 'http://localhost:9981/product',
+        shopping_cart_url:'http://localhost:9981/shopping_cart',
         thumbnail_processing_url: 'http://localhost:9981/thumbnail',
         photograpth_processing_url: 'http://localhost:9981/photograph',
+
+        review_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/reviews',
+
         success:true,
         error_message:'',
 
@@ -315,30 +297,39 @@
       this.is_vendor = is_vendor;
       var id = this.$route.params.id;
       axios
-        .get(this.get_product_url+'?id='+id)
-        .then((res) =>{
-          this.product = res.data;
-          var thumb = {
-            uid: '-1',
-            name: 'thumb',
+      .get(this.product_url+'?id='+id)
+      .then((res) => {
+        this.product = res.data;
+        this.carousel.push(res.data.thumbnail_location);
+        var thumb = {
+          uid: '-1',
+          name: 'thumb',
+          status: 'done',
+          url: res.data.thumbnail_location
+        }
+        this.thumbnail_file_list.push(thumb);
+        for (var p of res.data.product_photographs) {
+          this.carousel.push(p.file_location);
+          var photo = {
+            uid: '-'+p.id,
+            name: 'photograph'+p.id,
             status: 'done',
-            url: res.data.thumbnail_location
+            url: p.file_location,
+            file_id: p.id
           }
-          this.thumbnail_file_list.push(thumb);
-          for (var p of res.data.product_photographs) {
-            var photo = {
-              uid: '-'+p.id,
-              name: 'photograph'+p.id,
-              status: 'done',
-              url: p.file_location,
-              file_id: p.id
-            }
-            this.photograph_file_list.push(photo);
-          }
-                        // eslint-disable-next-line no-console
-                        // console.log(this.product)
-                      })
+          this.photograph_file_list.push(photo);
+        }
+          // eslint-disable-next-line no-console
+          // console.log(this.carousel);
+      })
+      axios
+      .get(this.review_url+'?id='+id)
+      .then((res) => {
+        this.reviews = res.data.reviews;
+      })
+      
     },
+
     methods: {
       getValue() {
         var star = 0;
@@ -356,7 +347,7 @@
         if(is_login){
           axios
           .get(
-              this.add_url, 
+              this.shopping_cart_url, 
               {
                   params: {
                     user_id: user_id,
@@ -377,7 +368,7 @@
             if(this.success){
               axios
               .post(
-                this.add_url,
+                this.shopping_cart_url,
                 {
                     user_id: user_id,
                     token: token,
@@ -613,23 +604,8 @@
   .ant-divider.ant-divider-horizontal.ant-divider-with-text::before,
   .ant-divider.ant-divider-horizontal.ant-divider-with-text::after
   {
-    border-top: 3px dashed rgb(1,1,1);
+    border-top: 1px solid rgb(1,1,1);
   }
-
-  
-
-  .ant-carousel img {
-    margin: 0 auto;
-/*    width: 100%;*/
-    height: 100%;
-    vertical-align: middle;
-  }
-
-  .ant-carousel >>> .slick-dots li button{
-    background: #C71585;
-  }
-
-  
 
   .info {
     text-align: left;
@@ -647,41 +623,37 @@
     height: 200px;
   }
 
-  .ant-carousel {
-    width: 100%;
-    padding-right: 15px;
+  .ant-carousel >>> .slick-slide {
+    text-align: center;
+    height: 400px;
+    line-height: 250px;
+    overflow: hidden;
   }
 
-/*  .ant-carousel >>> .slick-dots {
+  .ant-carousel >>> .slick-dots {
     height: auto;
   }
   .ant-carousel >>> .slick-slide img {
     border: 5px solid #fff;
     display: block;
     margin: auto;
-    max-width: 80%;
-  }*/
-  .ant-carousel >>> .slick-slide {
-    text-align: center;
-    height: 250px;
-    line-height: 250px;
-    overflow: hidden;
+    max-width: 60%;
+    /*height:100%;*/
   }
-  /*.ant-carousel >>> .slick-thumb {
+  .ant-carousel >>> .slick-thumb {
     bottom: -45px;
   }
   .ant-carousel >>> .slick-thumb li {
-    width: 60px;
-    height: 45px;
+    width: 100px;
+    height: 80px;
   }
   .ant-carousel >>> .slick-thumb li img {
-    width: 100%;
     height: 100%;
     filter: grayscale(100%);
   }
   .ant-carousel >>> .slick-thumb li.slick-active img {
     filter: grayscale(0%);
-  }*/
+  }
 
   #box-container{
    margin:0 auto;
@@ -719,24 +691,15 @@
     cursor: pointer;
   }
 
-.steps-content {
-  margin-top: 16px;
-  min-height: 200px;
-  padding-top: 50px;
-}
+  .steps-content {
+    margin-top: 16px;
+    min-height: 200px;
+    padding-top: 50px;
+  }
 
-.steps {
-  width: 1300px;
-  margin-left: 30px;
-}
-
-.son-steps {
-  width: 700px;
-  margin-left: 330px;
-}
-
-.son-steps-content {
-  margin-top: 30px;
-}
+  .steps {
+    width: 1300px;
+    margin-left: 30px;
+  }
 
 </style>

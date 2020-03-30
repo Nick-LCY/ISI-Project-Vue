@@ -65,7 +65,7 @@
         },
         po: 'current',
         po_info: [],
-        get_po_list_url: 'http://localhost:9981/purchase_orders',
+        po_list_url: 'http://localhost:9981/purchase_orders',
       }
     },
     
@@ -73,7 +73,7 @@
       const user_id = window.localStorage.getItem('user_id');
       const token = window.localStorage.getItem('token');
       axios
-      .get(this.get_po_list_url+'?user_id='+user_id+'&token='+token)
+      .get(this.po_list_url+'?user_id='+user_id+'&token='+token)
       .then((res) =>{
         this.po_info = res.data.po_info;
         console.log(res.data);
@@ -90,29 +90,31 @@
       },
 
       changePOStatus(po_info) {
-        var c = [];
-        var i = po_info.length - 1;
-        if (this.po == 'current') {
-          for (i; i >= 0; i--) {
-            var p = po_info[i];
-            if (p.status == "pending" || p.status == "hold") {
-              c.push(p);
+        if (po_info) {
+          var c = [];
+          var i = po_info.length - 1;
+          if (this.po == 'current') {
+            for (i; i >= 0; i--) {
+              var p = po_info[i];
+              if (p.status == "pending" || p.status == "hold") {
+                c.push(p);
+              }
             }
+            return _.orderBy(c, 'purchase_date', 'desc');
           }
-          return _.orderBy(c, 'purchase_date', 'desc');
-        }
-        else if (this.po == 'past') {
-          for (i; i >= 0; i--) {
-            p = po_info[i];
-            if (p.status == "shipped" || p.status == "cancelled") {
-              c.push(p);
+          else if (this.po == 'past') {
+            for (i; i >= 0; i--) {
+              p = po_info[i];
+              if (p.status == "shipped" || p.status == "cancelled") {
+                c.push(p);
+              }
             }
+            return _.orderBy(c, 'purchase_date', 'desc');
           }
-          return _.orderBy(c, 'purchase_date', 'desc');
-        }
-        else
-          return _.orderBy(po_info, 'purchase_date', 'desc');
-        }
+          else
+            return _.orderBy(po_info, 'purchase_date', 'desc');
+          }
+        }        
       },
 
     };
