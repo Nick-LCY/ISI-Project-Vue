@@ -122,7 +122,7 @@
 							po_no: this.po_number,
 							product_id: this.p_id,
 							content: this.content,
-							starts: this.stars-1,
+							stars: this.stars,
 							token: window.localStorage.getItem("token")
 						}
 					)
