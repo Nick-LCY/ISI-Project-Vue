@@ -29,15 +29,26 @@
 								</a-form-item>
 
 								<a-form-item v-show="isShow" >
-									<a-textarea :rows="4" @change="handleChange" :value="content"></a-textarea>
+									<a-textarea :rows="4" @change="textChange" :value="content"></a-textarea>
 								</a-form-item>
+
+								<a-form-item v-show="isShow">
+									<a-rate
+									:tooltips="desc"
+									:defaultValue="stars"
+									:allowClear="false"
+									@change="starChange"
+									/>
+									<span class="ant-rate-text">{{desc[stars - 1]}}</span>
+								</a-form-item>
+
 								<a-form-item v-show="isShow">
 									<a-button 
 									htmlType="submit" 
 									:loading="submitting" 
 									@click="handleSubmit" 
 									type="primary">
-										Add Comment
+										Submit
 									</a-button>
 								</a-form-item>
 							</div>
@@ -66,6 +77,8 @@
 				feedback: '',
 				isShow: false,
 				content: '',
+				stars: 0,
+				desc: ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'],
 				submitting: false,
 
 				po_number: this.po_no,
@@ -74,6 +87,8 @@
 				p_price: this.product_price,
 				p_quantity: this.quantity,
 				po_status: this.status,
+
+
 
 				review_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/review',
 			}
@@ -88,13 +103,17 @@
 			giveFeedback() {
 				this.isShow = !this.isShow;
 			},
-			handleChange(e) {
+			textChange(e) {
 				this.content = e.target.value;
-
+			},
+			starChange(e) {
+				this.stars = e;
+				console.log(this.stars)
 			},
 			handleSubmit() {
 				console.log(this.p_id);
-				if (!this.content) {this.$message.error('Please enter your feed back before submit!');}
+				if (!this.content) {this.$message.error('Please enter your feedback before submitting!');}
+				else if (this.stars === 0) {this.$message.error('Please give your rate!');}
 				else {
 					axios
 					.post(
@@ -103,6 +122,7 @@
 							po_no: this.po_number,
 							product_id: this.p_id,
 							content: this.content,
+							starts: this.stars,
 							token: window.localStorage.getItem("token")
 						}
 					)

@@ -28,6 +28,7 @@
       <div id="main-content">
 
         <a-row class="top" v-if="status === 'done'" type="flex" justify="space-around">
+
           <a-col class="carousel" :span="8">
             <a-carousel arrows dotsClass="slick-dots slick-thumb">
               <a slot="customPaging" slot-scope="props">
@@ -42,6 +43,7 @@
           <a-col :span="16" class="info">
             <a-divider>{{product.name}}</a-divider>
             <a-row type="flex" justify="space-around">
+
               <a-col :span="7" class="basic_info">
                 <p v-if="is_vendor === 'true'">ID: {{product.id}}</p>
                 <p>Category: {{product.category}}</p>
@@ -51,6 +53,7 @@
                   <a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button>
                 </p>
               </a-col>
+
               <a-col :span="15" class="description">
                 <p>Other Properties:</p>
                 <a-tabs tabPosition="left">
@@ -63,12 +66,11 @@
                   </a-tab-pane>
                 </a-tabs>
               </a-col>
+
             </a-row>
           </a-col>
+
         </a-row>
-
-
-
 
         <a-row v-if="status === 'edit'">
           <div class=steps>
