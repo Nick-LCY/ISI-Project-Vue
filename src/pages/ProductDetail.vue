@@ -222,10 +222,11 @@
 
 
 <script>
-  import axios from 'axios';
-  import TopBar from '@/components/TopBar.vue';
-  import ProductBasic from '@/components/ProductBasicInfo.vue';
-  import ChangeDes from '@/components/ChangeDes.vue';
+  import axios from 'axios'
+  import TopBar from '@/components/TopBar.vue'
+  import ProductBasic from '@/components/ProductBasicInfo.vue'
+  import ChangeDes from '@/components/ChangeDes.vue'
+  import category_processing from '@/config/category.js'
 
   export default {
     name: "product-detail",
@@ -286,7 +287,8 @@
             labelCol: {span: 4},
             wrapperCol: {span: 8, offset: 4},
         },
-        login_box_visible:false
+        login_box_visible:false,
+        options: category_processing.options
       };
     },
 
@@ -301,6 +303,7 @@
       axios
       .get(this.product_url+'?id='+id)
       .then((res) => {
+        category_processing.matchCategoryName([res.data], this.options, 1)
         this.product = res.data;
         this.carousel.push(res.data.thumbnail_location);
         var thumb = {
@@ -321,8 +324,6 @@
           }
           this.photograph_file_list.push(photo);
         }
-          // eslint-disable-next-line no-console
-          // console.log(this.carousel);
       })
       axios
       .get(this.review_url+'?id='+id)
