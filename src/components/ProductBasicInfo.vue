@@ -82,13 +82,11 @@
 
 <script>
 	import axios from 'axios';
-
 	export default {
 		name: 'ProductBasic',
 		props: ['product_id', 'product_name', 'product_category', 'product_price'],
 		data() {
 			return {
-
 				success: true,
 				submit: false,
 				error_message: '',
@@ -96,10 +94,7 @@
 				p_name: this.product_name,
 				p_category: this.product_category,
 				p_price: this.product_price,
-
-
 				product_url: 'http://localhost:9981/product',
-
 				formItemLayout: {
 					labelCol: {span: 4},
 					wrapperCol: {span: 16},
@@ -113,11 +108,9 @@
 				},
 			}
 		},
-
 		beforeCreate() {
 			this.form = this.$form.createForm(this, { name: 'product_basic' });
 		},
-
 		mounted() {
 			this.form.setFieldsValue({
 				"name": this.p_name,
@@ -125,9 +118,7 @@
 				"price": this.p_price,
 			})
 		},
-
 		methods: {
-
 			submitBasic(e) {
 				e.preventDefault();
 				this.form.validateFieldsAndScroll((err, values) => {
@@ -156,7 +147,6 @@
 								else{
 									this.error_message = res.data.message
 								}
-
 							})
 						}
 						else{
@@ -183,14 +173,11 @@
 								else{
 									this.error_message = res.data.message
 								}
-
 							})
-
 						}
 					}
 				});
 			},
-
 		}	
 	}
 </script>
@@ -200,5 +187,4 @@
 	margin: 24px 16px;
 	padding: 24px;
 }
-
 </style>

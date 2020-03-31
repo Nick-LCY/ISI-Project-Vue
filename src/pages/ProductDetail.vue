@@ -28,7 +28,6 @@
       <div id="main-content">
 
         <a-row class="top" v-if="status === 'done'" type="flex" justify="space-around">
-
           <a-col class="carousel" :span="8">
             <a-carousel arrows dotsClass="slick-dots slick-thumb">
               <a slot="customPaging" slot-scope="props">
@@ -43,7 +42,6 @@
           <a-col :span="16" class="info">
             <a-divider>{{product.name}}</a-divider>
             <a-row type="flex" justify="space-around">
-
               <a-col :span="7" class="basic_info">
                 <p v-if="is_vendor === 'true'">ID: {{product.id}}</p>
                 <p>Category: {{product.category}}</p>
@@ -53,7 +51,6 @@
                   <a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button>
                 </p>
               </a-col>
-
               <a-col :span="15" class="description">
                 <p>Other Properties:</p>
                 <a-tabs tabPosition="left">
@@ -66,11 +63,12 @@
                   </a-tab-pane>
                 </a-tabs>
               </a-col>
-
             </a-row>
           </a-col>
-
         </a-row>
+
+
+
 
         <a-row v-if="status === 'edit'">
           <div class=steps>
@@ -227,7 +225,6 @@
   import ProductBasic from '@/components/ProductBasicInfo.vue'
   import ChangeDes from '@/components/ChangeDes.vue'
   import category_processing from '@/config/category.js'
-
   export default {
     name: "product-detail",
     components:{
@@ -245,17 +242,13 @@
         pagination: {
           pageSize: 10,
         },
-
         product_url: 'http://localhost:9981/product',
         shopping_cart_url:'http://localhost:9981/shopping_cart',
         thumbnail_processing_url: 'http://localhost:9981/thumbnail',
         photograpth_processing_url: 'http://localhost:9981/photograph',
-
         review_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/reviews',
-
         success:true,
         error_message:'',
-
         current: 0,
         steps: [
             {
@@ -268,12 +261,10 @@
                 title: 'Change product\'s thumbnail and photographs',
             },
         ],
-
         thumbnail_file_list: [],
         photograph_file_list: [],
         preview_visible: false,
         preview_image: '',
-
         is_vendor: '',
         status: 'done',
         formItemLayout: {
@@ -291,11 +282,9 @@
         options: category_processing.options
       };
     },
-
     beforeCreate() {
       this.form = this.$form.createForm(this, { name: 'change_product' });
     },
-
     created(){
       var is_vendor = window.localStorage.getItem('is_vendor');
       this.is_vendor = is_vendor;
@@ -332,7 +321,6 @@
       })
       
     },
-
     methods: {
       getValue() {
         var star = 0;
@@ -399,12 +387,9 @@
           this.login_box_visible = true
         }
       },
-
       CloseLoginBox(value){
         this.login_box_visible = value
       },
-
-
       editPD() {
         this.status = 'edit';
       },
@@ -413,17 +398,14 @@
         this.current = 0;
         location. reload();
       },
-
       changeCurrentB(value) {
         this.current = value.current;
         console.log(this.current);
       },
-
       changeCurrentD(value) {
         this.current = value.current;
         console.log(this.current);
       },
-
       handleThumbnailRequest(data) {
                 // Init fileList
                 this.thumbnail_file_list = [{
@@ -468,7 +450,6 @@
                     this.thumbnail_file_list[0].status = "error"
                 })
             },
-
             handlePhotographRequest(data) {
                 var fileListObj = {
                     "uid": data.file.uid,
@@ -514,7 +495,6 @@
                     fileListObj.status = "error"
                 })
             },
-
             handleThumbnailRemove() {
                 // Remove uploaded file if success
                 axios.delete(this.thumbnail_processing_url, {"params": {
@@ -528,7 +508,6 @@
                     }
                 })
             },
-
             handlePhotographRemove(data) {
                 // If data.file_id exist, means back-end has this file in its local storage
                 // Then need to send delete request first
@@ -548,7 +527,6 @@
                     this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
                 }
             },
-
             handlePreview(e) {
                 this.preview_image = e.thumbUrl;
                 this.preview_visible = true;
@@ -566,11 +544,8 @@
                     
                 })
             },
-
       
     },
-
-
   };
 </script>
 
@@ -580,7 +555,6 @@
     margin-top: 16px;
     margin-bottom: 50px;
   }
-
   #components-layout-demo-fixed .logo {
     width: 120px;
     height: 31px;
@@ -588,51 +562,42 @@
     margin: 16px 24px 16px 0;
     float: left;
   }
-
   #content-box {
     padding: 0 50px;
   }
-
   #main-content {
     background: #fff;
     padding: 24px;
   }
-
   .ant-divider {
     padding-bottom: 10px;
     font-size: 30px;
     font-weight: bold;
   }
-
   .ant-divider.ant-divider-horizontal.ant-divider-with-text::before,
   .ant-divider.ant-divider-horizontal.ant-divider-with-text::after
   {
     border-top: 1px solid rgb(1,1,1);
   }
-
   .info {
     text-align: left;
     font-size: 20px;
     padding-left: 15px;
   }
-
   .description {
     border-left: 2px solid rgb(220, 220, 220);
     padding: 10px;
     margin: 0;
   }
-
   .ant-tabs {
     height: 200px;
   }
-
   .ant-carousel >>> .slick-slide {
     text-align: center;
     height: 400px;
     line-height: 250px;
     overflow: hidden;
   }
-
   .ant-carousel >>> .slick-dots {
     height: auto;
   }
@@ -657,7 +622,6 @@
   .ant-carousel >>> .slick-thumb li.slick-active img {
     filter: grayscale(0%);
   }
-
   #box-container{
    margin:0 auto;
    height: 100vh;
@@ -669,12 +633,10 @@
    z-index: 1;
    background-color: rgba(0, 0, 0, 0.5)
   }
-
   #search-box{
    margin-top: -20vh;
    width: 60vw;
   }
-
   .edit {
     box-sizing: border-box;
     margin: 0;
@@ -693,16 +655,13 @@
     height: 40px;
     cursor: pointer;
   }
-
   .steps-content {
     margin-top: 16px;
     min-height: 200px;
     padding-top: 50px;
   }
-
   .steps {
     width: 1300px;
     margin-left: 30px;
   }
-
 </style>

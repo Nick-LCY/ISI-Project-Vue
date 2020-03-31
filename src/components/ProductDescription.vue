@@ -1,10 +1,10 @@
 <template>
 
-	<a-layout>
+    <a-layout>
 
-		<a-layout-content>
+        <a-layout-content>
 
-			<a-alert
+            <a-alert
             v-if="!success"
             message="Error"
             :description="error_message"
@@ -42,8 +42,8 @@
             <br><br>
             <a-button type="primary" @click="submitDetail">Next</a-button>
 
-		</a-layout-content>
-	</a-layout>
+        </a-layout-content>
+    </a-layout>
 </template>
 
 <script>
@@ -57,7 +57,6 @@
                 submit: false,
                 error_message: '',
                 p_id: this.product_id,
-
                 columns: [
                     {
                         title: 'Attribute Name',
@@ -88,41 +87,11 @@
                     },
                 ],
                 count: 2,
-
                 des_url: 'http://localhost:9981/product_description',
-
             }
         },
-
-        beforeCreate() {
-            this.$nextTick(function() {
-                if (this.p_dess) {
-                    
-					this.descriptions = [];
-					var aname = [];
-					var avalue = [];
-					for (var p_des of this.p_dess) {
-						aname.push(p_des.attribute_name);
-						avalue.push(p_des.attribute_value);
-						this.descriptions.push(p_des);
-					}
-					console.log(aname);
-					this.form.setFieldsValue({
-						keys: this.keys,
-						attribute_name: aname,
-						attribute_value: avalue
-					})
-					console.log(this.form.getFieldValue('attribute_name'))
-					console.log(this.descriptions)
-                }
-                
-            })
-                
-                
-        },
-
+        
         methods: {
-
             submitDetail() {
                 for (var a of this.attributes) {
                     console.log(a);
@@ -162,7 +131,6 @@
                     })
                 }
             },
-
             onDelete(key) {
                 const attributes = [...this.attributes];
                 this.attributes = attributes.filter(attribute => attribute.key !== key);
@@ -193,16 +161,13 @@
                     this.attributes = newData;
                 }
             },
-
-        }	
+        }   
     }
 </script>
 
 <style scoped>
-
 .add {
     margin-top: 10px;
     margin-left: 1200px;
 }
-
 </style>
