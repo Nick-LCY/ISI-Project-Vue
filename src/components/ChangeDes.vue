@@ -153,7 +153,6 @@
 				}
                 this.cacheData = attributes.map(item => ({ ...item }));
 				console.log(this.attributes)
-                
             })
                 
                 

@@ -1,5 +1,3 @@
-<!-- for A6&7 -->
-
 <template>
   <a-layout id="components-layout-demo-fixed">
 
@@ -10,13 +8,13 @@
     </TopBar>
 
     <a-layout-content id="content">
+
       <a-breadcrumb :style="{ margin: '16px 0' }">
         <a-breadcrumb-item>Home</a-breadcrumb-item>
         <a-breadcrumb-item>Product Detail</a-breadcrumb-item>
         <a-breadcrumb-item>{{product.name}}</a-breadcrumb-item>
       </a-breadcrumb>
 
-      
       <a-alert
       v-if="!success"
       message="Error"
@@ -26,8 +24,9 @@
       />
       
       <div id="main-content">
-
-        <a-row class="top" v-if="status === 'done'" type="flex" justify="space-around">
+        <!-- Product information -->
+        <a-row v-if="status === 'done'" type="flex" justify="space-around">
+          <!-- Product thumbnail and photographs -->
           <a-col class="carousel" :span="8">
             <a-carousel arrows dotsClass="slick-dots slick-thumb">
               <a slot="customPaging" slot-scope="props">
@@ -38,19 +37,21 @@
               </div>
             </a-carousel>
           </a-col>
-
+          <!-- Product text information -->
           <a-col :span="16" class="info">
+            <!-- Product basic information -->
             <a-divider>{{product.name}}</a-divider>
             <a-row type="flex" justify="space-around">
               <a-col :span="7" class="basic_info">
                 <p v-if="is_vendor === 'true'">ID: {{product.id}}</p>
                 <p>Category: {{product.category}}</p>
                 <p>Price: ${{product.price}}</p>
-                <p>Rating: <a-rate :defaultValue="getValue()" disabled allowHalf/></p>
+                <p>Rating: <a-rate :value="product.rating" disabled allowHalf/></p>
                 <p v-if="is_vendor === 'false' || is_vendor === null">
                   <a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button>
                 </p>
               </a-col>
+              <!-- Product descriptions -->
               <a-col :span="15" class="description">
                 <p>Other Properties:</p>
                 <a-tabs tabPosition="left">
@@ -67,35 +68,33 @@
           </a-col>
         </a-row>
 
-
-
-
+        <!-- Product edit page -->
         <a-row v-if="status === 'edit'">
+          <!-- Steps -->
           <div class=steps>
               <a-steps :current="current">
                   <a-step v-for="item in steps" :key="item.title" :title="item.title" />
               </a-steps>
           </div>
-
+          <!-- Edit product basic info -->
           <div class="steps-content" v-if="current === 0">
             <ProductBasic
             @submitBasicBtn="changeCurrentB"
             :product_id="product.id"
             :product_name="product.name"
-            :product_category="product.category"
+            :product_category="cate"
             :product_price="product.price"
             ></ProductBasic>
           </div>
-
+          <!-- Edit product descriptions -->
           <div class="steps-content" v-if="current === 1">
             <changeDes
             @submitDesBtn="changeCurrentD"
             :product_id="product.id"
             :product_descriptions="product.product_descriptions">
             </changeDes>
-            
           </div>
-
+          <!-- Edit product thumbnail and photographs -->
           <div class="steps-content" v-if="current === 2">
             <a-alert
             v-if="!success"
@@ -104,9 +103,7 @@
             type="error"
             showIcon
             />
-
             <br>
-
             <a-form :form="form" @submit="submitImage">
               <!-- Preview Image Modal -->
               <a-modal :visible="preview_visible" :footer="null" @cancel="preview_visible = false">
@@ -163,18 +160,10 @@
                 </a-button>
               </a-form-item>
             </a-form>
-
-           
           </div>
         </a-row>
-
-
-
-
-
-
         <br><br><br> 
-
+        <!-- Reviews -->
         <a-row v-if="status === 'done'">
           <a-col>
             <a-list
@@ -185,26 +174,22 @@
             :pagination="pagination"
             >
               <a-list-item slot="renderItem" slot-scope="item">
-                <a-comment :author="item.author" :avatar="item.avatar">
-                  <a-rate v-model="item.rate" disabled allowHalf/>
+                <a-comment :author="item.author">
                   <p slot="content">{{item.content}}</p>
                   <a-tooltip slot="datetime">
                     <span>{{item.datetime}}</span>
                   </a-tooltip>
+                  <a-rate v-model="item.rate" disabled allowHalf/>
                 </a-comment>
+
               </a-list-item>
             </a-list>
           </a-col>
         </a-row>
-
       </div>
-
-
-
-      
-
+      <!-- Edit button and Cancel button -->
       <div v-if="is_vendor === 'true'" class="edit">
-        <a-button v-if="status === 'done'" type="primary" size="large" @click="editPD">Edit</a-button>
+        <a-button v-if="status === 'done'" type="primary" size="large" @click="edit">Edit</a-button>
         <a-popconfirm placement="top" okText="Yes" cancelText="No" @confirm="cancel">
           <template slot="title">
             <p>Are you sure to give up current and later pages modification?</p>
@@ -212,12 +197,9 @@
           <a-button v-if="status === 'edit'" type="danger" size="large">Cancel</a-button>
         </a-popconfirm>
       </div>
-
     </a-layout-content>
   </a-layout>
 </template>
-
-
 
 <script>
   import axios from 'axios'
@@ -225,6 +207,7 @@
   import ProductBasic from '@/components/ProductBasicInfo.vue'
   import ChangeDes from '@/components/ChangeDes.vue'
   import category_processing from '@/config/category.js'
+
   export default {
     name: "product-detail",
     components:{
@@ -234,21 +217,22 @@
     },
     data() {
       return {
-        product: {},
-        collapsed: false,
-        carousel: [],
-        value: 3.5,
-        reviews: [],
-        pagination: {
-          pageSize: 10,
-        },
-        product_url: 'http://localhost:9981/product',
-        shopping_cart_url:'http://localhost:9981/shopping_cart',
-        thumbnail_processing_url: 'http://localhost:9981/thumbnail',
-        photograpth_processing_url: 'http://localhost:9981/photograph',
-        review_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/reviews',
+        login_box_visible:false,
+        is_vendor: '',
+
+        options: category_processing.options,
+        cate: '',
+
         success:true,
         error_message:'',
+
+        product: {},
+        carousel: [],
+
+        reviews: [],
+        pagination: {pageSize: 10,},
+
+        status: 'done',
         current: 0,
         steps: [
             {
@@ -261,12 +245,12 @@
                 title: 'Change product\'s thumbnail and photographs',
             },
         ],
+
         thumbnail_file_list: [],
         photograph_file_list: [],
         preview_visible: false,
         preview_image: '',
-        is_vendor: '',
-        status: 'done',
+        
         formItemLayout: {
           labelCol: {span: 4},
           wrapperCol: {span: 16},
@@ -278,21 +262,30 @@
             labelCol: {span: 4},
             wrapperCol: {span: 8, offset: 4},
         },
-        login_box_visible:false,
-        options: category_processing.options
+        
+        product_url: 'http://localhost:9981/product',
+        shopping_cart_url:'http://localhost:9981/shopping_cart',
+        thumbnail_processing_url: 'http://localhost:9981/thumbnail',
+        photograpth_processing_url: 'http://localhost:9981/photograph',
+        review_url: 'http://localhost:9981/reviews',
       };
     },
+
     beforeCreate() {
       this.form = this.$form.createForm(this, { name: 'change_product' });
     },
+
     created(){
       var is_vendor = window.localStorage.getItem('is_vendor');
       this.is_vendor = is_vendor;
       var id = this.$route.params.id;
+      // Get product info
       axios
       .get(this.product_url+'?id='+id)
       .then((res) => {
-        category_processing.matchCategoryName([res.data], this.options, 1)
+        console.log(res.data);
+        this.cate = res.data.category;
+        category_processing.matchCategoryName([res.data], this.options, 1);
         this.product = res.data;
         this.carousel.push(res.data.thumbnail_location);
         var thumb = {
@@ -314,22 +307,19 @@
           this.photograph_file_list.push(photo);
         }
       })
+      // Get reviews
       axios
-      .get(this.review_url+'?id='+id)
+      .get(this.review_url+'?product_id='+id)
       .then((res) => {
         this.reviews = res.data.reviews;
       })
-      
     },
+
     methods: {
-      getValue() {
-        var star = 0;
-        for (var i = this.reviews.length - 1; i >= 0; i--) {
-           star += this.reviews[i].rate;
-        }
-        star = star/this.reviews.length;
-        return star; 
+      CloseLoginBox(value){
+        this.login_box_visible = value
       },
+      
       addToCart() {
         const user_id = window.localStorage.getItem('user_id')
         const token = window.localStorage.getItem('token')
@@ -387,164 +377,168 @@
           this.login_box_visible = true
         }
       },
-      CloseLoginBox(value){
-        this.login_box_visible = value
-      },
-      editPD() {
+      
+      // Go to edit page
+      edit() {
         this.status = 'edit';
       },
+      // Go back to view page
       cancel() {
         this.status = 'done';
         this.current = 0;
         location. reload();
       },
+
+      // Finish editing basic info and go to next step
       changeCurrentB(value) {
         this.current = value.current;
         console.log(this.current);
       },
+      // Finish editing descriptions and go to next step
       changeCurrentD(value) {
         this.current = value.current;
         console.log(this.current);
       },
+      // Finish all steps and go back to view page
+      submitImage(e) {
+        e.preventDefault();
+        this.form.validateFieldsAndScroll((err) => {
+            if (!err) {
+                location. reload()
+            }                                   
+        })
+      },
+
+      // Upload thumbnail
       handleThumbnailRequest(data) {
-                // Init fileList
-                this.thumbnail_file_list = [{
-                    "uid": data.file.uid,
-                    "lastModified": data.file.lastModified,
-                    "lastModifiedDate": data.file.lastModifiedDate,
-                    "name": data.file.name,
-                    "size": data.file.size,
-                    "type": data.file.type,
-                    "originFileObj": data.file,
-                    "status": "uploading",
-                    "percent": 0
-                }]
-                // Display upload progress while uploading
-                var config = {
-                    onUploadProgress: progressEvent => {
-                        this.thumbnail_file_list[0].percent
-                            = (progressEvent.loaded / progressEvent.total * 100 | 0)
-                    }
-                }
-                // Organize upload needed data
-                var formatData = new FormData()
-                formatData.append("thumbnail", data.file)
-                formatData.append("user_id", window.localStorage.getItem('user_id'))
-                formatData.append("product_id", this.product.id)
-                formatData.append("token", window.localStorage.getItem('token'))
-                // Upload file
-                axios
-                .post(this.thumbnail_processing_url, formatData, config)
-                .then((res) => {
-                    // Display file when upload success
-                    if(res.data.success) {
-                        this.thumbnail_file_list[0].status = "done"
-                        this.thumbnail_file_list[0].thumbUrl = res.data.file_link
-                        this.thumbnail_file_list[0].file_id = res.data.file_id
-                    } else {
-                        this.thumbnail_file_list[0].status = "error"
-                    }
-                })
-                .catch(() => {
-                    // Catch any probably error
-                    this.thumbnail_file_list[0].status = "error"
-                })
-            },
-            handlePhotographRequest(data) {
-                var fileListObj = {
-                    "uid": data.file.uid,
-                    "lastModified": data.file.lastModified,
-                    "lastModifiedDate": data.file.lastModifiedDate,
-                    "name": data.file.name,
-                    "size": data.file.size,
-                    "type": data.file.type,
-                    "originFileObj": data.file,
-                    "status": "uploading",
-                    "percent": 0
-                }
-                // Init fileList
-                this.photograph_file_list.push(fileListObj)
-                // Display upload progress while uploading
-                var config = {
-                    onUploadProgress: progressEvent => {
-                        fileListObj.percent
-                            = (progressEvent.loaded / progressEvent.total * 100 | 0)
-                    }
-                }
-                // Organize upload needed data
-                var formatData = new FormData()
-                formatData.append("photograph", data.file)
-                formatData.append("user_id", window.localStorage.getItem('user_id'))
-                formatData.append("product_id", this.product.id)
-                formatData.append("token", window.localStorage.getItem('token'))
-                // Upload file
-                axios
-                .post(this.photograpth_processing_url, formatData, config)
-                .then((res) => {
-                    // Display file when upload success
-                    if(res.data.success) {
-                        fileListObj.status = "done"
-                        fileListObj.thumbUrl = res.data.file_link
-                        fileListObj.file_id = res.data.file_id
-                    } else {
-                        fileListObj.status = "error"
-                    }
-                })
-                .catch(() => {
-                    // Catch any probably error
-                    fileListObj.status = "error"
-                })
-            },
-            handleThumbnailRemove() {
-                // Remove uploaded file if success
-                axios.delete(this.thumbnail_processing_url, {"params": {
-                    "user_id": window.localStorage.getItem("user_id"),
-                    "token": window.localStorage.getItem("token"),
-                    "product_id": this.product.id
-                }}).then((res) => {
-                    if(res.data.success) {
-                        this.thumbnail_file_list = []
-                        console.log('success!')
-                    }
-                })
-            },
-            handlePhotographRemove(data) {
-                // If data.file_id exist, means back-end has this file in its local storage
-                // Then need to send delete request first
-                if(data.file_id) {
-                    // Remove uploaded file if success
-                    axios.delete(this.photograpth_processing_url, {"params": {
-                        "user_id": window.localStorage.getItem("user_id"),
-                        "token": window.localStorage.getItem("token"),
-                        "product_id": this.product.id,
-                        "photograph_id": data.file_id
-                    }}).then((res) => {
-                        if(res.data.success) {
-                            this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
-                        }
-                    })
-                } else {
-                    this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
-                }
-            },
-            handlePreview(e) {
-                this.preview_image = e.thumbUrl;
-                this.preview_visible = true;
-            },
-            
-            submitImage(e) {
-                e.preventDefault();
-                this.form.validateFieldsAndScroll((err) => {
-                    if (!err) {
-                        location. reload()
-                    }
-                    // else{
-                    //     this.error_message = res.data.message
-                    // }                                    
-                    
-                })
-            },
-      
+        // Init fileList
+        this.thumbnail_file_list = [{
+            "uid": data.file.uid,
+            "lastModified": data.file.lastModified,
+            "lastModifiedDate": data.file.lastModifiedDate,
+            "name": data.file.name,
+            "size": data.file.size,
+            "type": data.file.type,
+            "originFileObj": data.file,
+            "status": "uploading",
+            "percent": 0
+        }]
+        // Display upload progress while uploading
+        var config = {
+            onUploadProgress: progressEvent => {
+                this.thumbnail_file_list[0].percent
+                    = (progressEvent.loaded / progressEvent.total * 100 | 0)
+            }
+        }
+        // Organize upload needed data
+        var formatData = new FormData()
+        formatData.append("thumbnail", data.file)
+        formatData.append("user_id", window.localStorage.getItem('user_id'))
+        formatData.append("product_id", this.product.id)
+        formatData.append("token", window.localStorage.getItem('token'))
+        // Upload file
+        axios
+        .post(this.thumbnail_processing_url, formatData, config)
+        .then((res) => {
+            // Display file when upload success
+            if(res.data.success) {
+                this.thumbnail_file_list[0].status = "done"
+                this.thumbnail_file_list[0].thumbUrl = res.data.file_link
+                this.thumbnail_file_list[0].file_id = res.data.file_id
+            } else {
+                this.thumbnail_file_list[0].status = "error"
+            }
+        })
+        .catch(() => {
+            // Catch any probably error
+            this.thumbnail_file_list[0].status = "error"
+        })
+      },
+      // Upload photograph
+      handlePhotographRequest(data) {
+        var fileListObj = {
+            "uid": data.file.uid,
+            "lastModified": data.file.lastModified,
+            "lastModifiedDate": data.file.lastModifiedDate,
+            "name": data.file.name,
+            "size": data.file.size,
+            "type": data.file.type,
+            "originFileObj": data.file,
+            "status": "uploading",
+            "percent": 0
+        }
+        // Init fileList
+        this.photograph_file_list.push(fileListObj)
+        // Display upload progress while uploading
+        var config = {
+            onUploadProgress: progressEvent => {
+                fileListObj.percent
+                    = (progressEvent.loaded / progressEvent.total * 100 | 0)
+            }
+        }
+        // Organize upload needed data
+        var formatData = new FormData()
+        formatData.append("photograph", data.file)
+        formatData.append("user_id", window.localStorage.getItem('user_id'))
+        formatData.append("product_id", this.product.id)
+        formatData.append("token", window.localStorage.getItem('token'))
+        // Upload file
+        axios
+        .post(this.photograpth_processing_url, formatData, config)
+        .then((res) => {
+            // Display file when upload success
+            if(res.data.success) {
+                fileListObj.status = "done"
+                fileListObj.thumbUrl = res.data.file_link
+                fileListObj.file_id = res.data.file_id
+            } else {
+                fileListObj.status = "error"
+            }
+        })
+        .catch(() => {
+            // Catch any probably error
+            fileListObj.status = "error"
+        })
+      },
+      // Remove thumbnail
+      handleThumbnailRemove() {
+        // Remove uploaded file if success
+        axios.delete(this.thumbnail_processing_url, {"params": {
+            "user_id": window.localStorage.getItem("user_id"),
+            "token": window.localStorage.getItem("token"),
+            "product_id": this.product.id
+        }}).then((res) => {
+            if(res.data.success) {
+                this.thumbnail_file_list = []
+                console.log('success!')
+            }
+        })
+      },
+      // Remove photograph
+      handlePhotographRemove(data) {
+          // If data.file_id exist, means back-end has this file in its local storage
+          // Then need to send delete request first
+          if(data.file_id) {
+              // Remove uploaded file if success
+              axios.delete(this.photograpth_processing_url, {"params": {
+                  "user_id": window.localStorage.getItem("user_id"),
+                  "token": window.localStorage.getItem("token"),
+                  "product_id": this.product.id,
+                  "photograph_id": data.file_id
+              }}).then((res) => {
+                  if(res.data.success) {
+                      this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
+                  }
+              })
+          } else {
+              this.photograph_file_list.splice(this.photograph_file_list.findIndex(item => item.uid === data.uid), 1)
+          }
+      },
+      // Preview image
+      handlePreview(e) {
+        this.preview_image = e.thumbUrl;
+        this.preview_visible = true;
+      },
     },
   };
 </script>
@@ -606,7 +600,6 @@
     display: block;
     margin: auto;
     max-width: 60%;
-    /*height:100%;*/
   }
   .ant-carousel >>> .slick-thumb {
     bottom: -45px;
@@ -663,5 +656,21 @@
   .steps {
     width: 1300px;
     margin-left: 30px;
+  }
+
+  .ant-comment-content-detail p {
+    font-size: 18px;
+  }
+
+  .ant-comment >>> .ant-comment-content-author-name {
+    font-size: 14px;
+  }
+
+  .ant-comment >>> .ant-comment-nested {
+    margin-left: 10px;
+  }
+
+  .ant-comment >>> .ant-comment-inner {
+    padding-bottom: 0px;
   }
 </style>

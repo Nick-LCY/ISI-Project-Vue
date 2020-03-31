@@ -37,11 +37,16 @@
 					label="Category" 
 					v-bind="formItemLayout"
 					>
-						<a-input
+						<a-cascader
 						v-decorator="[
 							'category',
-							{rules: [{ required: true, message: 'Please input product category'}] },
+							{
+								rules: [
+									{ type: 'array', required: true, message: 'Please select category' },
+								],
+							},
 						]"
+						:options="options"
 						placeholder="Product category"
 						/>
 					</a-form-item>
@@ -82,6 +87,7 @@
 
 <script>
 	import axios from 'axios';
+	import category_processing from '@/config/category.js';
 	export default {
 		name: 'ProductBasic',
 		props: ['product_id', 'product_name', 'product_category', 'product_price'],
@@ -90,10 +96,12 @@
 				success: true,
 				submit: false,
 				error_message: '',
+
 				p_id: this.product_id,
 				p_name: this.product_name,
 				p_category: this.product_category,
 				p_price: this.product_price,
+				p_cate: [],
 				product_url: 'http://localhost:9981/product',
 				formItemLayout: {
 					labelCol: {span: 4},
@@ -106,23 +114,35 @@
 				formItemLayoutWithOutLabel: {
 					wrapperCol: {span: 16, offset: 4},
 				},
+				options: category_processing.options,
 			}
 		},
 		beforeCreate() {
 			this.form = this.$form.createForm(this, { name: 'product_basic' });
+			this.$nextTick(	function () {
+				if (this.p_id) {
+					for (var i = 0; i < this.p_category.length; i++) {
+						this.p_cate.push(this.p_category.slice(0, i+1) + '_'.repeat(3-i))
+					}
+				}
+			})
 		},
+
 		mounted() {
 			this.form.setFieldsValue({
 				"name": this.p_name,
-				"category": this.p_category,
+				"category": this.p_cate,
 				"price": this.p_price,
 			})
 		},
+		
 		methods: {
 			submitBasic(e) {
 				e.preventDefault();
 				this.form.validateFieldsAndScroll((err, values) => {
 					if (!err) {
+						var cate = values.category;
+						console.log(cate);
 						if (this.p_id) {
 							axios
 							.patch(
@@ -130,7 +150,7 @@
 								{
 									id: this.p_id,
 									name: values.name,
-									category: values.category,
+									category: cate[cate.length-1],
 									price: values.price,
 									user_id: window.localStorage.getItem("user_id"),
 									token: window.localStorage.getItem("token")
@@ -155,7 +175,7 @@
 								this.product_url,
 								{
 									name: values.name,
-									category: values.category,
+									category: cate[cate.length-1],
 									price: values.price,
 									user_id: window.localStorage.getItem("user_id"),
 									token: window.localStorage.getItem("token")

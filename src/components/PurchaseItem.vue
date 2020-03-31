@@ -90,7 +90,7 @@
 
 
 
-				review_url: 'http://rest.apizza.net/mock/6e6f588e3cad8e88bda115251aed8406/review',
+				review_url: 'http://localhost:9981/review',
 			}
 
 		},
@@ -122,7 +122,7 @@
 							po_no: this.po_number,
 							product_id: this.p_id,
 							content: this.content,
-							starts: this.stars,
+							starts: this.stars-1,
 							token: window.localStorage.getItem("token")
 						}
 					)
@@ -163,12 +163,8 @@
 						}
 
 					})
-
 					
-				}
-
-
-				
+				}				
 			}
 		}
 
