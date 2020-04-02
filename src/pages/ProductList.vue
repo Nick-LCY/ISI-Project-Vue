@@ -119,8 +119,6 @@
         this.product_list = res.data.item_list;
         this.total_pages = res.data.total_pages;
         this.request_data.current_page = res.data.current_page;
-        category_processing.matchCategoryName(this.product_list, this.options, 1)
-
       })
       
     },

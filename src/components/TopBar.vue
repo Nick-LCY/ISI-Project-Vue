@@ -41,9 +41,10 @@
       </a-menu>
 
       <a-alert
+      style="top: 60vh;"
       v-if="!error.success"
       message="Error"
-      :description="error_message"
+      :description="error.error_message"
       type="error"
       showIcon
       />
@@ -350,6 +351,10 @@
             }
           }
           )
+          .catch(() => {
+            this.error.error_message = 'Invalid Input'
+            this.error.success = false
+          })
         }
       },
       logout(){
