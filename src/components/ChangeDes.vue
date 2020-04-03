@@ -152,7 +152,7 @@
 					this.attributes.push(d);
 				}
                 this.cacheData = attributes.map(item => ({ ...item }));
-				console.log(this.attributes)
+				// console.log(this.attributes)
             })
                 
                 
@@ -162,7 +162,7 @@
 
             submitDetail() {
                 for (var a of this.attributes) {
-                    console.log(a);
+                    // console.log(a);
                     if (a.attribute_name === '' || a.attribute_value === '') {
                         this.success = false;
                         this.error_message = 'Please fill in all the fields!';
@@ -171,7 +171,7 @@
                     else this.success = true;
                 }
                 for (a of this.new_attributes) {
-                    console.log(a);
+                    // console.log(a);
                     if (a.attribute_name === '' || a.attribute_value === '') {
                         this.success = false;
                         this.error_message = 'Please fill in all the fields!';
@@ -222,7 +222,7 @@
                 const newCacheData = [...this.cacheData];
                 const target = newData.filter(item => key === item.key)[0];
                 const targetCache = newCacheData.filter(item => key === item.key)[0];
-                console.log(targetCache);
+                // console.log(targetCache);
                 if (target && targetCache) {
                     target.editable = false;
                     this.attributes = newData;
@@ -238,7 +238,7 @@
                     attr.attribute_name = target.attribute_name;
                     attr.attribute_value = target.attribute_value;
                     product_descriptions.push(attr);
-                    console.log(product_descriptions);
+                    // console.log(product_descriptions);
                     axios
                     .patch(
                         this.des_url,

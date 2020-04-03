@@ -168,20 +168,29 @@
           <a-col>
             <a-list
             class="comment-list"
-            :header="`${reviews.length} reviews`"
+            :header="`${reviews.length+my_review.length} reviews`"
             itemLayout="horizontal"
             :dataSource="reviews"
             :pagination="pagination"
             >
-              <a-list-item slot="renderItem" slot-scope="item">
+              <a-list-item v-if="my_review.length">
+                <a-comment :author="my_review[0].author+' (My review) '">
+                  <p slot="content">{{my_review[0].content}}</p>
+                  <a-tooltip slot="datetime">
+                    <span>{{my_review[0].datetime}}</span>
+                  </a-tooltip>
+                  <a-rate v-model="my_review[0].rate" disabled />
+                  <a-button>Change Feedback</a-button>
+                </a-comment>
+              </a-list-item>
+              <a-list-item v-if="reviews.length" slot="renderItem" slot-scope="item">
                 <a-comment :author="item.author">
                   <p slot="content">{{item.content}}</p>
                   <a-tooltip slot="datetime">
                     <span>{{item.datetime}}</span>
                   </a-tooltip>
-                  <a-rate v-model="item.rate" disabled allowHalf/>
+                  <a-rate v-model="item.rate" disabled />
                 </a-comment>
-
               </a-list-item>
             </a-list>
           </a-col>
@@ -230,6 +239,8 @@
         carousel: [],
 
         reviews: [],
+        my_review: [],
+        is_show: false,
         pagination: {pageSize: 10,},
 
         status: 'done',
@@ -267,7 +278,8 @@
         shopping_cart_url:'http://localhost:9981/shopping_cart',
         thumbnail_processing_url: 'http://localhost:9981/thumbnail',
         photograpth_processing_url: 'http://localhost:9981/photograph',
-        review_url: 'http://localhost:9981/reviews',
+        review_url: 'http://localhost:9981/review',
+        reviews_url: 'http://localhost:9981/reviews',
       };
     },
 
@@ -276,6 +288,7 @@
     },
 
     created(){
+      const u_id = window.localStorage.getItem('user_id');
       var is_vendor = window.localStorage.getItem('is_vendor');
       this.is_vendor = is_vendor;
       var id = this.$route.params.id;
@@ -283,7 +296,6 @@
       axios
       .get(this.product_url+'?id='+id)
       .then((res) => {
-        console.log(res.data);
         this.cate = res.data.category;
         category_processing.matchCategoryName([res.data], this.options, 1);
         this.product = res.data;
@@ -309,9 +321,18 @@
       })
       // Get reviews
       axios
-      .get(this.review_url+'?product_id='+id)
+      .get(this.reviews_url+'?product_id='+id)
       .then((res) => {
         this.reviews = res.data.reviews;
+        for (var r of this.reviews) {
+          if (r.user_id == u_id) {
+            this.my_review.push(r);
+            this.reviews.splice(r);
+            break;
+          }
+        }
+        console.log(this.reviews);
+        console.log(this.my_review);
       })
     },
 
@@ -392,12 +413,10 @@
       // Finish editing basic info and go to next step
       changeCurrentB(value) {
         this.current = value.current;
-        console.log(this.current);
       },
       // Finish editing descriptions and go to next step
       changeCurrentD(value) {
         this.current = value.current;
-        console.log(this.current);
       },
       // Finish all steps and go back to view page
       submitImage(e) {
@@ -510,7 +529,6 @@
         }}).then((res) => {
             if(res.data.success) {
                 this.thumbnail_file_list = []
-                console.log('success!')
             }
         })
       },
@@ -538,6 +556,50 @@
       handlePreview(e) {
         this.preview_image = e.thumbUrl;
         this.preview_visible = true;
+      },
+
+      // To determine if the edit feedback area shows or not
+      changeFeedBack() {
+        this.is_show = !this.is_show;
+      },
+      // Change feedback content
+      textChange(e) {
+        this.my_review[0].content = e.target.value;
+      },
+      // Change rating
+      starChange(e) {
+        this.my_review[0].rate = e;
+        console.log(this.stars)
+      },
+      // Submit changed feedback
+      submitFeedback() {
+        if (!this.content) {this.$message.error('Please enter your feedback before submitting!');}
+        else if (this.stars == 0) {this.$message.error('Please give your rate!');}
+        else {
+          axios
+          .patch(
+            this.review_url,
+            {
+              po_no: this.my_review[0].po_no,
+              product_id: this.$route.params.id,
+              content: this.my_review[0].content,
+              stars: this.my_review[0].rate,
+              token: window.localStorage.getItem("token")
+            }
+          )
+          .then((res) =>{
+            this.success = res.data.success
+            if(this.success){
+              this.is_show = false;
+              this.$message.success('Change feedback successfully');
+            }
+            else{
+              this.error_message = res.data.message
+            }
+
+          })
+          
+        }
       },
     },
   };

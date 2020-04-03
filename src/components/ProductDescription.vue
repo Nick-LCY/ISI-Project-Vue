@@ -123,7 +123,7 @@
                     .then((res) => {
                         this.success = res.data.success;
                         if(this.success) {
-                            this.$message.success('Add descriptions success');
+                            this.$message.success('Add descriptions successfully');
                             var current = 2;
                             this.$emit('submitDesBtn', {current});
                         }

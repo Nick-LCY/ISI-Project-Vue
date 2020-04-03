@@ -12,6 +12,7 @@
 							<p>Unit Price: ${{p_price}}</p>
 							<p>Quantity: {{p_quantity}}</p>
 							<p>Subtotal: ${{p_price*p_quantity}}</p>
+							<p v-if="content && !is_show">Your review: {{content}}</p>
 							
 							<div slot="content">
 
@@ -22,27 +23,32 @@
 										Product Detail
 									</a-button>
 									<a-button 
-									v-if="po_status == 'shipped' && feedback == ''" 
+									v-if="po_status == 'shipped' && feedback == 'give'" 
 									@click="giveFeedback">
-										Give a Feedback
+										Give Feedback
+									</a-button>
+									<a-button 
+									v-if="po_status == 'shipped' && feedback == 'change'" 
+									@click="giveFeedback">
+										Change Feedback
 									</a-button>
 								</a-form-item>
 
-								<a-form-item v-show="isShow" >
+								<a-form-item v-show="is_show" >
 									<a-textarea :rows="4" @change="textChange" :value="content"></a-textarea>
 								</a-form-item>
 
-								<a-form-item v-show="isShow">
+								<a-form-item v-show="is_show">
 									<a-rate
 									:tooltips="desc"
-									:defaultValue="stars"
+									:value="stars"
 									:allowClear="false"
 									@change="starChange"
 									/>
 									<span class="ant-rate-text">{{desc[stars - 1]}}</span>
 								</a-form-item>
 
-								<a-form-item v-show="isShow">
+								<a-form-item v-show="is_show">
 									<a-button 
 									htmlType="submit" 
 									:loading="submitting" 
@@ -74,8 +80,8 @@
 				success: true,
 				error_message: '',
 
-				feedback: '',
-				isShow: false,
+				feedback: 'give',
+				is_show: false,
 				content: '',
 				stars: 0,
 				desc: ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'],
@@ -91,8 +97,27 @@
 
 
 				review_url: 'http://localhost:9981/review',
+				reviews_url: 'http://localhost:9981/reviews',
 			}
 
+		},
+
+		created() {
+			const u_id = window.localStorage.getItem('user_id');
+			axios
+			.get(this.reviews_url+'?product_id='+this.p_id)
+			.then((res) => {
+				this.reviews = res.data.reviews;
+				for (var r of this.reviews) {
+					if (r.user_id == u_id) {
+						this.content = r.content;
+						this.stars  = r.rate;
+						this.feedback = 'change';
+						break;
+					}
+				}
+				console.log(this.reviews);
+			})
 		},
 
 		methods: {
@@ -101,7 +126,7 @@
 			},
 
 			giveFeedback() {
-				this.isShow = !this.isShow;
+				this.is_show = !this.is_show;
 			},
 			textChange(e) {
 				this.content = e.target.value;
@@ -113,8 +138,8 @@
 			handleSubmit() {
 				console.log(this.p_id);
 				if (!this.content) {this.$message.error('Please enter your feedback before submitting!');}
-				else if (this.stars === 0) {this.$message.error('Please give your rate!');}
-				else {
+				else if (this.stars == 0) {this.$message.error('Please give your rate!');}
+				else if (this.feedback == 'give'){
 					axios
 					.post(
 						this.review_url,
@@ -129,14 +154,61 @@
 					.then((res) =>{
 						this.success = res.data.success
 						if(this.success){
-							this.content = '';
-							this.feedback = 'sent';
-							this.isShow = false;
+							this.is_show = false;
 							const key = `open${Date.now()}`;
 							this.$notification.open({
 								placement: 'topLeft',
 								message: 'Adding comment successful!',
 								description:'Your comment has been added successfully. Click the button to see details.',
+								btn: h => {
+									return h(
+										'a-button',
+										{
+										props: {
+											type: 'primary',
+											size: 'small',
+										},
+										on: {
+											click: () => {this.$router.push({path: '/product-detail/'+this.p_id});
+											this.$notification.close(key);}
+
+										},
+									},
+										'Confirm',
+									);
+								},
+								key,
+								onClose: close,
+							});
+						}
+						else{
+							this.error_message = res.data.message
+						}
+
+					})
+					
+				}
+				else if (this.feedback == 'change'){
+					axios
+					.patch(
+						this.review_url,
+						{
+							po_no: this.po_number,
+							product_id: this.p_id,
+							content: this.content,
+							stars: this.stars,
+							token: window.localStorage.getItem("token")
+						}
+					)
+					.then((res) =>{
+						this.success = res.data.success
+						if(this.success){
+							this.is_show = false;
+							const key = `open${Date.now()}`;
+							this.$notification.open({
+								placement: 'topLeft',
+								message: 'Changing comment successful!',
+								description:'Your comment has been changed successfully. Click the button to see details.',
 								btn: h => {
 									return h(
 										'a-button',
