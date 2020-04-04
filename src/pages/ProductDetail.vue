@@ -168,23 +168,32 @@
           <a-col>
             <a-list
             class="comment-list"
-            :header="`${reviews.length+my_review.length} reviews`"
+            :header="`${reviews.length} reviews`"
             itemLayout="horizontal"
             :dataSource="reviews"
             :pagination="pagination"
             >
-              <a-list-item v-if="my_review.length">
-                <a-comment :author="my_review[0].author+' (My review) '">
-                  <p slot="content">{{my_review[0].content}}</p>
-                  <a-tooltip slot="datetime">
-                    <span>{{my_review[0].datetime}}</span>
-                  </a-tooltip>
-                  <a-rate v-model="my_review[0].rate" disabled />
-                  <a-button>Change Feedback</a-button>
-                </a-comment>
-              </a-list-item>
               <a-list-item v-if="reviews.length" slot="renderItem" slot-scope="item">
-                <a-comment :author="item.author">
+                <a-comment v-if="item.my == true" :author="item.author+' (My review) '">
+                  <p v-if="!is_show" slot="content">{{item.content}}</p>
+                  <a-textarea v-if="is_show" :rows="4" @change="textChange" :value="item.content">
+                  </a-textarea>
+                  <a-tooltip slot="datetime">
+                    <span>{{item.datetime}}</span>
+                  </a-tooltip>
+                  <a-rate
+                  :tooltips="desc"
+                  :value="item.rate"
+                  :allowClear="false"
+                  @change="starChange"
+                  :disabled="!is_show"
+                  />
+                  <span v-if="is_show" class="ant-rate-text">{{desc[item.rate - 1]}}</span>
+                  <br><br>
+                  <a-button v-if="!is_show" @click="changeFeedback">Change Feedback</a-button>
+                  <a-button v-if="is_show" type="primary" @click="submitFeedback">Submit</a-button>
+                </a-comment>
+                <a-comment v-if="item.my == false" :author="item.author">
                   <p slot="content">{{item.content}}</p>
                   <a-tooltip slot="datetime">
                     <span>{{item.datetime}}</span>
@@ -241,6 +250,7 @@
         reviews: [],
         my_review: [],
         is_show: false,
+        desc: ['Terrible', 'Bad', 'Normal', 'Good', 'Wonderful'],
         pagination: {pageSize: 10,},
 
         status: 'done',
@@ -324,15 +334,17 @@
       .get(this.reviews_url+'?product_id='+id)
       .then((res) => {
         this.reviews = res.data.reviews;
-        for (var r of this.reviews) {
-          if (r.user_id == u_id) {
-            this.my_review.push(r);
-            this.reviews.splice(r);
-            break;
+        for (var i = this.reviews.length - 1; i >= 0; i--) {
+          console.log(i);
+          if (this.reviews[i].user_id == u_id) {
+            var r = this.reviews.splice(i, 1);
+            console.log(r)
+            r[0].my = true;
           }
+          else {this.reviews[i].my = false;}
         }
+        this.reviews.unshift(r[0]);
         console.log(this.reviews);
-        console.log(this.my_review);
       })
     },
 
@@ -559,47 +571,61 @@
       },
 
       // To determine if the edit feedback area shows or not
-      changeFeedBack() {
+      changeFeedback() {
         this.is_show = !this.is_show;
+        console.log(this.is_show);
       },
       // Change feedback content
       textChange(e) {
-        this.my_review[0].content = e.target.value;
+        for (var r of this.reviews) {
+          if (r.my == true) {
+            r.content = e.target.value;
+          }
+        }
       },
       // Change rating
       starChange(e) {
-        this.my_review[0].rate = e;
-        console.log(this.stars)
+        for (var r of this.reviews) {
+          if (r.my == true) {
+            r.rate = e;
+          }
+        }
       },
       // Submit changed feedback
       submitFeedback() {
-        if (!this.content) {this.$message.error('Please enter your feedback before submitting!');}
-        else if (this.stars == 0) {this.$message.error('Please give your rate!');}
-        else {
-          axios
-          .patch(
-            this.review_url,
-            {
-              po_no: this.my_review[0].po_no,
-              product_id: this.$route.params.id,
-              content: this.my_review[0].content,
-              stars: this.my_review[0].rate,
-              token: window.localStorage.getItem("token")
-            }
-          )
-          .then((res) =>{
-            this.success = res.data.success
-            if(this.success){
-              this.is_show = false;
-              this.$message.success('Change feedback successfully');
-            }
-            else{
-              this.error_message = res.data.message
-            }
+        for (var r of this.reviews) {
+          if (r.my == true) {
+            if (!r.content) {this.$message.error('Please enter your feedback before submitting!');}
+            else if (r.rate == 0) {this.$message.error('Please give your rate!');}
+            else {
+              axios
+              .patch(
+                this.review_url,
+                {
+                  po_no: r.po_no,
+                  product_id: this.$route.params.id,
+                  content: r.content,
+                  stars: r.rate,
+                  token: window.localStorage.getItem("token")
+                }
+              )
+              .then((res) =>{
+                this.success = res.data.success
+                if(this.success){
+                  this.is_show = false;
+                  this.$message.success('Change feedback successfully');
+                  location. reload();
+                }
+                else{
+                  this.error_message = res.data.message
+                }
 
-          })
-          
+              })
+              
+            }
+          }
         }
+        
       },
     },
   };
@@ -721,11 +747,11 @@
   }
 
   .ant-comment-content-detail p {
-    font-size: 18px;
+    font-size: 15px;
   }
 
   .ant-comment >>> .ant-comment-content-author-name {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .ant-comment >>> .ant-comment-nested {

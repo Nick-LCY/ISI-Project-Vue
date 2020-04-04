@@ -154,6 +154,7 @@
 					.then((res) =>{
 						this.success = res.data.success
 						if(this.success){
+							this.feedback = 'change';
 							this.is_show = false;
 							const key = `open${Date.now()}`;
 							this.$notification.open({
