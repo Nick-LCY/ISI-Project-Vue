@@ -343,7 +343,7 @@
           }
           else {this.reviews[i].my = false;}
         }
-        this.reviews.unshift(r[0]);
+        if (r) {this.reviews.unshift(r[0]);}
         console.log(this.reviews);
       })
     },

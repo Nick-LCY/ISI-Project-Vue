@@ -48,18 +48,29 @@
 				<div>
 					<a-list :grid="{column: 1}" :dataSource="po_detail.purchase_items">
 						<a-list-item slot="renderItem" slot-scope="item">
-							<router-link :to="'/product-detail/'+item.product_id">
+							
 							<a-card :title="item.product_name" hoverble>
 								<a-card-meta>
 									<template slot="description">
 										<p>Unit Price: ${{item.product_price}}</p>
 										<p>Quantity: {{item.quantity}}</p>
 										<p>Subtotal: ${{item.product_price*item.quantity}}</p>
+
+										<div>
+											<a-form-item>
+												<a-button 
+												type="primary"
+												@click="toDetail(item.product_id)">
+													Product Detail
+												</a-button>
+											</a-form-item>
+										</div>
 										
 									</template>
+									
 								</a-card-meta>
 							</a-card>
-							</router-link>
+							
 						</a-list-item>
 					</a-list>
 				</div>
@@ -106,6 +117,9 @@
 		},
 
 		methods: {
+			toDetail(id) {
+				this.$router.push({path: '/product-detail/'+id});
+			},
 			cancelPO(po_no, status) {
 				const user_id = window.localStorage.getItem('user_id');
 				const token = window.localStorage.getItem('token');
