@@ -103,13 +103,12 @@
 		},
 
 		created() {
-			const u_id = window.localStorage.getItem('user_id');
 			axios
 			.get(this.reviews_url+'?product_id='+this.p_id)
 			.then((res) => {
 				this.reviews = res.data.reviews;
 				for (var r of this.reviews) {
-					if (r.user_id == u_id) {
+					if (r.po_no == this.po_number) {
 						this.content = r.content;
 						this.stars  = r.rate;
 						this.feedback = 'change';
