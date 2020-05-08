@@ -46,7 +46,10 @@
                 <p v-if="is_vendor === 'true'">ID: {{product.id}}</p>
                 <p>Category: {{product.category}}</p>
                 <p>Price: ${{product.price}}</p>
-                <p>Rating: <a-rate :value="product.rating" disabled allowHalf/></p>
+                <p>Rating: 
+                  <a-rate v-if="product.rating <= 2" style="color: red;" :value="product.rating" disabled allowHalf/>
+                  <a-rate v-if="product.rating > 2" :value="product.rating" disabled allowHalf/>
+                </p>
                 <p v-if="is_vendor === 'false' || is_vendor === null">
                   <a-button type="primary" size="large" @click="addToCart">Add to Cart</a-button>
                 </p>
@@ -174,7 +177,7 @@
             :pagination="pagination"
             >
               <a-list-item v-if="reviews.length" slot="renderItem" slot-scope="item">
-                <a-comment v-if="item.my == true" :author="item.author+' (My review) '">
+                <!-- <a-comment v-if="item.my == true" :author="item.author+' (My review) '">
                   <p v-if="!is_show" slot="content">{{item.content}}</p>
                   <a-textarea v-if="is_show" :rows="4" @change="textChange" :value="item.content">
                   </a-textarea>
@@ -192,8 +195,9 @@
                   <br><br>
                   <a-button v-if="!is_show" @click="changeFeedback">Change Feedback</a-button>
                   <a-button v-if="is_show" type="primary" @click="submitFeedback">Submit</a-button>
-                </a-comment>
-                <a-comment v-if="item.my == false" :author="item.author">
+                </a-comment> -->
+                <!-- <a-comment v-if="item.my == false" :author="item.author"> -->
+                <a-comment :author="item.author">
                   <p slot="content">{{item.content}}</p>
                   <a-tooltip slot="datetime">
                     <span>{{item.datetime}}</span>
@@ -298,7 +302,7 @@
     },
 
     created(){
-      const u_id = window.localStorage.getItem('user_id');
+      // const u_id = window.localStorage.getItem('user_id');
       var is_vendor = window.localStorage.getItem('is_vendor');
       this.is_vendor = is_vendor;
       var id = this.$route.params.id;
@@ -334,16 +338,16 @@
       .get(this.reviews_url+'?product_id='+id)
       .then((res) => {
         this.reviews = res.data.reviews;
-        for (var i = this.reviews.length - 1; i >= 0; i--) {
-          console.log(i);
-          if (this.reviews[i].user_id == u_id) {
-            var r = this.reviews.splice(i, 1);
-            console.log(r)
-            r[0].my = true;
-          }
-          else {this.reviews[i].my = false;}
-        }
-        if (r) {this.reviews.unshift(r[0]);}
+        // for (var i = this.reviews.length - 1; i >= 0; i--) {
+        //   console.log(i);
+        //   if (this.reviews[i].user_id == u_id) {
+        //     var r = this.reviews.splice(i, 1);
+        //     console.log(r)
+        //     r[0].my = true;
+        //   }
+        //   else {this.reviews[i].my = false;}
+        // }
+        // if (r) {this.reviews.unshift(r[0]);}
         console.log(this.reviews);
       })
     },
