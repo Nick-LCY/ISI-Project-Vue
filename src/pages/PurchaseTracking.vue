@@ -32,7 +32,7 @@
 							</template>
 						</a-card-meta>
 						<template class="ant-card-actions" slot="actions">
-							<p><a-icon type="file-text" /> More Deatils <a-icon type="right" /></p>
+							<p><a-icon type="file-text" /> More Details <a-icon type="right" /></p>
 						</template>
 					</a-card>
           </router-link>

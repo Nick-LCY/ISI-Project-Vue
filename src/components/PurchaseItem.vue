@@ -178,7 +178,7 @@
 									);
 								},
 								key,
-								onClose: close,
+								onClose: this.$notification.close(key),
 							});
 						}
 						else{
