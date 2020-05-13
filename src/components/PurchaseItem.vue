@@ -137,7 +137,7 @@
 			handleSubmit() {
 				console.log(this.p_id);
 				if (!this.content) {this.$message.error('Please enter your feedback before submitting!');}
-				else if (this.stars == 0) {this.$message.error('Please give your rate!');}
+				else if (this.stars == 0) {this.$message.error('Please give your rating!');}
 				else if (this.feedback == 'give'){
 					axios
 					.post(
