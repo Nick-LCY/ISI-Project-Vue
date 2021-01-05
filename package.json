@@ -10,7 +10,7 @@
   "dependencies": {
     "ant-design-vue": "^1.4.10",
     "antd": "^3.26.8",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.4.4",
     "js-md5": "^0.7.3",
     "lodash": "^4.17.15",
